@@ -32,8 +32,7 @@
 	pages = {10},
 	year = {2019},
 	journal = {PHYSOR 2018},
-    annote  = {In this paper, the authors used DMD for produce a surrogate model based on two-dimensional full core data over six years and researched related uncertainties. They employed standard DMD(Algorithm I, Tu, 2014) to build the projections-based, reduced-order model. They defined the forward-sensitivity matrix $S = \phi ^{DMD} diag(e^{wt})\phi ^{DMD\dag}$ where $\omega= log(\lambda_i)/\Delta t$ and use the this and covariance matrix of initial condition $C_0$ to compute response
-covariance by $C^{DMD} = SC_0S^{T}$. In the conclusion, they mention the DMD model has difficulty in catch the spatial dependent bias.}
+    annote  = {In this paper, the authors used DMD to produce a surrogate model based on two-dimensional full core data over six years and researched related uncertainties. They employed standard DMD(Algorithm I, Tu, 2014) to build the projections-based, reduced-order model. They defined the forward-sensitivity matrix $S = \phi ^{DMD} diag(e^{wt})\phi ^{DMD\dag}$ where $\omega= log(\lambda_i)/\Delta t$ and use this and covariance matrix of initial condition $C_0$ to compute response covariance by $C^{DMD} = SC_0S^{T}$. In the conclusion, they mention the DMD model has difficulty in catching the spatial dependent bias.}
 }
 
 @article{zhang_model_2017,
@@ -45,6 +44,6 @@ covariance by $C^{DMD} = SC_0S^{T}$. In the conclusion, they mention the DMD mod
 	month = jun,
 	year = {2017},
 	journal = {AIAA AVIATION Forum},
-	annote  = {Zhang and Wei used DMD modes and their adjoint modes to build simple Galerkin models in a low-order space. Traditional DMD has non-orthogonal bases which increase the difficulty in reducing the order of the model.  We can calculate adjoint DMD modes by $ \phi^{ad} = U (w^l) ^{*} $ where $w^l$ is the left eigenvector of $ \tilde{A} $. Then the projection of snapshot on adjoint modes is $a(i,t) = (x_t,\phi^{ad}_i)$. The variable could be expand by $a$ and stand DMD modes, which could be written as $u(x,t) = \sum^r_{i=0} a_i(t) \phi_i(x) $. Then we can project our governing equation by $(\phi^{ad},\frac{\partial u}{\partial t})$. Since there is natural bi-orthogonality between DMD modes and adjoint DMD modes $(\phi^{ad}_j,phi_i) = \delta$, the projection will lead to a sets of ODEs of $\frac{\partial a_i}{\partial t}$.   }
+	annote  = {Zhang and Wei used DMD modes and their adjoint modes to build simple Galerkin models in a low-order space. Traditional DMD has non-orthogonal bases which increase the difficulty in reducing the order of the model.  We can calculate adjoint DMD modes by $ \phi^{ad} = U (w^l) ^{*} $ where $w^l$ is the left eigenvector of $ \tilde{A} $. Then the projection of snapshot on adjoint modes is $a(i,t) = (x_t,\phi^{ad}_i)$. The variable could be expand by $a$ and stand DMD modes, which could be written as $u(x,t) = \sum^r_{i=0} a_i(t) \phi_i(x) $. Then we can project our governing equation by $(\phi^{ad},\frac{\partial u}{\partial t})$. Since there is natural bi-orthogonality between DMD modes and adjoint DMD modes $(\phi^{ad}_j,\phi_i) = \delta_{ij}$, the projection will lead to a sets of ODEs of $\frac{\partial a_i}{\partial t}$.   }
 }
 %%
