@@ -5,11 +5,11 @@
 \chapter{Finite Volume Method of 1D Time Dependent Heat Equation}
 
 \section{Governing Equation}
-An one-dimensional nonlinear time dependent heat equation is defined as:
+The one-dimensional, nonlinear, time-dependent heat equation is defined as:
 \begin{equation}
-\frac{\partial u}{\partial t} = \alpha(x,u) \frac{\partial^2 u}{\partial x^2} + S(x,t)
+\frac{\partial u}{\partial t} = \alpha(x,u) \frac{\partial^2 u}{\partial x^2} + S(x,t)\, ,
 \end{equation}
-where thermal diffusivity $\alpha$ is linearly dependent on density ($\rho$), heat capacity(C), and thermal conductivity ($\kappa$) by:
+where the thermal diffusivity $\alpha$ is linearly dependent on density ($\rho$), heat capacity(C), and thermal conductivity ($\kappa$) by:
 \begin{equation}
 \alpha(x,u) = \frac{\kappa(x,u)}{\rho C}
 \end{equation}
@@ -67,3 +67,4 @@ Then equation 10.3 become:
 \begin{equation}
 \Delta x_j u_t = \frac{\tilde{\alpha}_{j+1/2} }{\Delta i}(u_{j+1}-u_{j}) - \frac{\tilde{\alpha}_{j-1/2} }{\Delta i} (u_{j}-u_{j-1}) +S_j
 \end{equation}
+
