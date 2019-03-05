@@ -46,4 +46,17 @@
 	journal = {AIAA AVIATION Forum},
 	annote  = {Zhang and Wei used DMD modes and their adjoint modes to build simple Galerkin models in a low-order space. Traditional DMD has non-orthogonal bases which increase the difficulty in reducing the order of the model.  We can calculate adjoint DMD modes by $ \phi^{ad} = U (w^l) ^{*} $ where $w^l$ is the left eigenvector of $ \tilde{A} $. Then the projection of snapshot on adjoint modes is $a(i,t) = (x_t,\phi^{ad}_i)$. The variable could be expand by $a$ and stand DMD modes, which could be written as $u(x,t) = \sum^r_{i=0} a_i(t) \phi_i(x) $. Then we can project our governing equation by $(\phi^{ad},\frac{\partial u}{\partial t})$. Since there is natural bi-orthogonality between DMD modes and adjoint DMD modes $(\phi^{ad}_j,\phi_i) = \delta_{ij}$, the projection will lead to a sets of ODEs of $\frac{\partial a_i}{\partial t}$.   }
 }
+
+
+@article{proctor_dynamic_2016,
+	title = {Dynamic {Mode} {Decomposition} with {Control}},
+	volume = {15},
+	issn = {1536-0040},
+	annote  = {Kutz’ group propose a modified version of DMD called DMD with control (DMDc). Compare to DMD, DMDc assume the system could be written as: $x_{k+1} \approx Ax_k + Bu_k  $ where $u_k$ should be the sparse current control. The main difference from the DMD algorithm is that the input data matrix is constructed by $\Omega = [X,U]^T$ and reduced-order approximation of A computed by $\tilde{A} =\hat{U}^{*} X' \tilde{V} \tilde{\Sigma}^{-1} \tilde{U}^{*}_1 \hat{U} $ where $X'$ is the truncated SVD output matrix of $\Omega$ . The map B could be either known or unknown. For unknown case, we assume $X' \approx G \Omega$, then $[A B] = X' [X U]^T$},
+	journal = {SIAM Journal on Applied Dynamical Systems},
+	author = {Proctor, Joshua L. and Brunton, Steven L. and Kutz, J. Nathan},
+	month = jan,
+	year = {2016},
+	pages = {142--161},
+}
 %%
