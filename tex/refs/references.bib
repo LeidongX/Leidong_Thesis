@@ -1,143 +1,62 @@
-% +-------------------------------------------------------------------------+
-% |
-% | The STRING command can be used to define abbreviations.  This is especially
-% | useful in defining an abbreviation to represent journal titles (or
-% | abbreviations).  In the first example below, "ARPC" is defined to represent
-% | "Annu. Rev. Phy. Chem." (the standard abbreviation for the journal "Annual
-% | Review of Physics and Chemistry.")  Any reference in your text to ARPC will
-% | be replaced by the full string, Annu. Rev. Phy. Chem.  Abbreviations are not
-% | case sensitive, i.e, "arpc" and "ARPC" are treated as the same.
-% |
-% | The STRING command must be preceded by the "at" symbol. 
-% |
-% +-------------------------------------------------------------------------+
+% This is annote.bib
+% Author: Ayman Ammoura
+% A demo for CMPUT 603 Fall 2002.
+% The order of the following entries is irrelevant. They will be sorted according to the
+% bibliography style used.
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
-@STRING(  ARPC = "Annu. Rev. Phys. Chem.")
-@STRING(   JCP = "J.~Chem. Phys.")
-@STRING( JOSAB = "J.~Opt. Soc. Am.~B")
-@STRING(   PRL = "Phys. Rev. Lett.")
-@STRING(   RMP = "Rev. Mod. Phys.")
+% The following is a conference paper
+@STRING( JFM = "Journal of Fluid Mechanics.")
 
+@article{schmid_dynamic_2010,
+	title = {Dynamic mode decomposition of numerical and experimental data},
+	volume = {656},
+	issn = {0022-1120, 1469-7645},
+	doi = {10.1017/S0022112010001217},
+	language = {en},
+	urldate = {2018-09-21},
+	journal = JFM,
+	author = {Schmid, Peter J.},
+	month = aug,
+	year = {2010},
+	pages = {5--28},
+    annote  = {In this paper, the authors propose a decomposition technology, dynamic mode decomposition(DMD), based on Koopman analysis of nonlinear dynamical systems. This method extracted dynamic modes describe the global behavior captured from numerical and experimental data to project large-scale problems onto a reduced order dynamical system. Compare to proper orthogonal decomposition(POD), DMD directly applied on data and does not decomposite on orthogonal space. Schmid applied this frame on both numerical Navier–Stokes code results and experimental measures and illustrated the significant essential on quantifying fluid-dynamical problems.\\ \\ At section 2, Schmid shows the initial idea of DMD algorithm which is usually called standard DMD in the following publications. Instead of employing QR-decomposition, he took advantage of SVD decomposition and obtain a robust approximation by $\tilde{S} = U^HV_2^NW\Sigma^{-1}$, where $V^{N-1}_1 = U\Sigma W^H$. The eigenvector $y_i$ of matrix $S$ and left eigenvector matrix U would be used to form the final dynamic modes $\phi_i$. Compare to the standard DMD, the tradition method use the least square solution to form matrix $S$ from QR-decomposition by $a = R^{−1}Q^Hv_N$, where $QR = V^{N-1}_1$. Also, some older attempts using Arnoldi method and Hessenberg matrix by $AQ \approx QH$ and $H = RSR^{−1}$ is not applicable because projections the matrix $A$ has to be available. Here $V^{N}_1 = \{v_1,Av_1,A^2v_1,…,A^{N-1}v_1 \} $ is the Krylov sequence based on the initial data snapshot $v_1$ and the linear map $A$ connect two snapshots ordered by sequence.      }	
 
-@BOOK{GEN:Bransden:2003,
-
-       AUTHOR = "B.~H.~Bransden and C.~J.~Joachain",
-        TITLE = "Physics of Atoms and Molecules",
-    PUBLISHER = "New York: Prentice-Hall",
-       VOLUME = "2nd Ed.",
-         YEAR = 2003
 }
 
 
-@BOOK{GEN:Bransden:2003,
-
-       AUTHOR = "S.~H.~Patil and K.~T.~Tang",
-        TITLE = "Asymptotic Methods in Quantum Mechanics: Application to Atoms, Molecules, and Nuclei",
-    PUBLISHER = "Berlin; New York: Springer",
-         YEAR = 2000
+@article{abdo_3_nodate,
+	title = {3 {Modeling} isotopic evolution with surrogates based on dynamic mode 4 decomposition},
+	language = {en},
+	author = {Abdo, Mohammad and Elzohery, Rabab and Roberts, Jeremy A},
+	pages = {10},
+	year = {2019},
+	journal = {PHYSOR 2018},
+    annote  = {In this paper, the authors used DMD to produce a surrogate model based on two-dimensional full core data over six years and researched related uncertainties. They employed standard DMD(Algorithm I, Tu, 2014) to build the projections-based, reduced-order model. They defined the forward-sensitivity matrix $S = \phi ^{DMD} diag(e^{wt})\phi ^{DMD\dag}$ where $\omega= log(\lambda_i)/\Delta t$ and use this and covariance matrix of initial condition $C_0$ to compute response covariance by $C^{DMD} = SC_0S^{T}$. In the conclusion, they mention the DMD model has difficulty in catching the spatial dependent bias.}
 }
 
-@ARTICLE{
-ARP:Loy:1974,
-
-       AUTHOR = {M.~M.~T.~Loy},
-        TITLE = {Observation of Population Inversion by Optical Adiabatic Rapid Passage},
-      JOURNAL = PRL,
-       VOLUME = {32},
-        PAGES = {814-817},
-         YEAR = {1974},
-          URL = {http://test.com}
-}
-
-@ARTICLE{
-ARP:Melinger:1991,
-
-       AUTHOR = {J.~S.~Melinger and A.~Hariharan and S.~R.~Gandhi and W.~S.~Warren},
-        TITLE = {Adiabatic population inversion in $I_{2}$ vapor with picosecond laser pulses},
-      JOURNAL = JCP,
-       VOLUME = {95},
-        PAGES = {2210-2213},
-         YEAR = {1991},
-          URL = {http://test2.com}
+@article{zhang_model_2017,
+	address = {Denver, Colorado},
+	title = {Model order reduction using {DMD} modes and adjoint {DMD} modes},
+	booktitle = {8th {AIAA} {Theoretical} {Fluid} {Mechanics} {Conference}},
+	publisher = {American Institute of Aeronautics and Astronautics},
+	author = {Zhang, Wei and Wei, Mingjun},
+	month = jun,
+	year = {2017},
+	journal = {AIAA AVIATION Forum},
+	annote  = {Zhang and Wei used DMD modes and their adjoint modes to build simple Galerkin models in a low-order space. Traditional DMD has non-orthogonal bases which increase the difficulty in reducing the order of the model.  We can calculate adjoint DMD modes by $ \phi^{ad} = U (w^l) ^{*} $ where $w^l$ is the left eigenvector of $ \tilde{A} $. Then the projection of snapshot on adjoint modes is $a(i,t) = (x_t,\phi^{ad}_i)$. The variable could be expand by $a$ and stand DMD modes, which could be written as $u(x,t) = \sum^r_{i=0} a_i(t) \phi_i(x) $. Then we can project our governing equation by $(\phi^{ad},\frac{\partial u}{\partial t})$. Since there is natural bi-orthogonality between DMD modes and adjoint DMD modes $(\phi^{ad}_j,\phi_i) = \delta_{ij}$, the projection will lead to a sets of ODEs of $\frac{\partial a_i}{\partial t}$.   }
 }
 
 
-@ARTICLE{
-CT:Phillips:1985,
-
-       AUTHOR = {W.~D.~Phillips and J.~V.~Prodan and H.~J.~Metcalf},
-        TITLE = {Laser cooling and electromagnetic trapping of neutral atoms},
-      JOURNAL = JOSAB,
-       VOLUME = {2},
-        PAGES = {1751-1767},
-         YEAR = {1985},
-          URL = {http://test3.com}
+@article{proctor_dynamic_2016,
+	title = {Dynamic {Mode} {Decomposition} with {Control}},
+	volume = {15},
+	issn = {1536-0040},
+	annote  = {Kutz’ group propose a modified version of DMD called DMD with control (DMDc). Compare to DMD, DMDc assume the system could be written as: $x_{k+1} \approx Ax_k + Bu_k  $ where $u_k$ should be the sparse current control. The main difference from the DMD algorithm is that the input data matrix is constructed by $\Omega = [X,U]^T$ and reduced-order approximation of A computed by $\tilde{A} =\hat{U}^{*} X' \tilde{V} \tilde{\Sigma}^{-1} \tilde{U}^{*}_1 \hat{U} $ where $X'$ is the truncated SVD output matrix of $\Omega$ . The map B could be either known or unknown. For unknown case, we assume $X' \approx G \Omega$, then $[A B] = X' [X U]^T$},
+	journal = {SIAM Journal on Applied Dynamical Systems},
+	author = {Proctor, Joshua L. and Brunton, Steven L. and Kutz, J. Nathan},
+	month = jan,
+	year = {2016},
+	pages = {142--161},
 }
-
-@ARTICLE{
-CT:Weiner:1999,
-
-       AUTHOR = {J.~Weiner and V.~S.~Bagnato and S.~Zilio and P.~S.~Julienne},
-        TITLE = {Experiments and theory in cold and ultracold collisions},
-      JOURNAL = RMP,
-       VOLUME = {71},
-        PAGES = {1-85},
-         YEAR = {1999},
-         NOTE = {\url{http://test4.com}}
-}
-
-@ARTICLE{
-CT:Gould:1988,
-
-       AUTHOR = {P.~L.~Gould and P.~D.~Lett and P.~S.~Julienne and W.~D.~Phillips},
-        TITLE = {Observation of Associative Ionization of Ultracold Laser-Trapped Sodium Atoms},
-      JOURNAL = PRL,
-       VOLUME = {60},
-        PAGES = {788-791},
-         YEAR = {1988},
-          URL = {http://test5.com}
-}
-
-@MISC{
-DePaola:2003,
-
-       AUTHOR = {B.~D.~DePaola},
-        TITLE = {Lectures on Coherent Excitation},
- HOWPUBLISHED = {Kansas State University, Manhattan, KS},
-         YEAR = {2003},
-         NOTE =  {(Unpublished)}
-}
-
-@MISC{
-Weaver:2005,
-
-       AUTHOR = {O.~L.~Weaver},
- HOWPUBLISHED = {Kansas State University, Manhattan, KS},
-         YEAR = {2005},
-         NOTE =  {(Private Communication)}
-}
-
-@PHDTHESIS{
-Nguyen:2003,
-
-       AUTHOR = {H.~Nguyen},
-        TITLE = {MOTRIMS},
-       SCHOOL = {Kansas State University},
-         YEAR = {2003}
-}
-
-
-@MISC{
-Params1:2005,
-
-         NOTE = {You can add the text of a note between the braces.}
-}
-
-@MISC{
-Params2:2005,
-
-         NOTE = {For Fig.~\ref{fig:chap02:Mathematica:DvsDetuning}, the following parameters were
-         used:  $I_{p} = 20$~W/cm$^{2}$, $I_{s}$ was set such that the Rabi frequencies, $\Omega_{p}$ and
-         $\Omega_{s}$ were equal, $w_{p} = w_{s} = 50$~ns and $\tau = -80$~ns.  Both $\Delta_{1}$ and
-         $\Delta_{2}$ (one- and two-photon resonance, respectively) were allowed to vary.}
-}
+%%
