@@ -10,23 +10,82 @@
 % +--------------------------------------------------------------------+
 
 \chapter{Results}
-\label{makereference2}
 
-To refer to Chapter~\ref{makereference1}, use the slash ref command
-along with the "makereference" label which was assigned back at the
-beginning of Chapter 1.
 
-\section{Page Number References}
-\label{makereference2.1} It is possible to refer to a specific page
-number, such as page~\pageref{makereference1}.  Add a slash label
-command and a unique name for each page to be referenced later in
-the text.
+\begin{figure*}[t!]
+\centering
+\begin{tikzpicture}[scale=.4]
 
-\section{Referring to Sections Within Chapter 1}
-\label{makereference2.2} It is possible to refer to sections within
-a chapter.  Add a slash label command and a unique name with the
-section number for each section to be referenced later in the text.
-Here is an example of a figure in section~\ref{makereference1.1} and
-an example of a table in section~\ref{makereference1.2}.  In
-section~\ref{makereference1.3}, we looked at examples of
-bibliographic citations.
+\begin{scope}<->;
+
+% GRID
+
+ \draw[step=1.0,gray,very thin, dashed,opacity=0.4] (0.0,0.0) grid (17.0, 17.0); 
+  
+% AXES
+  \draw[black, thick, ->] (0, 0) -- (18,  0) node[right] {$x$ (cm)};
+  \draw[black, thick, ->] (0, 0) -- ( 0, 18) node[above] {$y$ (cm)};
+
+% Material 3 regions
+  \draw[black, thick] (  0.0, 17.0) -- (17.0, 17.0);
+  \draw[black, thick] (  17.0, 17.0) -- (17.0, 0.0);  
+  \node[font=\large] at (6.0, 14.0) {3};
+
+% Material 0 regions
+  \draw[black, thick] (  0.0, 15.0) -- (5.0, 15.0);
+  \draw[black, thick] (  5.0, 15.0) -- (5.0, 13.0);  
+  \draw[black, thick] (  5.0, 13.0) -- (9.0, 13.0);
+  \draw[black, thick] (  9.0, 13.0) -- (9.0, 11.0);
+  \draw[black, thick] (  9.0, 11.0) -- (11.0, 11.0); 
+  \draw[black, thick] (  11.0, 11.0) -- (11.0, 9.0); 
+  \draw[black, thick] (  11.0, 9.0) -- (13.0, 9.0); 
+  \draw[black, thick] (  13.0, 9.0) -- (13.0, 5.0);
+  \draw[black, thick] (  15.0, 5.0) -- (13.0, 5.0);
+  \draw[black, thick] (  15.0, 5.0) -- (15.0, 0.0);
+  \node[font=\large] at (4.0, 12.0) {0};
+
+% Material 1 regions
+  \draw[black, thick] (  0.0, 13.0) -- (3.0, 13.0);
+  \draw[black, thick] (  3.0, 13.0) -- (3.0, 11.0);  
+  \draw[black, thick] (  3.0, 11.0) -- (7.0, 11.0);
+  \draw[black, thick] (  7.0, 11.0) -- (7.0, 7.0);
+  \draw[black, thick] (  7.0, 7.0) -- (11.0, 7.0); 
+  \draw[black, thick] (  11.0, 7.0) -- (11.0, 3.0);  
+  \draw[black, thick] (  11.0, 3.0) -- (13.0, 3.0);  
+  \draw[black, thick] (  13.0, 3.0) -- (13.0, 0.0);  
+  \node[font=\large] at (4.0, 8.0) {1};
+
+% Material 2 regions
+  \draw[black, thick] (  0.0, 0.0) -- (0.0, 1.0);
+  \draw[black, thick] (  1.0, 1.0) -- (1.0, 0.0);  
+  \draw[black, thick] (  0.0, 1.0) -- (1.0, 1.0);
+  \node[font=\large] at (0.5, 0.5) {2};  
+  
+  \draw[black, thick] (  0.0, 7.0) -- (1.0, 7.0); 
+  \draw[black, thick] (  1.0, 7.0) -- (1.0, 9.0);  
+  \draw[black, thick] (  1.0, 9.0) -- (0.0, 9.0);  
+  \node[font=\large] at (0.5, 8.0) {2};  
+  
+  
+  \draw[black, thick] (  7.0, 7.0) -- (9.0, 7.0);  
+  \draw[black, thick] (  9.0, 7.0) -- (9.0, 9.0);  
+  \draw[black, thick] (  9.0, 9.0) -- (7.0, 9.0);  
+  \node[font=\large] at (8.0, 8.0) {2};
+
+  \draw[black, thick] (  7.0, 0.0) -- (9.0, 0.0);
+  \draw[black, thick] (  9.0, 0.0) -- (9.0, 1.0);
+  \draw[black, thick] (  9.0, 1.0) -- (7.0, 1.0);
+  \draw[black, thick] (  7.0, 1.0) -- (7.0, 0.0);
+  \node[font=\large] at (8.0, 0.5) {2}; 
+ 
+% ticks
+  \foreach \x/\xtext in {0, 10, 30, 50, 70, 90, 110, 130, 150, 170}
+      \draw[black,xshift=0.1*\x cm] (0,.3) -- (0,0) node[below] {$\xtext$};
+  \foreach \y/\ytext in {0, 10, 70, 90, 130, 150, 170}
+      \draw[black,yshift=0.1*\y cm] (.3,0) -- (0,0) node[left] {$\ytext$};
+
+\end{scope}
+\end{tikzpicture}
+\caption{Geometry as modeled for the IAEA 2-D diffusion benchmark.  Material properties can be found in the benchmark documentation.  Materials 0 and 1 are fuel, material 2 represents control, while material 3 represents the outer reflector.}
+\label{fig:iaea2d}
+\end{figure*}
