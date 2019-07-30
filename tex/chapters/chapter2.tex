@@ -4,29 +4,37 @@
 
 \cleardoublepage
 
-% +--------------------------------------------------------------------+
-% | Replace "This is Chapter 2" below with the title of your chapter.
-% | LaTeX will automatically number the chapters.                      
-% +--------------------------------------------------------------------+
-
 \chapter{MultiGroup Transport and Diffusion Equation}
 \label{makereference2}
+Since it is impossible to simulate the location, moving direction, and moving speed of neutrons, neutron transport equation is employed to model the neutron particle kinetics and neutron population in the systems.
+Neutron transport is a extension of Boltzmann transport equation, which describes the statistical behaviour of particles in the dynamic thermal systems.
 
-To refer to Chapter~\ref{makereference1}, use the slash ref command
-along with the "makereference" label which was assigned back at the
-beginning of Chapter 1.
+Fix source and Eigenvalue
 
-\section{Page Number References}
-\label{makereference2.1} It is possible to refer to a specific page
-number, such as page~\pageref{makereference1}.  Add a slash label
-command and a unique name for each page to be referenced later in
-the text.
+\section{Numerical approach}
+Both fixed-source and criticality calculations can be solved using deterministic methods or stochastic methods. In deterministic methods the transport equation (or an approximation of it, such as diffusion theory) is solved as a differential equation. In stochastic methods such as Monte Carlo discrete particle histories are tracked and averaged in a random walk directed by measured interaction probabilities. Deterministic methods usually involve multi-group approaches while Monte Carlo can work with multi-group and continuous energy cross-section libraries. Multi-group calculations are usually iterative, because the group constants are calculated using flux-energy profiles, which are determined as the result of the neutron transport calculation.
 
-\section{Referring to Sections Within Chapter 1}
-\label{makereference2.2} It is possible to refer to sections within
-a chapter.  Add a slash label command and a unique name with the
-section number for each section to be referenced later in the text.
-Here is an example of a figure in section~\ref{makereference1.1} and
-an example of a table in section~\ref{makereference1.2}.  In
-section~\ref{makereference1.3}, we looked at examples of
-bibliographic citations.
+
+
+After these assumptions and the further assumption of isotropic scattering, the neutron transport equation reduces to
+\begin{equation}
+\begin{split}
+  \bm{\hat{\Omega}} & \cdot \nabla \psi_g(\vec{r},\bm{\hat{\Omega}}) +
+    \Sigma_{t g}(\vec{r}) \psi_{g}(\vec{r},\bm{\hat{\Omega}}) = \\
+   & \frac{1}{4\pi} \sum\limits^{N_g}_{g'=1} \Sigma_{s g g'}(\vec{r}) \phi_{g'}(\vec{r}) +
+    \frac{\chi_g}{4\pi k} \sum\limits^{N_g}_{g'=1} \nu\Sigma_{fg'}(\vec{r}) \phi_{g'}(\vec{r}) \, ,
+\end{split}
+\label{eq:transport}
+\end{equation}
+where $\psi_g$ represents the angular flux and $\phi_g$ is the 
+group-dependent scalar flux in certain energy group $g$.  
+In addition, $\Sigma_{t,g}$, $\Sigma_{s,g\prime g}$, and $\Sigma_{f,g}$ represent the group dependent cross sections for total, inscattering, and fission respectively.  
+$\chi_g$ is the fission spectrum, $\nu$ is the average number of neutrons emitted per fission, and the $k$-eigenvalue (or ``multiplication factor'') represents the balance of neutron gains (by fission) to losses (by absorption and leakage).  A reactor is ``critical,'' i.e., the neutron population is steady, when $k=1$.
+
+\section{Operator Notation}
+The transport equation may be written more compactly in operator notation as
+\begin{equation}
+ \mathbf{(I - DL^{-1}MS)} \mathbf{\phi} = \frac{1}{k} \mathbf{DL^{-1}MF} \mathbf{\phi}  \, ,
+ \label{eq:keig}
+\end{equation}
+where $\mathbf{\phi} $ describes the scalar flux, $\mathbf{L}$ represents loss operator,  $\mathbf{F}$ represents fission operator, $\mathbf{S}$ represents the scattering operator, $\mathbf{M}$ and $\mathbf{D}$ represent moment-to-discrete and discrete-to-moment operators respectively, and the eigenvalue $k$ represents the ratio of gains to losses. 
