@@ -17,134 +17,100 @@
 % +--------------------------------------------------------------------+
 
 \chapter{Introduction}
-\label{makereference1}
-\section{Motivation}
-\section{Objective}
+\label{chapter:intro}
+Nuclear power was studied initially in 1940s and has become an important supply in power industry.
+Without estimating the desired state of neutron population, it is impossible to control the neutronic systems and generate essential design. 
+Computational simulation technology is critical in nuclear physics, which does not only used to optimize nuclear reactor design, but also help to understanding extremely complicated neutron dynamic behaviors.
+However, to model a full core is an long-standing goal while it is still too computationally expensive to directly solve it even using the most advanced large-scale super computers. 
+Therefore, having an efficient approach to obtain the criticality and neutron distribution accurately is a pivotal topic in this field.
+
+\section{Operator Notation}
+The generalized eigenvalue form of the neutron transport equation is a fundamental problem in computational reactor physics.
+The dominant eigenvector and corresponding eigenvalue of this equation can represent if a system is in steady-state conditions.
+Though criticality calculation arised from the analysis of time-dependent processes, it is sufficient to reduced transport equation in steady-state. 
+Then the transport equation can be written in operator notation as
+\begin{equation}
+ \mathbf{(I - DL^{-1}MS)} \mathbf{\phi} = \frac{1}{k} \mathbf{DL^{-1}MF} \mathbf{\phi}  \, ,
+ \label{eq:keig}
+\end{equation}
+where $\mathbf{\phi} $ describes the scalar flux, $\mathbf{L}$ represents loss operator,  $\mathbf{F}$ represents fission operator, $\mathbf{S}$ represents the scattering operator, $\mathbf{M}$ and $\mathbf{D}$ represent moment-to-discrete and discrete-to-moment operators respectively, and the eigenvalue $k$ represents the ratio of gains to losses.
+A reactor is "critical," i.e., the neutron population is steady, when $k = 1$; or "subcritical," i.e., the neutron density is decreasing as time passes when $k < 1$; or "supercritical," i.e., the neutron density is increasing with time when $k>1$.
+The eigenvector corresponding to the largest eigenvalue $k$, which is usually known as fundamental (or dominant) eigenmode, indicates the scalar flux distribution when the system reach steady state.
+A more generalized multigroup neutron transport equation will be represented in Chapter 2.
+
+\section{Motivation and Objective}
+Discrete ordinates method is a practical deterministic approach that used to solve Equation \ref{eq:keig}.
+This approach is often smoothed by other iterative method, like power method, Richard iteration method and GMRES, and will apply the loss operator $L$ every iteration.
+Numerically, we don't solve directly inverse the operator, and would sweeping over each energy group and space location until the system converges instead.  
+However, it will still cost the enormous computational resource when it requires a large amount number of iterations. 
+Many breakthrough, such as the Generalized Davidson(GD) method and Diffusion Synthetic Acceleration(DSA), came to accelerate those iteration methods.
+
+Within the development of computational science，some theory of data science has been employed to analyze engineering problems.
+Dynamic mode decomposition(DMD) was one of the most well-known supervised learning approach that has achieved great success in computational fluid dynamics.
+This data-driven technology could produce reduced-dimensional surrogate model by gathering modes from given states of the time series and reconstructing the output parameters.
+The primary focus of this dissertation is to estimate a more accurate fundamental eigenmodes by DMD to accelerate power and related methods.
+
+To achieve these goals, a reviews of applications of DMD will be described in the rest of Chapter 1.
+Chapter 2 will introduce the multigroup neutron transport and diffusion equation, and Chapter 3 discuss the mathematically background of power and flatten power method.
+Following that, DMD-PM(n) are presented in Chapter 4, while DMD-FPM(n) are presented in Chapter 5.
+Then, the results and further analysis of the 1-D and 2-D test problems are described in Chapter 6.
+Chapter 7 will include conclusions and future work including possibility to combine this theory with other methods. 
 
 
+\section{Summary of previous work}
+Before continuing, it would be useful to brief introduce some great achievements that demonstrated the success of dynamic mode decompositio
+DMD was initially proposed by Schmid to extract dynamics information from time-series data of fluids observations.\cite{schmid_dynamic_2010}\cite{schmid_applications_2011}
+Schmid proposed a decomposition technology, dynamic mode decomposition(DMD), based on Koopman analysis of nonlinear dynamical systems. 
+This method extracted dynamic modes describe the global behavior captured from numerical and experimental data to project large-scale problems onto a reduced order dynamical system. 
+Compare to proper orthogonal decomposition(POD), DMD directly applied on data and does not decomposite on orthogonal space. 
+Schmid applied this frame on both numerical Navier-Stokes code results and experimental measures and illustrated the significant essential on quantifying fluid-dynamical problems.
+Schmid shows the initial idea of DMD algorithm which is usually known as standard DMD algorithm in the subsequent publications. 
+Instead of employing QR-decomposition, he took advantage of SVD decomposition and obtain a robust approximation by $\tilde{S} = U^HV_2^NW\Sigma^{-1}$, where $V^{N-1}_1 = U\Sigma W^H$. 
+The eigenvector $y_i$ of matrix $S$ and left eigenvector matrix U would be used to form the final dynamic modes $\phi_i$. Compare to the standard DMD, the tradition method use the least square solution to form matrix $S$ from QR-decomposition by $a = R^{−1}Q^Hv_N$, where $QR = V^{N-1}_1$. 
+Also, some older attempts using Arnoldi method and Hessenberg matrix by $AQ \approx QH$ and $H = RSR^{−1}$ is not applicable because projections the matrix $A$ has to be available. 
+Here $V^{N}_1 = \{v_1,Av_1,A^2v_1,…,A^{N-1}v_1 \} $ is the Krylov sequence based on the initial data snapshot $v_1$ and the linear map $A$ connect two snapshots ordered by sequence.  
 
+Tu and Kutz posted mathematical analysis of DMD algorithm and further extension including Extract DMD.  \cite{tu_dynamic_2014}
+They also summarized many other fashion variety DMD algorithms, such as mrDMD and DMDc, and discuss the applicability fitting with different complex systems.\cite{kutz_dynamic_2016}
+Fundamental theoretical foundations of DMD and the Koopman operator was also developed in this book.
 
+\subsection{DMD in Nuclear Engineering}
+Soon after, this technology then was applied in nuclear reactor simulation. 
+Abdo and others used DMD as a direct, explicit-in-time surrogate for such black-box models, e.g., to model the evolution of nuclear reactor isotopics over long time periods; and the nonlinear response of reactor power during short transients.\cite{abdo_data-driven_2018}\cite{abdo_modeling_2019}\cite{elzohery2018comparison}
 
+\subsection{DMD Acceleration}
+A way to achieve acceleration is to use results from lower dimensional system projected system to find a correction each iteration until system converges.
+The first research of using DMD to accelerate iterative methods was the work of Andersson and Eriksson.\cite{andersson_novel}
+A Krylov subspace is built up by store the states samples with time sequence as $V_n$, then Gram-Schmidt algorithm is applied by $V_n = E_n U_n$.
+The reason why authors would not like to use SVD is that Gram-Schmidt algorithm only work with two state vectors each time and SVD requires the whole subspace matrix $V_n$. 
+Moreover, Gram-Schmidt algorithm is obviously a more suitable approach for parallel computations. 
+The reduced projection of the system matrix $\tilde{A}$ is obtained by $\tilde{A} = E_n^T V_{n+1} U_n^{-1}$, and is implemented into iterative linear relation $\mathbf{x}^{(n+1)} = \mathbf{A}\mathbf{x}^{(n)} + \mathbf{b}$.
+The estimate of the converged solution can be calculate in the modified form as:
+\begin{equation}
+ x^{u} = x^{(n+1)} + E_n(I_n - \tilde{A}_n)^{-1} E_n^T(x^{(n+2)} - x^{(n+1)}) \, ,
+ \label{eq:andersson}
+\end{equation}
+By performing this process several time to correct the solution, both the number of iterations and the average fluctuation was reduced almost 30\% for compressible flow problems. 
 
+McClarren present a novel acceleration technique for improving the convergence of Richardson(source) iteration for source-driven neutronics problems.\cite{mcclarren_acceleration_2018}
+The Richardson iteration can be expressed as 
+\begin{equation}
+ \mathbf{x}^{(n+1)} = (\mathbf{I}-\mathbf{A})\mathbf{x}^{(n)} + \mathbf{b} \, ,
+ \label{eq:richardson}
+\end{equation}
+where sequence of $\mathbf{x}^{(n)}$ was often saved to build Krylov subspace. 
+However, a great feature in his modified DMD acceleration algorithm is that a set successive differences $\mathbf{x}^{(n)}-\mathbf{x}^{(n-1)}$ is used as the columns in the data matrix $Y_+$ and $Y_-$ while the standard DMD with SVD decomposition is applied to form the approximation system $\tilde{A}$.
+The algorithm is as follows
+\begin{enumerate}
+ \item Perform R source iterations: $\phi^{l} = A \phi^{l-1} +b$
+ \item Compute K source iterations to form $Y_+$ and $Y_-$. The last column of $Y_-$ we call $\phi^{K-1}$ 
+ \item Compute $\phi = \phi^{K-1} + U \Delta y$.
+\end{enumerate} 
+Here, $U$ is the left unitary matrix from SVD decomposition of $Y_-$ and $\Delta y$ is computed by 
+\begin{equation}
+ (I - \tilde{A}) \Delta y = U^T(\phi^{K} - \phi^{K-1})\, ,
+ \label{eq:McClarren}
+\end{equation}
+Results from a homogeneous slab problem and a multi-dimensional pip problem suggest that a sequence of Richardson iterations followed by corrections reduces the number of iterations required by about one order of magnitude.
 
-
-
-
-
-
-In this chapter there examples of various features you may want to
-incorporate into your document. Here's an example of a figure
-inserted into the text:
-
-\begin{figure}[htb]%t=top, b=bottom, h=here
-
-    \includegraphics[height=2.5in]{tex/figures/graph.png}
-
-    \caption[Optional: Short caption to appear in List of
-    Figures]{Full caption to appear below the Figure}
-
-    \label{figure1}
-\end{figure}
-
-% +--------------------------------------------------------------------+
-% |To create cross-references to figures, tables and segments
-% |of text, LaTeX provides the following commands:
-% |   \label{marker}
-% |   \ref{marker}
-% |   \pageref{marker}
-% | where {marker} is a unique identifier.
-% |
-% | In the line above, we use \label{figure1} to mark a location
-% | we wish to refer to later.  LATEX replaces \ref by the number of
-% | the chapter, section, subsection, figure, or table after which the
-% | corresponding \label command was issued. \pageref prints the page
-% | number of the page where the \label command occurred.
-% |
-% +--------------------------------------------------------------------+
-
-See the file chapter1.tex for examples of the commands used to
-insert a figure or table, add a caption, etc.  Here is an example of
-a table:
-
-\begin{table}[ht]
-
-% +--------------------------------------------------------------------+
-% | We include the command \begin{center} to center the table
-% | horizontally on the page.  Note use of the command \end{center}
-% | to turn off centering after the table is defined.
-% +--------------------------------------------------------------------+
-    \begin{center}
-
-% +--------------------------------------------------------------------+
-% | The table is created with this command
-% |
-% | \begin{tabular}[pos]{table spec}
-% |
-% | The "pos" argument specifies the vertical position of the table
-% | relative to the baseline of the surrounding text.  Use t, b, or c
-% | to specify alignment at the top, bottom, or center.
-% |
-% | The "table spec" command defines the format of the table
-% |   l for a column of left-aligned text
-% |   r for a column of right-aligned text
-% |   c for centered text
-% |   p{width} for a column containing justified text with line breaks
-% |   | for a vertical line
-% |
-% |  In this example, the caption is made to appear above the table
-% |  by positioning the \caption command before the \begin{tabular
-% |  command. To position the caption below the table, insert the
-% |  \caption command after the \end{tabular} command.
-% +--------------------------------------------------------------------+
-    \caption{Caption to appear above the table}
-    \begin{tabular}[c]{|c|c|c|}
-        \hline
-        Column 1 Heading & Column 2 Heading & Column 3 Heading \\
-        \hline
-        Col 1 Row 1 & Col 2 Row 1 & Col 3 Row 1\\
-        Col 1 Row 2 & Col 2 Row 2 & Col 3 Row 2\\
-        Col 1 Row 3 & Col 2 Row 3 & Col 3 Row 3\\
-        \hline
-    \end{tabular}
-
-    \label{table1}
-   \end{center}
-\end{table}
-
-
-
-% +--------------------------------------------------------------------+
-% | Replace \section headings below with the title of your
-% | subsections.  LaTeX will automatically number the subsections 1.1,
-% | 1.2, 1.3, etc.
-% +--------------------------------------------------------------------+
-
-\section{Making References to Figures or Tables}
-\label{makereference1.1}
-
-It is possible to create cross-references and hyperlinks to items or
-sections within your paper.  For example, here is a reference to
-Fig.~\ref{figure1} mentioned at the beginning of this chapter and a
-reference to the Table~\ref{table1}.
-
-\section{Making a Reference to a Chapter Subsection}
-\label{makereference1.2}
-
-In this section, we refer back to text mentioned in
-Section~\ref{makereference1.1} on page~\pageref{makereference1.1}.
-
-\section{Making a Citation}
-\label{makereference1.3}
-
-%Here's an example of a citation to a single
-%work.~\citep{CT:Weiner:1999} It's also possible to make multiple
-%citations.~\citep{CT:Phillips:1985, ARP:Loy:1974}
-%
-%This template uses BibTeX to manage and format citations.  BibTeX is
-%not the only way to create a bibliography within LaTeX, but it's
-%generally considered to be the best option for long documents like a
-%thesis or dissertation.~\citep{CT:Gould:1988}  There are a few more
-%sample citations in this paragraph so you can see examples of how
-%in-text references are made and how the bibliography is
-%formatted.~\citep{ARP:Melinger:1991} See the file "BibTeX Guide.pdf"
-%for information on how to use BibTeX.
+All of these past successes shows that DMD has potential to estimate the converged dominant modes of a reactor system by extrapolating forward from observed snapshots, even though the sequence of iterations from power method does not means "real time".
