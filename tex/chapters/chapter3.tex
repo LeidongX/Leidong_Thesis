@@ -1,11 +1,16 @@
 \cleardoublepage
 
-\chapter{Power Method and Flattened Power Method}
+\chapter{The Power and Flattened-Power Methods}
 \label{chapter:PM}
 
 This chapter contains a general description of power method and flattened power method and provides the algorithms of applying them on k-eigenvalue neutron transport problems.
-All the eigenvalues and eigenvectors of a system matrix can be calculated by solving a characteristic equation. 
-However, the computational cost can be extremely expensive for a large system.
+All the eigenvalues and eigenvectors of a system matrix can be calculated by solving the characteristic equation,
+\begin{equation}
+det(\mathbf{A} -\lambda \mathbf{I} ) = 0 \, ,
+\label{eq:characteristic}
+\end{equation}
+where I represents the identity matrix.
+However, the computational cost of solving this equation directly can be extremely high for large systems. 
 
 Iterative algorithms solve the eigenvalue problem by producing sequences that converge to either the eigenvalues or the eigenvectors.
 In common applications, the eigenvalue sequences and eigenvector sequences are expressed as sequences of similar matrices. 
