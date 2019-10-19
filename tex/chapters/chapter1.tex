@@ -15,17 +15,17 @@ The dominant eigenvector and corresponding eigenvalue of this equation can repre
 Though criticality calculations arose from the analysis of time-dependent processes, it is sufficient to reduce the transport equation to steady-state in many cases. 
 The steady-state transport equation can be written in operator notation as
 \begin{equation}
- \mathbf{(I - DL^{-1}MS)} \mathbf{\phi} = \frac{1}{k} \mathbf{DL^{-1}MF} \mathbf{\phi}  \, ,
+ \mathbf{(I - DL^{-1}MS)} \mathbf{\mathbf{x}} = \frac{1}{k} \mathbf{DL^{-1}MF} \mathbf{\mathbf{x}}  \, ,
  \label{eq:keig}
 \end{equation}
-where $\mathbf{\phi} $ describes the scalar flux, $\mathbf{L}$ represents loss operator,  $\mathbf{F}$ represents fission operator, $\mathbf{S}$ represents the scattering operator, $\mathbf{M}$ and $\mathbf{D}$ represent moment-to-discrete and discrete-to-moment operators respectively, and the eigenvalue $k$ represents the ratio of gains to losses.
+where $\mathbf{\mathbf{x}} $ describes the scalar flux, $\mathbf{L}$ represents loss operator,  $\mathbf{F}$ represents fission operator, $\mathbf{S}$ represents the scattering operator, $\mathbf{M}$ and $\mathbf{D}$ represent moment-to-discrete and discrete-to-moment operators respectively, and the eigenvalue $k$ represents the ratio of gains to losses.
 A reactor is ``critical,'' i.e., the neutron population is steady, when $k = 1$; or ``subcritical,'' i.e., the neutron density is decreasing as time passes when $k < 1$; or ``supercritical,'' i.e., the neutron density is increasing with time when $k>1$.
 The eigenvector corresponding to the largest eigenvalue $k$, which is usually known as fundamental (or dominant) eigenmode, indicates the scalar flux distribution when the system reaches steady state.
 A more generalized multigroup neutron transport equation will be presented in Chapter 2.
 
 \section{Motivation and Objective}
 The discrete ordinates method is a practical, deterministic approach that is used to solve \EQ{eq:keig}.
-This approach is often smoothed by other iterative methods such as the power method, Richard iteration method, or GMRES, which each apply the loss operator $L$ every iteration.
+This approach is often smoothed by other iterative methods such as the power method (PM), Richard iteration method, or the generalized minimal residual method (GMRES)\cite{saad1986gmres}, which each apply the loss operator $L$ every iteration.
 Numerically, it is inefficient to solve for the operator inverse; instead, a series of sweeps over each energy group and space location can be performed until the system converges.  
 However, the expense of this approach is now proportional to the number of iterations.
 Many breakthrough, such as the generalized Davidson(GD) method\cite{larsen1984diffusion} and Diffusion Synthetic Acceleration(DSA)\cite{hamilton2011numerical}, came to accelerate the aforementioned iteration methods.
@@ -37,7 +37,8 @@ The primary focus of this thesis is to estimate accurate fundamental eigenmodes 
 
 To achieve these goals, a review of DMD will be described in the remainder of this chapter.
 \CHAPTER{chapter:multigroup} will introduce the multigroup neutron transport and diffusion equations, and \CHAPTER{chapter:PM} discusses the mathematical background of the power and flatten power methods.
-Following that, a scheme using DMD to accelerate the power method is presented in \CHAPTER{chapter:DMD-PM}, while the DMD-FPM(n) scheme is presented in \CHAPTER{chapter:DMD-FPM(n)}.
+Following that, a restarted, DMD-accelerated power method scheme (DMD-PM(n)) is presented in \CHAPTER{chapter:DMD-PM}, while a DMD-based, accelerated, flattened power
+method DMD-FPM(n) is presented in \CHAPTER{chapter:DMD-FPM(n)}.
 Then, the results using either of acceleration schemes on compute analyzing a 1-D boiling water reactor(BWR) model and the famous 2-D C5G7 test problem, are discussed in \CHAPTER{chapter:results}.
 \CHAPTER{chapter:conclusion} will include conclusions and future work including the possibility of combining this theory with other methods. 
 
@@ -46,7 +47,7 @@ Then, the results using either of acceleration schemes on compute analyzing a 1-
 Before continuing, it would be useful to briefly introduce some great achievements that demonstrated the success of dynamic mode decomposition.
 DMD was initially proposed by \citet{schmid_dynamic_2010}\cite{schmid_applications_2011} to extract dynamics information from time-series data of fluids observations in 2010.
 He applied this frame on both numerical Navier-Stokes code results and experimental measures and illustrated the significant essential on quantifying fluid-dynamical problems.
-As opposed to proper orthogonal decomposition(POD), DMD is a pure data-based procedure and does not decompose on an orthogonal space. 
+As opposed to proper orthogonal decomposition (POD)\cite{lumley2007stochastic}, DMD is a pure data-based procedure and does not decompose on an orthogonal space. 
 This method is based on Koopman analysis of nonlinear dynamical systems and can extracte dynamic modes to describe the global behavior captured by projecting large-scale problems onto a reduced order dynamical system.
 In his work, the time-dependent dynamic systems are described in the form of a snapshots sequence,
 \begin{equation}
@@ -59,16 +60,16 @@ We assume that there exist a linear mapping operator $\mathbf{A}$, which can be 
  \mathbf{X}^{N}_1 = \{\mathbf{x}_1,A\mathbf{x}_1,A^2\mathbf{x}_1,…,A^{N-1}\mathbf{x}_1 \} \, .
  \label{eq:Krylov_seq}
 \end{equation}
-Some famous older attempts, like Arnoldi method, uses QR-decomposition $\mathbf{QR} = \mathbf{X}^{N-1}_1$ to reconstruct the mapping operator, which is not applicable while the matrix $A$ has to be available explicitly for the projections.\cite{Greenbaum_1997}  \cite{trefethen1997numerical}
+Some famous older attempts, like Arnoldi method\cite{arnoldi1951principle}, uses QR-decomposition $\mathbf{QR} = \mathbf{X}^{N-1}_1$ to reconstruct the mapping operator, which is not applicable while the matrix $A$ has to be available explicitly for the projections.\cite{Greenbaum_1997}  \cite{trefethen1997numerical}
 Instead of employing the QR-decomposition, Schmid took advantage of the SVD decomposition and obtained a robust approximation by 
 \begin{equation}
 \mathbf{\tilde{A}} = \mathbf{U^H X_1^{N-1}V\Sigma^{-1}} \, ,
  \label{eq:stanard_DMD}
 \end{equation}
 where $\mathbf{X}_1^{N-1} = \mathbf{U}\Sigma \mathbf{V}^H$. 
-The eigenvector $x_i$ of $\mathbf{\tilde{A}}$ and left eigenvector matrix $\mathbf{U}$ are used to calculate the DMD modes $\mathbf{\Phi}_i$ by 
+The eigenvector $x_i$ of $\mathbf{\tilde{A}}$ and left eigenvector matrix $\mathbf{U}$ are used to calculate the DMD modes $\mathbf{\mathbf{x}}_i$ by 
 \begin{equation}
-\mathbf{\Phi}_i = \mathbf{U} \mathbf{x}_i \, ,
+\mathbf{\mathbf{x}}_i = \mathbf{U} \mathbf{x}_i \, ,
  \label{eq:dyanmic_modes}
 \end{equation}
 and, therefore, recover the a reduced order dynamic system.
@@ -83,7 +84,7 @@ Many practical theory were developed based on the this successfully attempt, and
 where $\mathbf{X}_0^{\dagger}$ is the pseudoinverse of $\mathbf{X}_0$. And the DMD modes and
 eigenvalues are the eigenvectors and eigenvalues of $\mathbf{A}$, which can be computed by eigendecomposition. However, in practice, it may be expensive to compute the eigendecomposition of $\mathbf{A}$. With very minimum changes, exact DMD can also compute the modes and eigenvalue without manipulate explicit $\mathbf{A}$. In the case of directly-manipulation-free extract DMD, all other processes keep consistent with standard DMD, but the DMD modes are computed by 
 \begin{equation}
- \mathbf{\Phi}_i = \frac{1}{\lambda} \mathbf{X}_1 \mathbf{V} \mathbf{\Sigma}^{-1} \omega \, .
+ \mathbf{\mathbf{x}}_i = \frac{1}{\lambda} \mathbf{X}_1 \mathbf{V} \mathbf{\Sigma}^{-1} \omega \, .
  \label{eq:exact_dmd_free}
 \end{equation}
 
@@ -97,39 +98,39 @@ Abdo and others used DMD as a direct, explicit-in-time surrogate for such black-
 \subsection{DMD Acceleration}
 A way to achieve acceleration is to use results from lower dimensional system projected system to find a correction each iteration until system converges.
 The first research of using DMD to accelerate iterative methods was the work of \citet{andersson_novel}.
-A Krylov subspace is built up by store the states samples with time sequence as $V_n$, then Gram-Schmidt algorithm is applied by $V_n = E_n U_n$.
+A Krylov subspace is built up by store the states samples with time sequence as $\mathbf{V_n}$, then Gram-Schmidt algorithm is applied by $\mathbf{V_n} = \mathbf{{E_n U_n}}$.
 The reason why authors would not like to use SVD is that Gram-Schmidt algorithm only work with two state vectors each time and SVD requires the whole subspace matrix $V_n$. 
 Moreover, Gram-Schmidt algorithm is obviously a more suitable approach for parallel computations. 
-The reduced projection of the system matrix $\tilde{A}$ is obtained by 
+The reduced projection of the system matrix $\mathbf{\tilde{A}}$ is obtained by 
 \begin{equation}
- \tilde{A} = \mathbf{E}_n^T \mathbf{V}_{n+1} \mathbf{U}_n^{-1}  \, ,
+ \mathbf{\tilde{A}} = \mathbf{E}_n^T \mathbf{V}_{n+1} \mathbf{U}_n^{-1}  \, ,
  \label{eq:andersson_reduce}
 \end{equation}
 and is implemented into iterative linear relation $\mathbf{x}^{(n+1)} = \mathbf{A}\mathbf{x}^{(n)} + \mathbf{b}$.
 The estimate of the converged solution can be calculate in the modified form as:
 \begin{equation}
- x^{u} = x^{(n+1)} + \mathbf{E}_n(I_n - \tilde{A}_n)^{-1} \mathbf{E}_n^T(x^{(n+2)} - x^{(n+1)}) \, ,
+ \mathbf{x}^{u} = \mathbf{x}^{(n+1)} + \mathbf{E}_n(\mathbf{I_n} - \mathbf{\tilde{A}}_n)^{-1} \mathbf{E}_n^T(\mathbf{x}^{(n+2)} - \mathbf{x}^{(n+1)}) \, ,
  \label{eq:andersson}
 \end{equation}
 By performing this process several time to correct the solution, both the number of iterations and the average fluctuation was reduced almost 30\% for compressible flow problems. 
 
-McClarren present a novel acceleration technique for improving the convergence of Richardson(source) iteration for source-driven neutronics problems.\cite{mcclarren_acceleration_2018}
+Then \citet{mcclarren_acceleration_2018} presented a novel acceleration technique for improving the convergence of Richardson(source) iteration for source-driven neutronics problems.
 The Richardson iteration can be expressed as 
 \begin{equation}
  \mathbf{x}^{(n+1)} = (\mathbf{I}-\mathbf{A})\mathbf{x}^{(n)} + \mathbf{b} \, ,
  \label{eq:richardson}
 \end{equation}
 where sequence of $\mathbf{x}^{(n)}$ was often saved to build Krylov subspace. 
-However, a great feature in his modified DMD acceleration algorithm is that a set successive differences $\mathbf{x}^{(n)}-\mathbf{x}^{(n-1)}$ is used as the columns in the data matrix $\mathbf{Y}_+$ and $\mathbf{Y}_-$ while the standard DMD with SVD decomposition is applied to form the approximation system $\tilde{A}$.
+However, a great feature in his modified DMD acceleration algorithm is that a set successive differences $\mathbf{x}^{(n)}-\mathbf{x}^{(n-1)}$ is used as the snapshots in the data matrix $\mathbf{Y}_+$ and $\mathbf{Y}_-$ while the standard DMD with SVD decomposition is applied to form the approximation system $\mathbf{\tilde{A}}$.
 The algorithm is as follows
 \begin{enumerate}
- \item Perform R source iterations: $\phi^{l} = \mathbf{A} \phi^{l-1} +b$
- \item Compute K source iterations to form $\mathbf{Y}_+$ and $\mathbf{Y}_-$. The last column of $Y_-$ we call $\phi^{K-1}$ 
- \item Compute $\phi = \phi^{K-1} + \mathbf{U} \Delta y$.
+ \item Perform R source iterations: $\mathbf{x}^{l} = \mathbf{A} \mathbf{x}^{l-1} +b$
+ \item Compute K source iterations to form $\mathbf{Y}_+$ and $\mathbf{Y}_-$. The last column of $Y_-$ we call $\mathbf{x}^{K-1}$ 
+ \item Compute $\mathbf{x} = \mathbf{x}^{K-1} + \mathbf{U} \Delta y$.
 \end{enumerate} 
-Here, $U$ is the left unitary matrix from SVD decomposition of $\mathbf{Y}_-$ and $\Delta y$ is computed by 
+where $U$ is the left unitary matrix from SVD decomposition of $\mathbf{Y}_-$ and $\Delta y$ is computed by 
 \begin{equation}
- (\mathbf{I} - \mathbf{\tilde{A}}) \Delta y = \mathbf{U}^T(\phi^{K} - \phi^{K-1})\, ,
+ (\mathbf{I} - \mathbf{\tilde{A}}) \Delta y = \mathbf{U}^T(\mathbf{x}^{K} - \mathbf{x}^{K-1})\, ,
  \label{eq:McClarren}
 \end{equation}
 Results from a homogeneous slab problem and a multi-dimensional pip problem suggest that a sequence of Richardson iterations followed by corrections reduces the number of iterations required by about one order of magnitude.
