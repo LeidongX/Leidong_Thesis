@@ -3,7 +3,7 @@
 \chapter{The Power and Flattened-Power Methods}
 \label{chapter:PM}
 
-This chapter contains a general description of power method and flattened power method and provides the algorithms of applying them on k-eigenvalue neutron transport problems.
+This chapter contains a general description of power method and flattened-power method and provides the algorithms of applying them on k-eigenvalue neutron transport problems.
 All the eigenvalues and eigenvectors of a system matrix can be calculated by solving the characteristic equation,
 \begin{equation}
 det(\mathbf{A} -\lambda \mathbf{I} ) = 0 \, ,
@@ -23,8 +23,8 @@ On the other hand, the costs per iteration and convergence could also be differe
 Some of those iterative algorithms can produce all the eigenpairs or eigenvalues. 
 However, as mentioned in last chapter, only the largest eigenvalue and corresponding eigenvector are relevant in the k-eigenvalue transport problem.
 Although there are many iterative methods used for this type of eigenvalue problems, such as QR algorithm, Bisection method and Jacobi eigenvalue algorithm, traditional power iteration is the simplest method to determine the fundamental mode and corresponding eigenvalue.
-This method goes by many names such as power iteration and Von Mises iteration.
-Moreover, some of the more advanced eigenvalue algorithms are variations of the power iteration, for example, Arnoldi iteration which takes advantage of the whole Krylov subspace. 
+This method goes by many names such as power iteration and Von Mises iteration\cite{mises1929praktische}.
+Moreover, some of the more advanced eigenvalue algorithms are variations of the power iteration, for example, Arnoldi iteration \cite{arnoldi1951principle} which takes advantage of the whole Krylov subspace. 
 
 \section{Methodology}
 Using the same notation from Equation \ref{eq:keig}, we first define $\mathbf{A} =  \mathbf{(I - DL^{-1}MS)}$ and $\mathbf{B} = \mathbf{DL^{-1}MF}$ for convenience.
