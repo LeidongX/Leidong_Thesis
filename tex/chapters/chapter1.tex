@@ -25,8 +25,9 @@ The eigenvector corresponding to the largest eigenvalue $k$, which is usually kn
 A more generalized multigroup neutron transport equation will be presented in Chapter 2.
 
 \section{Motivation and Objective}
-The discrete ordinates method is a practical, deterministic approach that is used to solve \EQ{eq:keig}.
-This approach is often smoothed by other iterative methods such as the power method (PM), Richard iteration method, or the generalized minimal residual method (GMRES)\cite{saad1986gmres}, which each apply the loss operator $L$ every iteration.
+The discrete ordinates method, or the $S_n$ method, is a practical, deterministic approach that is used to discrize multigroup neutron transport equation.
+This discrete ordinates equation is often solved by other iterative methods such as the power method (PM), the Richardson iteration method\cite{adams1993two}, or the generalized minimal residual method (GMRES)\cite{saad1986gmres} for a given level of accuracy. 
+No matter which iterative method is employed, it must apply the loss operator $L$ every iteration.
 Numerically, it is inefficient to solve for the operator inverse; instead, a series of sweeps over each energy group and space location can be performed until the system converges.  
 However, the expense of this approach is now proportional to the number of iterations.
 Many breakthrough, such as the generalized Davidson(GD) method\cite{larsen1984diffusion} and Diffusion Synthetic Acceleration(DSA)\cite{hamilton2011numerical}, came to accelerate the aforementioned iteration methods.
@@ -35,33 +36,26 @@ Within the development of computational science，some theory of data science ha
 Dynamic mode decomposition(DMD) is one of the most well-known, supervised learning approaches that has achieved great success in computational fluid dynamics.
 This data-driven technology can produce reduced-dimensional surrogate models by gathering modes from given states of time dependent data and reconstructing the output parameters.
 The primary focus of this thesis is to estimate accurate fundamental eigenmodes by DMD to accelerate the Power Method and other, related methods.
-
-To achieve these goals, a review of DMD will be described in the remainder of this chapter.
-\CHAPTER{chapter:multigroup} will introduce the multigroup neutron transport and diffusion equations, and \CHAPTER{chapter:PM} discusses the mathematical background of the power and flatten power methods.
-Following that, a restarted, DMD-accelerated power method scheme (DMD-PM(n)) is presented in \CHAPTER{chapter:DMD-PM}, while a DMD-based, accelerated, flattened power
-method DMD-FPM(n) is presented in \CHAPTER{chapter:DMD-FPM(n)}.
-Then, the results using either of acceleration schemes on compute analyzing a 1-D boiling water reactor(BWR) model and the famous 2-D C5G7 test problem, are discussed in \CHAPTER{chapter:results}.
-\CHAPTER{chapter:conclusion} will include conclusions and future work including the possibility of combining this theory with other methods. 
-
+Before continuing, it would be useful to briefly introduce some great achievements that demonstrated the success of dynamic mode decomposition.
 
 \section{Summary of previous work}
-Before continuing, it would be useful to briefly introduce some great achievements that demonstrated the success of dynamic mode decomposition.
+
 DMD was initially proposed by \citet{schmid_dynamic_2010}\cite{schmid_applications_2011} to extract dynamics information from time-series data of fluids observations in 2010.
 He applied this frame on both numerical Navier-Stokes code results and experimental measures and illustrated the significant essential on quantifying fluid-dynamical problems.
 As opposed to proper orthogonal decomposition (POD)\cite{lumley2007stochastic}, DMD is a pure data-based procedure and does not decompose on an orthogonal space. 
-This method is based on Koopman analysis of nonlinear dynamical systems and can extracte dynamic modes to describe the global behavior captured by projecting large-scale problems onto a reduced order dynamical system.
+This method is based on Koopman analysis\cite{lasota2013chaos,mezic2005spectral} of nonlinear dynamical systems and can extract dynamic modes to describe the global behavior captured by projecting large-scale problems onto a reduced order dynamical system.
 In his work, the time-dependent dynamic systems are described in the form of a snapshots sequence,
 \begin{equation}
  \mathbf{X}^{N}_1 = \{\mathbf{x}_0, \mathbf{x}_1, \ldots, \mathbf{x}_{N} \} \, ,
  \label{eq:snap_matrix}
 \end{equation}
 where $\mathbf{x}_i$ stands for the {\it i}th state.
-We assume that there exist a linear mapping operator $\mathbf{A}$, which can be applied on on the initial data snapshot $\mathbf{x}_0$ repeatedly and formulate snapshots sequence \EQ{eq:snap_matrix} as a Krylov sequence by
+We assume that there exist a linear mapping operator $\mathbf{A}$, which can be applied on on the initial data snapshot $\mathbf{x}_0$ repeatedly and formulate snapshots sequence \EQ{eq:snap_matrix} as a Krylov subspace by
 \begin{equation}
  \mathbf{X}^{N}_1 = \{\mathbf{x}_1,A\mathbf{x}_1,A^2\mathbf{x}_1,…,A^{N-1}\mathbf{x}_1 \} \, .
  \label{eq:Krylov_seq}
 \end{equation}
-Some famous older attempts, like Arnoldi method\cite{arnoldi1951principle}, uses QR-decomposition $\mathbf{QR} = \mathbf{X}^{N-1}_1$ to reconstruct the mapping operator, which is not applicable while the matrix $A$ has to be available explicitly for the projections.\cite{Greenbaum_1997}  \cite{trefethen1997numerical}
+Some famous older attempts, like Arnoldi method\cite{arnoldi1951principle}, uses QR-decomposition $\mathbf{QR} = \mathbf{X}^{N-1}_1$ to reconstruct the mapping operator $\mathbf{A}$, which is not applicable because the explicit matrix form of  $\mathbf{A}$ is not often available for the projections.\cite{Greenbaum_1997, trefethen1997numerical}
 Instead of employing the QR-decomposition, Schmid took advantage of the SVD decomposition and obtained a robust approximation by 
 \begin{equation}
 \mathbf{\tilde{A}} = \mathbf{U^H X_1^{N-1}V\Sigma^{-1}} \, ,
@@ -78,14 +72,13 @@ This scheme is often known as the standard DMD approach, and a more detailed dis
 
 Many practical theories were developed based on the this successfully attempt.
 One such attempt uses the past and future snapshot matrix, which is defined as $\mathbf{X}_0 \triangleq \{\mathbf{x}_0, \mathbf{x}_1, \ldots, \mathbf{x}_{N-1} \}$ and $\mathbf{X}_1 \triangleq \{\mathbf{x}_1, \mathbf{x}_1, \ldots, \mathbf{x}_{N} \} $. 
-\citet{tu_dynamic_2014} posted a delicate mathematical analysis of the DMD algorithm and developed a theoretical extension of DMD(extract DMD) using a new definition of operater $\mathbf{A}$ by    
+\citet{tu_dynamic_2014} posted a delicate mathematical analysis of the DMD algorithm and developed a theoretical extension of DMD (extract DMD) using a new definition of operater $\mathbf{A}$ by    
 \begin{equation}
  \mathbf{A}\triangleq \mathbf{X}_1  \mathbf{X}_0^{\dagger}\, ,
  \label{eq:exact_dmd}
 \end{equation}
-where $\mathbf{X}_0^{\dagger}$ is the pseudoinverse of $\mathbf{X}_0$. And the DMD modes and
-eigenvalues are the same as the eigenvectors and eigenvalues of $\mathbf{A}$, which can be computed by eigendecomposition.
-However, in practice, it may be expensive to compute the eigendecomposition of $\mathbf{A}$.
+where $\mathbf{X}_0^{\dagger}$ is the pseudoinverse of $\mathbf{X}_0$. 
+And the DMD modes and eigenvalues can be computed by eigendecomposition, however, it may be expensive to apply the eigendecomposition of $\mathbf{A}$in practice.
 With very minimum changes, exact DMD can also compute the modes and eigenvalue without explicitly forming $\mathbf{A}$.
 In the case of directly-manipulation-free extract DMD, all processes are consistent with standard DMD, except for computation of the DMD modes, which is now done by
 \begin{equation}
@@ -100,13 +93,12 @@ Fundamental theoretical foundations of DMD and the Koopman operator was also dev
 Soon after, this technology then was applied to nuclear reactor simulations. 
 \citet{abdo_data-driven_2018} used DMD as a direct, explicit-in-time surrogate for black-box models, e.g., to model the evolution of nuclear reactor isotopics over long time periods as well as the nonlinear response of reactor power during short transients.\cite{abdo_modeling_2019}\cite{elzohery2018comparison}
 
-\subsection{DMD Acceleration}
+\subsection{DMD Accelerated Iterative Methods}
 A way to achieve acceleration is to use results from lower dimensional system projected system to find a correction each iteration until system converges.
 The first research of using DMD to accelerate iterative methods was the work of \citet{andersson_novel}.
-A Krylov subspace is built up by storing the state-samples with time sequence as $\mathbf{V_n}$.
+A Krylov subspace storing the state-samples with time sequence as $\mathbf{V_n}$ is built up in a same way as \EQ{eq:Krylov_seq}.
 Then the Gram-Schmidt algorithm is applied by $\mathbf{V_n} = \mathbf{{E_n U_n}}$ to orthogonalize the subspace.
 Most applications avoid the SVD because the Gram-Schmidt algorithm only works with two state vectors each time, and the SVD requires the whole subspace matrix $V_n$. 
-In other words, Gram-Schmidt is slow for large systems.
 Moreover, Gram-Schmidt algorithm is obviously a more suitable approach for parallel computations. 
 The reduced projection of the system matrix $\mathbf{\tilde{A}}$ is obtained by 
 \begin{equation}
@@ -140,6 +132,13 @@ where $U$ is the left unitary matrix from SVD decomposition of $\mathbf{Y}_-$ an
  (\mathbf{I} - \mathbf{\tilde{A}}) \Delta y = \mathbf{U}^T(\mathbf{x}^{K} - \mathbf{x}^{K-1})\, .
  \label{eq:McClarren}
 \end{equation}
-Results from a homogeneous slab problem and a multi-dimensional pip problem suggest that a sequence of Richardson iterations followed by corrections reduces the number of iterations required by about one order of magnitude.
+McClarren's results of a homogeneous slab problem and a multi-dimensional pip problem suggest that a sequence of Richardson iterations followed by corrections reduces the number of iterations required by about one order of magnitude.
 
 All of these past successes shows that DMD has potential to estimate the converged dominant modes of a reactor system by extrapolating forward from observed snapshots, even though the sequence of iterations from power method does not means ``real time''.
+
+To achieve these goals, In the following chapters the methods will be expanded in certain ways.
+\CHAPTER{chapter:multigroup} will introduce the multigroup neutron transport and diffusion equations, and \CHAPTER{chapter:PM} discusses the mathematical background of the power and flatten power methods.
+Following that, a restarted, DMD-accelerated power method scheme (DMD-PM(n)) is presented in \CHAPTER{chapter:DMD-PM}, while a DMD-based, accelerated, flattened power
+method DMD-FPM(n) is presented in \CHAPTER{chapter:DMD-FPM(n)}.
+Then, the results using either of acceleration schemes on compute analyzing a 1-D boiling water reactor(BWR) model and the famous 2-D C5G7 test problem, are discussed in \CHAPTER{chapter:results}.
+\CHAPTER{chapter:conclusion} will include conclusions and future work including the possibility of combining this theory with other methods. 
