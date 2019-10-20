@@ -3,7 +3,8 @@
 \chapter{Introduction}
 \label{chapter:intro}
 Nuclear power was initially studied in the 1940s and has become an important source in the power industry.
-The nuclear reactor core containing the fuel is where the chain reactions take place and the heat is generated from, which is the foremost component of the nulcear power plant. 
+The nuclear reactor core containing the fuel is where the chain reactions take place.
+The amount of heat generation is proportional to the neutron population in the core, which itself is proportional to the number of fission events. 
 Without estimating the desired state of neutron population, it is impossible to control the neutronic systems and generate essential design. 
 In nuclear physics, computational simulations are critical for optimizing nuclear reactor designs and helping to understand extremely complicated neutron dynamic behaviors.
 However, modeling a full core is still too computationally expensive even with the most advanced, large-scale, super computers. 
@@ -19,7 +20,7 @@ The steady-state transport equation can be written in operator notation as
  \label{eq:keig}
 \end{equation}
 where $\mathbf{\mathbf{x}} $ describes the scalar flux, $\mathbf{L}$ represents loss operator,  $\mathbf{F}$ represents fission operator, $\mathbf{S}$ represents the scattering operator, $\mathbf{M}$ and $\mathbf{D}$ represent moment-to-discrete and discrete-to-moment operators respectively, and the eigenvalue $k$ represents the ratio of gains to losses.
-A reactor is ``critical,'' i.e., the neutron population is steady, when $k = 1$; or ``subcritical,'' i.e., the neutron density is decreasing as time passes when $k < 1$; or ``supercritical,'' i.e., the neutron density is increasing with time when $k>1$.
+The so called criticality of a reactor is determined by examining the dominant eigenvalue $k$, where $k=1$ is ``critical'' (the neutron population is steady), $k<1$ is ``subcritical'' (the neutron density is decreasing in time), and $k > 1$ is ``supercritical'' (the neutron density is increasing with time).
 The eigenvector corresponding to the largest eigenvalue $k$, which is usually known as fundamental (or dominant) eigenmode, indicates the scalar flux distribution when the system reaches steady state.
 A more generalized multigroup neutron transport equation will be presented in Chapter 2.
 
@@ -31,7 +32,7 @@ However, the expense of this approach is now proportional to the number of itera
 Many breakthrough, such as the generalized Davidson(GD) method\cite{larsen1984diffusion} and Diffusion Synthetic Acceleration(DSA)\cite{hamilton2011numerical}, came to accelerate the aforementioned iteration methods.
 
 Within the development of computational science，some theory of data science has been employed to analyze engineering problems.
-Dynamic mode decomposition(DMD) is one of the most well-known supervised learning approaches that has achieved great success in computational fluid dynamics.
+Dynamic mode decomposition(DMD) is one of the most well-known, supervised learning approaches that has achieved great success in computational fluid dynamics.
 This data-driven technology can produce reduced-dimensional surrogate models by gathering modes from given states of time dependent data and reconstructing the output parameters.
 The primary focus of this thesis is to estimate accurate fundamental eigenmodes by DMD to accelerate the Power Method and other, related methods.
 
@@ -72,17 +73,21 @@ The eigenvector $x_i$ of $\mathbf{\tilde{A}}$ and left eigenvector matrix $\math
 \mathbf{\mathbf{x}}_i = \mathbf{U} \mathbf{x}_i \, ,
  \label{eq:dyanmic_modes}
 \end{equation}
-and, therefore, recover the a reduced order dynamic system.
+and, therefore, recover the reduced order dynamic system.
 This scheme is often known as the standard DMD approach, and a more detailed discussion of the standard DMD scheme is presented in \CHAPTER{chapter:DMD-PM}.   
 
-Many practical theory were developed based on the this successfully attempt, and past and future snapshot matrix is defined as $\mathbf{X}_0 \triangleq \{\mathbf{x}_0, \mathbf{x}_1, \ldots, \mathbf{x}_{N-1} \}$ and $\mathbf{X}_1 \triangleq \{\mathbf{x}_1, \mathbf{x}_1, \ldots, \mathbf{x}_{N} \} $. 
-\citet{tu_dynamic_2014} posted a delicate mathematical analysis of the DMD algorithm and develop a theoretical extension of DMD(extract DMD) using a new definition of operater $\mathbf{A}$ by    
+Many practical theories were developed based on the this successfully attempt.
+One such attempt uses the past and future snapshot matrix, which is defined as $\mathbf{X}_0 \triangleq \{\mathbf{x}_0, \mathbf{x}_1, \ldots, \mathbf{x}_{N-1} \}$ and $\mathbf{X}_1 \triangleq \{\mathbf{x}_1, \mathbf{x}_1, \ldots, \mathbf{x}_{N} \} $. 
+\citet{tu_dynamic_2014} posted a delicate mathematical analysis of the DMD algorithm and developed a theoretical extension of DMD(extract DMD) using a new definition of operater $\mathbf{A}$ by    
 \begin{equation}
  \mathbf{A}\triangleq \mathbf{X}_1  \mathbf{X}_0^{\dagger}\, ,
  \label{eq:exact_dmd}
 \end{equation}
 where $\mathbf{X}_0^{\dagger}$ is the pseudoinverse of $\mathbf{X}_0$. And the DMD modes and
-eigenvalues are the eigenvectors and eigenvalues of $\mathbf{A}$, which can be computed by eigendecomposition. However, in practice, it may be expensive to compute the eigendecomposition of $\mathbf{A}$. With very minimum changes, exact DMD can also compute the modes and eigenvalue without manipulate explicit $\mathbf{A}$. In the case of directly-manipulation-free extract DMD, all other processes keep consistent with standard DMD, but the DMD modes are computed by 
+eigenvalues are the same as the eigenvectors and eigenvalues of $\mathbf{A}$, which can be computed by eigendecomposition.
+However, in practice, it may be expensive to compute the eigendecomposition of $\mathbf{A}$.
+With very minimum changes, exact DMD can also compute the modes and eigenvalue without explicitly forming $\mathbf{A}$.
+In the case of directly-manipulation-free extract DMD, all processes are consistent with standard DMD, except for computation of the DMD modes, which is now done by
 \begin{equation}
  \mathbf{\mathbf{x}}_i = \frac{1}{\lambda} \mathbf{X}_1 \mathbf{V} \mathbf{\Sigma}^{-1} \omega \, .
  \label{eq:exact_dmd_free}
@@ -92,14 +97,16 @@ eigenvalues are the eigenvectors and eigenvalues of $\mathbf{A}$, which can be c
 Fundamental theoretical foundations of DMD and the Koopman operator was also developed in this book.
 
 \subsection{DMD in Nuclear Engineering}
-Soon after, this technology then was applied in nuclear reactor simulation. 
-Abdo and others used DMD as a direct, explicit-in-time surrogate for such black-box models, e.g., to model the evolution of nuclear reactor isotopics over long time periods; and the nonlinear response of reactor power during short transients.\cite{abdo_data-driven_2018}\cite{abdo_modeling_2019}\cite{elzohery2018comparison}
+Soon after, this technology then was applied to nuclear reactor simulations. 
+\citet{abdo_data-driven_2018} used DMD as a direct, explicit-in-time surrogate for black-box models, e.g., to model the evolution of nuclear reactor isotopics over long time periods as well as the nonlinear response of reactor power during short transients.\cite{abdo_modeling_2019}\cite{elzohery2018comparison}
 
 \subsection{DMD Acceleration}
 A way to achieve acceleration is to use results from lower dimensional system projected system to find a correction each iteration until system converges.
 The first research of using DMD to accelerate iterative methods was the work of \citet{andersson_novel}.
-A Krylov subspace is built up by store the states samples with time sequence as $\mathbf{V_n}$, then Gram-Schmidt algorithm is applied by $\mathbf{V_n} = \mathbf{{E_n U_n}}$.
-The reason why authors would not like to use SVD is that Gram-Schmidt algorithm only work with two state vectors each time and SVD requires the whole subspace matrix $V_n$. 
+A Krylov subspace is built up by storing the state-samples with time sequence as $\mathbf{V_n}$.
+Then the Gram-Schmidt algorithm is applied by $\mathbf{V_n} = \mathbf{{E_n U_n}}$ to orthogonalize the subspace.
+Most applications avoid the SVD because the Gram-Schmidt algorithm only works with two state vectors each time, and the SVD requires the whole subspace matrix $V_n$. 
+In other words, Gram-Schmidt is slow for large systems.
 Moreover, Gram-Schmidt algorithm is obviously a more suitable approach for parallel computations. 
 The reduced projection of the system matrix $\mathbf{\tilde{A}}$ is obtained by 
 \begin{equation}
@@ -109,19 +116,19 @@ The reduced projection of the system matrix $\mathbf{\tilde{A}}$ is obtained by
 and is implemented into iterative linear relation $\mathbf{x}^{(n+1)} = \mathbf{A}\mathbf{x}^{(n)} + \mathbf{b}$.
 The estimate of the converged solution can be calculate in the modified form as:
 \begin{equation}
- \mathbf{x}^{u} = \mathbf{x}^{(n+1)} + \mathbf{E}_n(\mathbf{I_n} - \mathbf{\tilde{A}}_n)^{-1} \mathbf{E}_n^T(\mathbf{x}^{(n+2)} - \mathbf{x}^{(n+1)}) \, ,
+ \mathbf{x}^{u} = \mathbf{x}^{(n+1)} + \mathbf{E}_n(\mathbf{I_n} - \mathbf{\tilde{A}}_n)^{-1} \mathbf{E}_n^T(\mathbf{x}^{(n+2)} - \mathbf{x}^{(n+1)}) \, .
  \label{eq:andersson}
 \end{equation}
-By performing this process several time to correct the solution, both the number of iterations and the average fluctuation was reduced almost 30\% for compressible flow problems. 
+By performing this process several times to correct the solution, both the number of iterations and the average fluctuation were reduced almost 30\% for compressible flow problems. 
 
-Then \citet{mcclarren_acceleration_2018} presented a novel acceleration technique for improving the convergence of Richardson(source) iteration for source-driven neutronics problems.
+Then, \citet{mcclarren_acceleration_2018} presented a novel acceleration technique for improving the convergence of Richardson(source) iteration for source-driven neutronics problems.
 The Richardson iteration can be expressed as 
 \begin{equation}
  \mathbf{x}^{(n+1)} = (\mathbf{I}-\mathbf{A})\mathbf{x}^{(n)} + \mathbf{b} \, ,
  \label{eq:richardson}
 \end{equation}
 where sequence of $\mathbf{x}^{(n)}$ was often saved to build Krylov subspace. 
-However, a great feature in his modified DMD acceleration algorithm is that a set successive differences $\mathbf{x}^{(n)}-\mathbf{x}^{(n-1)}$ is used as the snapshots in the data matrix $\mathbf{Y}_+$ and $\mathbf{Y}_-$ while the standard DMD with SVD decomposition is applied to form the approximation system $\mathbf{\tilde{A}}$.
+However, a great feature in his modified DMD acceleration algorithm is that a set successive differences $\mathbf{x}^{(n)}-\mathbf{x}^{(n-1)}$ is used as the snapshots in the data matrix $\mathbf{Y}_+$ and $\mathbf{Y}_-$, while the standard DMD with SVD decomposition is applied to form the approximation system $\mathbf{\tilde{A}}$.
 The algorithm is as follows
 \begin{enumerate}
  \item Perform R source iterations: $\mathbf{x}^{l} = \mathbf{A} \mathbf{x}^{l-1} +b$
@@ -130,7 +137,7 @@ The algorithm is as follows
 \end{enumerate} 
 where $U$ is the left unitary matrix from SVD decomposition of $\mathbf{Y}_-$ and $\Delta y$ is computed by 
 \begin{equation}
- (\mathbf{I} - \mathbf{\tilde{A}}) \Delta y = \mathbf{U}^T(\mathbf{x}^{K} - \mathbf{x}^{K-1})\, ,
+ (\mathbf{I} - \mathbf{\tilde{A}}) \Delta y = \mathbf{U}^T(\mathbf{x}^{K} - \mathbf{x}^{K-1})\, .
  \label{eq:McClarren}
 \end{equation}
 Results from a homogeneous slab problem and a multi-dimensional pip problem suggest that a sequence of Richardson iterations followed by corrections reduces the number of iterations required by about one order of magnitude.
