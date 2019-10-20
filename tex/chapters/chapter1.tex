@@ -25,7 +25,7 @@ The eigenvector corresponding to the largest eigenvalue $k$ is usually known as 
 A more generalized multigroup neutron transport equation will be presented in Chapter 2.
 
 \section{Motivation and Objective}
-The discrete ordinates method, or the $S_n$ method, is a practical, deterministic approach that is used to discretize the  multigroup neutron transport equation.
+The discrete ordinates method, or the $S_n$ method\cite{lewis1984computational}, is a practical, deterministic approach that is used to discretize the  multigroup neutron transport equation.
 This discrete ordinates method is often implemented using an iterative method such as the power method (PM), the Richardson iteration method\cite{adams1993two}, or the generalized minimal residual method (GMRES)\cite{saad1986gmres} to solve for the dominant eigenpair. 
 While the specifics for of implementation differ for each iterative methods, Each of them begin with an initial approximation for the dominant eigenmode.
 This approximation is inserted into the transport equation, and is used to solve for an improved approximation, by applying the loss operator $L$.
@@ -39,12 +39,11 @@ Within the development of computational science，some theory of data science ha
 Dynamic mode decomposition(DMD) is one of the most well-known, supervised learning approaches that has achieved great success in computational fluid dynamics.
 This data-driven technology can produce reduced-dimensional surrogate models by gathering modes from given states of time dependent data and reconstructing the output parameters.
 The primary focus of this thesis is to estimate accurate fundamental eigenmodes by DMD to accelerate the Power Method and other, related methods.
-Before continuing, it would be useful to briefly introduce some great achievements that demonstrated the success of dynamic mode decomposition.
 
 \section{Summary of previous work}
-
+Before continuing, it would be useful to briefly introduce some great achievements that demonstrated the success of dynamic mode decomposition.
 DMD was initially proposed by \citet{schmid_dynamic_2010}\cite{schmid_applications_2011} to extract dynamics information from time-series data of fluids observations in 2010.
-He applied this frame on both numerical Navier-Stokes code results and experimental measures and illustrated the significant essential on quantifying fluid-dynamical problems.
+He applied this frame on both numerical Navier-Stokes code results and experimental measures and illustrated the significant effects on quantifying fluid-dynamical problems.
 As opposed to proper orthogonal decomposition (POD)\cite{lumley2007stochastic}, DMD is a purely data-based procedure and does not decompose on an orthogonal space. 
 This method is based on Koopman analysis\cite{lasota2013chaos,mezic2005spectral} of nonlinear dynamical systems and can extract dynamic modes to describe the global behavior captured by projecting large-scale problems onto a reduced order dynamical system.
 In his work, the time-dependent dynamic systems are described in the form of a snapshots sequence,
@@ -83,8 +82,8 @@ One such attempt uses the past and future snapshot matrix, which is defined as $
 \end{equation}
 where $\mathbf{X}_0^{\dagger}$ is the pseudoinverse of $\mathbf{X}_0$. 
 The DMD modes and eigenvalues can be computed by eigendecomposition, however, it may be expensive to apply the eigendecomposition of $\mathbf{A}$ in practice.
-With minimal changes, exact DMD can also compute the modes and eigenvalue without explicitly forming $\mathbf{A}$.
-In the case of directly-manipulation-free extract DMD, all processes are consistent with standard DMD, except for computation of the DMD modes, which is now done by
+With minimal changes, exact DMD can also compute the modes and eigenvalue without explicitly forming or directly multiplication of $\mathbf{A}$.
+In the case of this improved extract DMD algorithm, all processes are consistent with standard DMD, except for computation of the DMD modes, which is now done by
 \begin{equation}
  \mathbf{\mathbf{x}}_i = \frac{1}{\lambda} \mathbf{X}_1 \mathbf{V} \mathbf{\Sigma}^{-1} \omega \, .
  \label{eq:exact_dmd_free}
@@ -93,7 +92,6 @@ In the case of directly-manipulation-free extract DMD, all processes are consist
 \citet{kutz_dynamic_2016} summarized many variations on the DMD algorithm and discussed the applicability of each by solving with various complex systems in a recent monograph.
 Fundamental theoretical foundations of DMD and the Koopman operator was also developed in this book.
 
-\subsection{DMD in Nuclear Engineering}
 Soon after, this technology then was applied to nuclear reactor simulations. 
 \citet{abdo_data-driven_2018} used DMD as a direct, explicit-in-time surrogate for black-box models, e.g., to model the evolution of nuclear reactor isotopics over long time periods as well as the nonlinear response of reactor power during short transients.\cite{abdo_modeling_2019}\cite{elzohery2018comparison}
 
