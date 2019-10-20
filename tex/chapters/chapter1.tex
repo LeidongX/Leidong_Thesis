@@ -20,17 +20,20 @@ The steady-state transport equation can be written in operator notation as
  \label{eq:keig}
 \end{equation}
 where $\mathbf{\mathbf{x}} $ describes the scalar flux, $\mathbf{L}$ represents loss operator,  $\mathbf{F}$ represents fission operator, $\mathbf{S}$ represents the scattering operator, $\mathbf{M}$ and $\mathbf{D}$ represent moment-to-discrete and discrete-to-moment operators respectively, and the eigenvalue $k$ represents the ratio of gains to losses.
-The so called criticality of a reactor is determined by examining the dominant eigenvalue $k$, where $k=1$ is ``critical'' (the neutron population is steady), $k<1$ is ``subcritical'' (the neutron density is decreasing in time), and $k > 1$ is ``supercritical'' (the neutron density is increasing with time).
-The eigenvector corresponding to the largest eigenvalue $k$, which is usually known as fundamental (or dominant) eigenmode, indicates the scalar flux distribution when the system reaches steady state.
+The so called criticality of a reactor is determined by examining the dominant eigenvalue $k$, where $k=1$ is ``critical'' (the neutron population holds steady), $k<1$ is ``subcritical'' (the neutron density decreases over time), and $k > 1$ is ``supercritical'' (the neutron density increases over time).
+The eigenvector corresponding to the largest eigenvalue $k$ is usually known as fundamental (or dominant) eigenmode and corresponds to the scalar flux distribution when the system reaches steady state.
 A more generalized multigroup neutron transport equation will be presented in Chapter 2.
 
 \section{Motivation and Objective}
-The discrete ordinates method, or the $S_n$ method, is a practical, deterministic approach that is used to discrize multigroup neutron transport equation.
-This discrete ordinates equation is often solved by other iterative methods such as the power method (PM), the Richardson iteration method\cite{adams1993two}, or the generalized minimal residual method (GMRES)\cite{saad1986gmres} for a given level of accuracy. 
-No matter which iterative method is employed, it must apply the loss operator $L$ every iteration.
-Numerically, it is inefficient to solve for the operator inverse; instead, a series of sweeps over each energy group and space location can be performed until the system converges.  
-However, the expense of this approach is now proportional to the number of iterations.
-Many breakthrough, such as the generalized Davidson(GD) method\cite{larsen1984diffusion} and Diffusion Synthetic Acceleration(DSA)\cite{hamilton2011numerical}, came to accelerate the aforementioned iteration methods.
+The discrete ordinates method, or the $S_n$ method, is a practical, deterministic approach that is used to discretize the  multigroup neutron transport equation.
+This discrete ordinates method is often implemented using an iterative method such as the power method (PM), the Richardson iteration method\cite{adams1993two}, or the generalized minimal residual method (GMRES)\cite{saad1986gmres} to solve for the dominant eigenpair. 
+While the specifics for of implementation differ for each iterative methods, Each of them begin with an initial approximation for the dominant eigenmode.
+This approximation is inserted into the transport equation, and is used to solve for an improved approximation, by applying the loss operator $L$.
+This process continues until the eigenmode has converged to some tolerance.
+While possible in some cases to solve for the inverse of $L$, it is inefficient or impossible for large problems.
+The various iterative methods provide a way of solving the operator equation without forming the matrix inverse by applying $L$ successively, which involves sweeping over each spatial cell and energy group.  
+The expense of these iterative methods is now proportional to the number of iterations, i.e., applications of the operator.
+Methods such as the generalized Davidson(GD) method\cite{larsen1984diffusion} and diffusion synthetic acceleration(DSA)\cite{hamilton2011numerical} are designed to to accelerate the iteration methods by incorporating a correction to the approximation at each iteration.
 
 Within the development of computational science，some theory of data science has been employed to analyze engineering problems.
 Dynamic mode decomposition(DMD) is one of the most well-known, supervised learning approaches that has achieved great success in computational fluid dynamics.
@@ -42,7 +45,7 @@ Before continuing, it would be useful to briefly introduce some great achievemen
 
 DMD was initially proposed by \citet{schmid_dynamic_2010}\cite{schmid_applications_2011} to extract dynamics information from time-series data of fluids observations in 2010.
 He applied this frame on both numerical Navier-Stokes code results and experimental measures and illustrated the significant essential on quantifying fluid-dynamical problems.
-As opposed to proper orthogonal decomposition (POD)\cite{lumley2007stochastic}, DMD is a pure data-based procedure and does not decompose on an orthogonal space. 
+As opposed to proper orthogonal decomposition (POD)\cite{lumley2007stochastic}, DMD is a purely data-based procedure and does not decompose on an orthogonal space. 
 This method is based on Koopman analysis\cite{lasota2013chaos,mezic2005spectral} of nonlinear dynamical systems and can extract dynamic modes to describe the global behavior captured by projecting large-scale problems onto a reduced order dynamical system.
 In his work, the time-dependent dynamic systems are described in the form of a snapshots sequence,
 \begin{equation}
@@ -55,7 +58,8 @@ We assume that there exist a linear mapping operator $\mathbf{A}$, which can be 
  \mathbf{X}^{N}_1 = \{\mathbf{x}_1,A\mathbf{x}_1,A^2\mathbf{x}_1,…,A^{N-1}\mathbf{x}_1 \} \, .
  \label{eq:Krylov_seq}
 \end{equation}
-Some famous older attempts, like Arnoldi method\cite{arnoldi1951principle}, uses QR-decomposition $\mathbf{QR} = \mathbf{X}^{N-1}_1$ to reconstruct the mapping operator $\mathbf{A}$, which is not applicable because the explicit matrix form of  $\mathbf{A}$ is not often available for the projections.\cite{Greenbaum_1997, trefethen1997numerical}
+Some famous older attempts, such as the Arnoldi method\cite{arnoldi1951principle}, use QR-decomposition $\mathbf{QR} = \mathbf{X}^{N-1}_1$ to reconstruct the mapping operator $\mathbf{A}$, which is not possible if  the explicit matrix form of  $\mathbf{A}$ is unavailable \cite{Greenbaum_1997, trefethen1997numerical}.
+When solving the neutron transport equation, the mapping operator is often unavailable due to the size of the system and the cost associated with explicitly forming this matrix.
 Instead of employing the QR-decomposition, Schmid took advantage of the SVD decomposition and obtained a robust approximation by 
 \begin{equation}
 \mathbf{\tilde{A}} = \mathbf{U^H X_1^{N-1}V\Sigma^{-1}} \, ,
@@ -70,7 +74,7 @@ The eigenvector $x_i$ of $\mathbf{\tilde{A}}$ and left eigenvector matrix $\math
 and, therefore, recover the reduced order dynamic system.
 This scheme is often known as the standard DMD approach, and a more detailed discussion of the standard DMD scheme is presented in \CHAPTER{chapter:DMD-PM}.   
 
-Many practical theories were developed based on the this successfully attempt.
+Many practical theories were developed based on this successfully attempt.
 One such attempt uses the past and future snapshot matrix, which is defined as $\mathbf{X}_0 \triangleq \{\mathbf{x}_0, \mathbf{x}_1, \ldots, \mathbf{x}_{N-1} \}$ and $\mathbf{X}_1 \triangleq \{\mathbf{x}_1, \mathbf{x}_1, \ldots, \mathbf{x}_{N} \} $. 
 \citet{tu_dynamic_2014} posted a delicate mathematical analysis of the DMD algorithm and developed a theoretical extension of DMD (extract DMD) using a new definition of operater $\mathbf{A}$ by    
 \begin{equation}
@@ -78,15 +82,15 @@ One such attempt uses the past and future snapshot matrix, which is defined as $
  \label{eq:exact_dmd}
 \end{equation}
 where $\mathbf{X}_0^{\dagger}$ is the pseudoinverse of $\mathbf{X}_0$. 
-And the DMD modes and eigenvalues can be computed by eigendecomposition, however, it may be expensive to apply the eigendecomposition of $\mathbf{A}$in practice.
-With very minimum changes, exact DMD can also compute the modes and eigenvalue without explicitly forming $\mathbf{A}$.
+The DMD modes and eigenvalues can be computed by eigendecomposition, however, it may be expensive to apply the eigendecomposition of $\mathbf{A}$ in practice.
+With minimal changes, exact DMD can also compute the modes and eigenvalue without explicitly forming $\mathbf{A}$.
 In the case of directly-manipulation-free extract DMD, all processes are consistent with standard DMD, except for computation of the DMD modes, which is now done by
 \begin{equation}
  \mathbf{\mathbf{x}}_i = \frac{1}{\lambda} \mathbf{X}_1 \mathbf{V} \mathbf{\Sigma}^{-1} \omega \, .
  \label{eq:exact_dmd_free}
 \end{equation}
 
-\citet{kutz_dynamic_2016} summarized many other fashion variety DMD algorithms and discussed the applicability fitting with different complex systems in a recent monograph.
+\citet{kutz_dynamic_2016} summarized many variations on the DMD algorithm and discussed the applicability of each by solving with various complex systems in a recent monograph.
 Fundamental theoretical foundations of DMD and the Koopman operator was also developed in this book.
 
 \subsection{DMD in Nuclear Engineering}
@@ -94,8 +98,9 @@ Soon after, this technology then was applied to nuclear reactor simulations.
 \citet{abdo_data-driven_2018} used DMD as a direct, explicit-in-time surrogate for black-box models, e.g., to model the evolution of nuclear reactor isotopics over long time periods as well as the nonlinear response of reactor power during short transients.\cite{abdo_modeling_2019}\cite{elzohery2018comparison}
 
 \subsection{DMD Accelerated Iterative Methods}
-A way to achieve acceleration is to use results from lower dimensional system projected system to find a correction each iteration until system converges.
-The first research of using DMD to accelerate iterative methods was the work of \citet{andersson_novel}.
+As mentioned briefly, a way to achieve acceleration of iterative methods is to correct the eigenmode at each iteration to reduce the total number of iterations.
+One way to do this is to use the results from a lower-dimensional, projected system, to predict the solution to the higher-dimensional system that we wish solved.
+\citet{andersson_novel} first used DMD to accelerate iterative methods.
 A Krylov subspace storing the state-samples with time sequence as $\mathbf{V_n}$ is built up in a same way as \EQ{eq:Krylov_seq}.
 Then the Gram-Schmidt algorithm is applied by $\mathbf{V_n} = \mathbf{{E_n U_n}}$ to orthogonalize the subspace.
 Most applications avoid the SVD because the Gram-Schmidt algorithm only works with two state vectors each time, and the SVD requires the whole subspace matrix $V_n$. 
@@ -106,7 +111,7 @@ The reduced projection of the system matrix $\mathbf{\tilde{A}}$ is obtained by
  \label{eq:andersson_reduce}
 \end{equation}
 and is implemented into iterative linear relation $\mathbf{x}^{(n+1)} = \mathbf{A}\mathbf{x}^{(n)} + \mathbf{b}$.
-The estimate of the converged solution can be calculate in the modified form as:
+The estimate of the converged solution can be calculated in the modified form as
 \begin{equation}
  \mathbf{x}^{u} = \mathbf{x}^{(n+1)} + \mathbf{E}_n(\mathbf{I_n} - \mathbf{\tilde{A}}_n)^{-1} \mathbf{E}_n^T(\mathbf{x}^{(n+2)} - \mathbf{x}^{(n+1)}) \, .
  \label{eq:andersson}
@@ -114,13 +119,13 @@ The estimate of the converged solution can be calculate in the modified form as:
 By performing this process several times to correct the solution, both the number of iterations and the average fluctuation were reduced almost 30\% for compressible flow problems. 
 
 Then, \citet{mcclarren_acceleration_2018} presented a novel acceleration technique for improving the convergence of Richardson(source) iteration for source-driven neutronics problems.
-The Richardson iteration can be expressed as 
+Richardson iteration can be expressed as 
 \begin{equation}
  \mathbf{x}^{(n+1)} = (\mathbf{I}-\mathbf{A})\mathbf{x}^{(n)} + \mathbf{b} \, ,
  \label{eq:richardson}
 \end{equation}
-where sequence of $\mathbf{x}^{(n)}$ was often saved to build Krylov subspace. 
-However, a great feature in his modified DMD acceleration algorithm is that a set successive differences $\mathbf{x}^{(n)}-\mathbf{x}^{(n-1)}$ is used as the snapshots in the data matrix $\mathbf{Y}_+$ and $\mathbf{Y}_-$, while the standard DMD with SVD decomposition is applied to form the approximation system $\mathbf{\tilde{A}}$.
+where the sequence of $\mathbf{x}^{(n)}$ was often saved to build a Krylov subspace. 
+A feature in his modified DMD acceleration algorithm was that a set successive differences $\mathbf{x}^{(n)}-\mathbf{x}^{(n-1)}$ was used as the snapshots in the data matrix $\mathbf{Y}_+$ and $\mathbf{Y}_-$, while the standard DMD with SVD decomposition was applied to form the approximation system $\mathbf{\tilde{A}}$.
 The algorithm is as follows
 \begin{enumerate}
  \item Perform R source iterations: $\mathbf{x}^{l} = \mathbf{A} \mathbf{x}^{l-1} +b$
