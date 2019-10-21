@@ -10,11 +10,11 @@ All the eigenvalues and eigenvectors of a system matrix can be calculated by sol
 \label{eq:characteristic}
 \end{equation}
 where $\mathbf{I}$ represents the identity matrix.
-However, the computational cost of solving this equation directly can be extremely high for large systems. 
+However, the computational cost of solving this equation directly scales exponentially with the size of the matrix $\mathbf{A}$. 
 
 Iterative algorithms solve the eigenvalue problem by producing sequences that converge to either the eigenvalues or the eigenvectors.
-In many schemes, the eigenvalues and eigenvectors are reveal through the application of sequences of similar matrices. 
-Eventually, these sequences will converge to a triangular or diagonal form, which allows the eigenvalues to be read easily. 
+In many schemes, the eigenvalues and eigenvectors are revealed through the application of sequences of matrices that are similar to $\mathbf{A}$. 
+Eventually, these sequences converge to a triangular or diagonal form, which allows the eigenvalues to be read easily. 
 
 Those iterative algorithms have been used for a variety of purposes and productions.
 This means certain algorithm might not be applicable to general systems, but can only be applied to hermitian or symmetric systems.
@@ -24,11 +24,11 @@ Some of those iterative algorithms can produce all the eigenpairs or eigenvalues
 However, as mentioned in last chapter, only the largest eigenvalue and corresponding eigenvector are relevant in the k-eigenvalue transport problem.
 Although there are many iterative methods used for this type of eigenvalue problems, such as QR algorithm, Bisection method and Jacobi eigenvalue algorithm, traditional power iteration is the simplest method to determine the fundamental mode and corresponding eigenvalue.
 This method goes by many names such as power iteration and Von Mises iteration\cite{mises1929praktische}.
-Moreover, some of the more advanced eigenvalue algorithms are variations of the power iteration, for example, Arnoldi iteration \cite{arnoldi1951principle} which takes advantage of the whole Krylov subspace. 
+Moreover, some of the more advanced eigenvalue algorithms are variations of the power iteration, for example, Arnoldi iteration \cite{arnoldi1951principle}, which takes advantage of the whole Krylov subspace. 
 
 \section{Methodology}
 Using the same notation from Equation \ref{eq:keig}, we first define $\mathbf{A} =  \mathbf{(I - DL^{-1}MS)}$ and $\mathbf{B} = \mathbf{DL^{-1}MF}$ for convenience.
-With these definitions, Equation \ref{eq:keig} may be rewritten as a general eigenvalue problem:
+With these definitions, Equation \ref{eq:keig} may be rewritten as a general eigenvalue problem, i.e.,
 \begin{equation}
 \mathbf{A} \mathbf{x} = \frac{1}{k} \mathbf{B} \mathbf{x} \, ,
 \label{eq:eigenvalue}
@@ -39,11 +39,10 @@ At the time of the study, the in-house transport solver used the ratios of fluxe
 However, the code has since been updated to use the ratio of fission densities, and found a negligible difference in results.
 
 First, power method starts from a good assumption of eigenpairs, where the eigenvector is often normalized by norm equal to one.
-Then the $\mathbf{x}$ can be updated by solving a typical $\mathbf{A} \mathbf{x} =\mathbf{b}$ problem, where $\mathbf{b}$ is a vector from applying the B operator and k value to the previous $\mathbf{x}$.
+Then, the $\mathbf{x}$ can be updated by solving a typical $\mathbf{A} \mathbf{x} =\mathbf{b}$ problem, where $\mathbf{b}=\frac{1}{k}\mathbf{B}\mathbf{x}$ is a vector.
 Note that the ratio between the new and old eigenvalues is equal to $\frac{||\mathbf{x}_{i}||}{||\mathbf{x}_{i-1}||}$, also, $\mathbf{x}$ needs to be normalized before the next iteration. 
-This process should be repeated until convergence criteria are met and produce the dominant eigenmodes at the steady state if the problem could converge.
-
-And the full power method algorithm is summarized as follows:
+This process is repeated until convergence criteria are met, which produces the dominant eigenmodes at the steady state.
+The algorithm for the full power method is as follows:
 \begin{enumerate}
   \item Assume $k_{(0)}$ and $\mathbf{x}_{(0)}$, where $||\mathbf{x}_{(0)}||=1$.
   \item Update $\mathbf{x}_{(i)} = \frac{1}{k_{(i-1)}} \mathbf{A}^{-1} \mathbf{B} \mathbf{x}_{(i-1)}$, where $(i)$ represents the eigen iteration.
@@ -51,7 +50,7 @@ And the full power method algorithm is summarized as follows:
   \item Repeat steps 2 and 3 for $i = 1, 2, \ldots$ until $||\mathbf{x}^{}_{(i)} - \mathbf{x}^{}_{(i-1)}|| < \tau$ for some tolerance $\tau$.
 \end{enumerate}
 Here the low index $i$ indicates the sequence number of iteration.
-This numerical approach can be implemented as relatively simple codes.
+This approach can be simply implemented in the programming language of choice.
 
 \section{Convergence}
 Note that convergence is an important evaluation criteria of the iterative method. 
@@ -67,8 +66,8 @@ The initial guess can be expressed as a sum of the weighted eigenvectors of $\ma
      &=  c_0' \left (\mathbf{x}_0 + c_1 \mathbf{x}_1 + c_2 \mathbf{x}_2 \ldots  \right )\, .         
 \end{split}
 \end{equation}
-Because normalization of an eigenvector is arbitrary, let $c_0' = 1$.
-Then, applying operator $\mathbf{A}$ by this initial guess leads to 
+Without loss of generality, let $c_0' = 1$.
+Application of operator $\mathbf{A}$ leads to 
 \begin{equation}
 \begin{split}
   \mathbf{A} \mathbf{x}^{(0)} 
@@ -77,7 +76,7 @@ Then, applying operator $\mathbf{A}$ by this initial guess leads to
    &= \lambda_0 \left ( \mathbf{x}_0 + c_1 \frac{\lambda_1}{\lambda_0} \mathbf{x}_1 + c_2 \frac{\lambda_2}{\lambda_0} \mathbf{x}_2 + \ldots \right ) \, .
 \end{split}
 \end{equation}
-Repeated multiplications of $\mathbf{A}$ leads to
+Repeated applications of operator $\mathbf{A}$ leads to
 \begin{equation}
 \begin{split}
   \mathbf{A}^n \mathbf{x}^{(0)} 
