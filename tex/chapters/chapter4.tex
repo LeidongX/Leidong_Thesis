@@ -1,6 +1,6 @@
 \cleardoublepage
 
-\chapter{DMD-PM(n) and related Dynamic Mode Decomposition}
+\chapter{The DMD-PM(n) method and related Dynamic Mode Decomposition}
 \label{chapter:DMD-PM}
 \section{Dynamic Mode Decomposition}
 Before introducing how to using dynamic mode decomposition to accelerate the power and flattened power method, it may be helpful to review some details of DMD.
@@ -84,7 +84,7 @@ The general DMD scheme is summarized as
 \item Compute $\mathbf{\tilde{A}}=\mathbf{U_r^{*}X_1}\mathbf{V_r}\boldsymbol{\Sigma}_{\mathbf{r}}^{-1}$, where $\mathbf{A}$ and $\mathbf{\tilde{A}}$ are similar matrices.
 \item Compute the eigendecomposition $\mathbf{\tilde{A} \tilde{W}}=\boldsymbol{\Lambda}\mathbf{\tilde{W}}$.
 \item Calculate the DMD modes as ${\boldsymbol{\Phi}}={\mathbf{X_2V_r}}\boldsymbol{\Sigma}_\mathbf{r}^{-1}{\mathbf{\tilde{W}}}$.
-\item Predict the response by $\vec{x}^{DMD}(t) \approx \sum_{i=1}^{r} \vec{\phi}_i e^{\omega_it} b_i = \boldsymbol{\Phi}{\mathbf{diag}}(e^{\vec{\omega}t})\vec{b}$, where $\mathbf{b}=\boldsymbol{\Phi}^{\dag} \mathbf{x}_{0}$ and $\dagger$ indicates the pseudoinverse.
+\item Predict the response by $\vec{x}^{DMD}(t) \approx \sum_{i=1}^{r} \vec{\phi}_i e^{\omega_it} b_i = \boldsymbol{\Phi}{\mathbf{diag}}(e^{\vec{\omega}t})\vec{b}$, where $\mathbf{b}=\boldsymbol{\Phi}^{\dag} \mathbf{x}_{0}$.
 \end{enumerate}
 
 \section{An Accelerated Power Method using DMD}
@@ -111,9 +111,11 @@ This phenomena can also be proved in numerical perspective, as mentioned at \EQ{
 Therefore, instead of computing all the dmd modes and predict the response by \EQ{eq:dmd_predict}, we can simply compute the dominant DMD mode only and predict the system by 
 \begin{equation}
 \label{eq:f_mode}
-\vec{x}^{DMD}(t) \triangleq \vec{\phi}_0 b_0 \, ,
+\vec{x}^{DMD}(t) \approx \vec{\phi}_0 \mathbf{b}_0 \, ,
 \end{equation}
-which can save a great amount of computational resources.
+where $b_0= \phi^{T}_0 \mathbf{x}_{0}$.
+
+This improvement can get rid of the noise from the higher rank modes and save a great amount of computational resources during reconstructing the system.
 In order to accelerate the power method with DMD, the following DMD-PM($n$) algorithm is proposed:
 \begin{enumerate}
  \item Guess $\mathbf{x}^{(0)}$ and normalize.
@@ -123,10 +125,8 @@ In order to accelerate the power method with DMD, the following DMD-PM($n$) algo
  \item Set $\mathbf{x}^{(0)} = \Re(\mathbf{x}(\infty)) / ||\mathbf{x}(\infty)||$.  
  \item Repeat Steps 1 through 5 until converged.
 \end{enumerate}
+By restarting the process, numerical errors caused by ill-conditioned snapshot matrices can be minimized.
+A article discussed the framework for the first time by \citet{roberts2019acceleration} was published in 2019.
 Stability analysis between using \EQ{eq:dmd_predict} or \EQ{eq:f_mode} and other numerical challenges are represent in \CHAPTER{chapter:results}.
-Nota that the normalization in step 5 is important for reducing numerical round-off errors introduced by growing (or decaying) iterates.  
-
-
-
-
+Nota that the normalization in step 5 is important for reducing numerical round-off errors introduced by growing (or decaying) iterates.
 
