@@ -148,7 +148,140 @@ The baseline pincell discretization consisted of 18 mesh cells of fuel enclosed 
 Boundary conditions on both sides for this case were vacuum.
 
 Also, the the well-studied 2-D C5G7 benchmark were analyzed \cite{oecd_nuclear_energy_agency_benchmark_2003}, in order to verify the performance of algorithm for multi-dimensional problems.
+The configure of the benchmark is adapted from the benchmark problem presented in \citet{reed_2015}.
+The configure of a quarter core contains four fuel pin assemblies and five moderator.assemblies is shown in \FIGURE{fig:C5G7_config}.
+Each fuel assembly has 17 $\times$ 17 individual pincells, and the configuration of $UO_2$ assemblyis shown in \FIG{fig:UO2_config} and the configuration of MOX assembly is shown in \FIG{fig:MOX_config}.
+Here, each pincell is discretized on a 7$\times$ Cartesian mesh. The demensions are shown in \FIG{fig:MOX_config}.
+\begin{figure*}[htb]
+    \centering
+    \begin{tikzpicture}[scale=0.6, every node/.style={scale=1}]
+        \filldraw[xshift=6 cm, yshift=0 cm, fill=blue!30!white, draw=black] 
+        (0, 0) rectangle (3,3) node[pos=.5] {Mod};
+        \filldraw[xshift=6 cm, yshift=3 cm, fill=blue!30!white, draw=black] 
+        (0, 0) rectangle (3,3) node[pos=.5] {Mod};
+        \filldraw[xshift=6 cm, yshift=6 cm, fill=blue!30!white, draw=black] 
+        (0, 0) rectangle (3,3) node[pos=.5] {Mod};
+        \filldraw[xshift=3 cm, yshift=6 cm, fill=blue!30!white, draw=black] 
+        (0, 0) rectangle (3,3) node[pos=.5] {Mod};
+        \filldraw[xshift=0 cm, yshift=6 cm, fill=blue!30!white, draw=black] 
+        (0, 0) rectangle (3,3) node[pos=.5] {Mod};
+        \filldraw[xshift=0 cm, yshift=0 cm, fill=green!30!white, draw=black] 
+        (0, 0) rectangle (3,3) node[pos=.5] {UO$_2$};
+        \filldraw[xshift=3 cm, yshift=3 cm, fill=green!30!white, draw=black] 
+        (0, 0) rectangle (3,3) node[pos=.5] {UO$_2$};
+        \filldraw[xshift=3 cm, yshift=0 cm, fill=red!30!white, draw=black] 
+        (0, 0) rectangle (3,3) node[pos=.5] {MOX};
+        \filldraw[xshift=0 cm, yshift=3 cm, fill=red!30!white, draw=black] 
+        (0, 0) rectangle (3,3) node[pos=.5] {MOX};
+        \draw[xshift=9cm,yshift=4.25cm] node[right] 
+        {\rotatebox{-90}{Vacuum}};
+        \draw[yshift=4.25cm] node[left] {\rotatebox{90}{Reflect}};
+        \draw[xshift=3.25cm,yshift=9.5cm] node[right] {{Vacuum}};
+        \draw[xshift=3.25cm, yshift=-.5cm] node[right] {{Reflect}};
+    \end{tikzpicture}
+    \caption{Configuration for Full-Core.  Each square represents the area of a 
+             $17\times17$ pin assembly}
+    \label{fig:C5G7_config}
+\end{figure*}
 
+\begin{figure*}[htb]
+    \centering
+    \begin{tikzpicture}[scale=0.4, every node/.style={scale=1}]
+        \foreach \x in {0,1.26,...,20.16}
+        \foreach \y in {0,1.26,...,20.16}
+        \filldraw[xshift=\x cm, yshift=\y cm, fill=blue!30!white, 
+        draw=black] (0, 0) rectangle (1.26,1.26) node[pos=.5] {};
+        \foreach \x in {0,1.26,...,20.16}
+        \foreach \y in {0,1.26,...,20.16}
+        \filldraw[xshift=\x cm, yshift=\y cm, fill=green!30!white, 
+        draw=black] (.63,.63) circle (.5) node[pos=.5] {};
+        \foreach \x in {5*1.26, 8*1.26, 11*1.26}
+        \foreach \y in {2*1.26, 14*1.26}
+        \filldraw[xshift=\x cm, yshift=\y cm, fill=blue!30!white, 
+        draw=black] (.63,.63) circle (.5) node[pos=.5] {};
+        \foreach \x in {3*1.26, 13*1.26}
+        \foreach \y in {3*1.26, 13*1.26}
+        \filldraw[xshift=\x cm, yshift=\y cm, fill=blue!30!white, 
+        draw=black] (.63,.63) circle (.5) node[pos=.5] {};
+        \foreach \x in {2*1.26, 5*1.26, 8*1.26, 11*1.26, 14*1.26}
+        \foreach \y in {5*1.26, 8*1.26, 11*1.26}
+        \filldraw[xshift=\x cm, yshift=\y cm, fill=blue!30!white, 
+        draw=black] (.63,.63) circle (.5) node[pos=.5] {};
+    \end{tikzpicture}
+    \caption{Configuration for UO$_2$ fuel bundle.  The green represents a 
+             UO$_2$ pincell, while the blue represents a guide tube modeled as 
+             a pincell filled with moderator}
+    \label{fig:UO2_config}
+\end{figure*}
+
+\begin{figure*}[htb]
+    \centering
+    \begin{tikzpicture}[scale=0.4, every node/.style={scale=1}]
+        \foreach \x in {0,1.26,...,20.16}
+        \foreach \y in {0,1.26,...,20.16}
+        \filldraw[xshift=\x cm, yshift=\y cm, fill=blue!30!white, 
+        draw=black] (0, 0) rectangle (1.26,1.26) node[pos=.5] {};
+        \foreach \x in {0,1.26,...,20.16}
+        \foreach \y in {0,1.26,...,20.16}
+        \filldraw[xshift=\x cm, yshift=\y cm, fill=red!30!white, draw=black] 
+        (.63,.63) circle (.5) node[pos=.5] {};
+        \foreach \x in {1.26,2.52,...,20.16}
+        \foreach \y in {1.26,2.52,...,20.16}
+        \filldraw[xshift=\x cm, yshift=\y cm, fill=red!60!white, draw=black] 
+        (.63,.63) circle (.5) node[pos=.5] {};
+        \foreach \x in {5*1.26,6*1.26,7*1.26,8*1.26,9*1.26,10*1.26,11*1.26}
+        \foreach \y in {3*1.26,13*1.26}
+        \filldraw[xshift=\x cm, yshift=\y cm, fill=red!90!white, draw=black] 
+        (.63,.63) circle (.5) node[pos=.5] {};
+        \foreach \x in 
+        {4*1.26,5*1.26,6*1.26,7*1.26,8*1.26,9*1.26,10*1.26,11*1.26,12*1.26}
+        \foreach \y in {4*1.26,12*1.26}
+        \filldraw[xshift=\x cm, yshift=\y cm, fill=red!90!white, draw=black] 
+        (.63,.63) circle (.5) node[pos=.5] {};
+        \foreach \x in {3.78,5.04,...,16.38}
+        \foreach \y in {6.3,7.56,...,15.04}
+        \filldraw[xshift=\x cm, yshift=\y cm, fill=red!90!white, draw=black] 
+        (.63,.63) circle (.5) node[pos=.5] {};
+        \foreach \x in {5*1.26, 8*1.26, 11*1.26}
+        \foreach \y in {2*1.26, 14*1.26}
+        \filldraw[xshift=\x cm, yshift=\y cm, fill=blue!30!white, 
+        draw=black] (.63,.63) circle (.5) node[pos=.5] {};
+        \foreach \x in {3*1.26, 13*1.26}
+        \foreach \y in {3*1.26, 13*1.26}
+        \filldraw[xshift=\x cm, yshift=\y cm, fill=blue!30!white, 
+        draw=black] (.63,.63) circle (.5) node[pos=.5] {};
+        \foreach \x in {2*1.26, 5*1.26, 8*1.26, 11*1.26, 14*1.26}
+        \foreach \y in {5*1.26, 8*1.26, 11*1.26}
+        \filldraw[xshift=\x cm, yshift=\y cm, fill=blue!30!white, 
+        draw=black] (.63,.63) circle (.5) node[pos=.5] {};
+    \end{tikzpicture}
+    \caption{Configuration for MOX bundle.  The light red represents 4.3\% MOX 
+             fuel, the medium red represents 7.0 \% MOX fuel, and the dark red 
+             represents 8.7\% MOX fuel.  The blue represents moderator (i.e.,  
+             light water)}
+    \label{fig:MOX_config}
+\end{figure*}
+
+
+
+\begin{figure*}[htb]
+    \centering
+    \begin{tikzpicture}[scale=3, every node/.style={scale=1}]
+        \filldraw[xshift=0 cm, yshift=0 cm, fill=blue!30!white, draw=black] 
+        (0, 0) rectangle (1.26,1.26) node[pos=.5] {};
+        \filldraw[xshift=0 cm, yshift=0 cm, fill=green!30!white, draw=black] 
+        (.63,.63) circle (.54) node[pos=.5] {};
+        \draw (0,-.2) -- (0,-.4) -- (0,-.30) -- (0.63,-.3) node[below=0.1cm] 
+        {1.26 cm} -- (1.26,-.30) -- (1.26,-.2) -- (1.26, -.4);
+        \draw (1.35,.63) -- (1.55,.63) -- (1.45,.63) -- (1.45,.92) 
+        node[right=0.1cm] {0.54 cm} -- (1.45,1.17) -- (1.35,1.17) -- (1.55, 
+        1.17);
+    \end{tikzpicture}
+    \caption{Configuration for pincell.  The circular fuel element had a 
+             radius of 0.54 cm and was homogenized with cladding for this 
+             model.}
+    \label{fig:pin_cell_config}
+\end{figure*}
 Here, the neutron transport equation for both 1-D and 2-D problems are solved by the discrete ordinates method in a Fortran in-house code unotran, and all DMD calculations were also performed using the PyDMD \cite{pydmd}.
 An S4 Gauss-Legendre quadrature was used with the diamond difference approximation.
 The reference eigenvalue and eigenvector were computed using full power iteration (i.e., fully converging the scattering source at each eigen iteration).
