@@ -4,7 +4,7 @@
 \label{chapter:DMD-PM}
 \section{Dynamic Mode Decomposition}
 Before introducing how to using dynamic mode decomposition to accelerate the power and flattened power method, it may be helpful to review some details of DMD.
-As mentioned at Chapter 1, DMD was developed in a variety of fields, therefore, there are are many different varieties, and some of them are combined with other numerical technologies. 
+As mentioned in Chapter 1, many fields developed separate varieties of DMD that were combined with different numerical technologies.
 However, most of these varieties share a familiar, straightforward frame. I would like to use the most famous and widely-used one, standard DMD, as an example to represent the algorithm.
 
 To start, first consider the generic, dynamic problem defined by 
@@ -107,7 +107,7 @@ e_0 = 1 \quad and  \quad e_j < 1,j = 1,2,3,4... \, .
 \end{equation}
 There are many strategies to select the optimal rank of DMD modes $r$ used to fit the original system $\mathbf{A}$. 
 Alternatively, because the power method can only reveal a single, dominant mode if the assumptions described in \CHAPTER{chapter:PM} are satisfied, only one mode recovered by DMD should remain at $t=\infty$, which is the fundamental eigenmode.
-This phenomena can also be proved in numerical perspective, as mentioned at \EQ{eq:ej}, all other modes with eigenvalue smaller than one will vanish eventually while apply the diagonal matrix $e^{\vec{\omega}t}$ for infinity times.
+This phenomena can also be proven in numerical perspective, as mentioned at \EQ{eq:ej}, all other modes with eigenvalue smaller than one will vanish eventually while apply the diagonal matrix $e^{\vec{\omega}t}$ for infinity times.
 Therefore, instead of computing all the DMD modes and predicting the response by \EQ{eq:dmd_predict}, we can simply compute only the dominant DMD mode and predict the system by 
 \begin{equation}
 \label{eq:f_mode}
@@ -127,6 +127,6 @@ In order to accelerate the power method with DMD, the following DMD-PM($n$) algo
 \end{enumerate}
 By restarting the process, numerical errors caused by ill-conditioned snapshot matrices can be minimized.
 An article by \citet{roberts2019acceleration} was published in 2019 that discusses the framework for the first time.
-Stability analysis between using \EQ{eq:dmd_predict} or \EQ{eq:f_mode} and other numerical challenges are represent in \CHAPTER{chapter:results}.
+Stability analysis using either \EQ{eq:dmd_predict} or \EQ{eq:f_mode} and other numerical challenges are represent in \CHAPTER{chapter:results}.
 Note that the normalization in step 5 is important for reducing numerical round-off errors introduced by growing (or decaying) iterates.
 
