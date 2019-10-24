@@ -1,25 +1,37 @@
-% +--------------------------------------------------------------------+
-% | Sample Chapter 2
-% +--------------------------------------------------------------------+
-
 \cleardoublepage
 
-% +--------------------------------------------------------------------+
-% | Replace "This is Chapter 2" below with the title of your chapter.
-% | LaTeX will automatically number the chapters.                      
-% +--------------------------------------------------------------------+
+\chapter{Results and Analysis}
+\label{chapter:results}
+This section contains a complete description of the test problem modeling and further numerical analysis.
+For the purpose of illustrating the performance of using DMD-PM(n) method and the DMD-FPM(n) method, multiple tests problems were developed. 
+Three testing geometries with different dimensions were constructed totally, one that is 1-D and two that are 2-D.
+We are chasing the fundamental eigenmodes of these test cases, where the power method solutions serve as the benchmark and the snapshots resource for DMD. 
 
-\chapter{Results}
+\section{Test problem}
+The test problems considered are (1) a 2-D, IAEA diffusion benchmark, (2) a 1-D, 70-pin BWR core model, and (3) the 2-D C5G7 benchmark.
+Problem(1) is used to test DMD-PM(n) method, and Problem(2) Problem(3) are used to test the DMD-FPM(n) method.
+\subsection{Test problem for DMD-PM(n)}
+The well-known, two-dimensional (2-D) International Atomic Energy Agency (IAEA) diffusion benchmark was used to test the DMD acceleration algorithm proposed in \CHAPTER{chapter:DMD-PM}.
+The governing diffusion equations are
+\begin{equation}
+ \begin{split}
+  -\nabla D(\mathbf{r})_1 \nabla \phi_1 (\mathbf{r}) + \Sigma_{r1}(\mathbf{r}) \phi_1 (\mathbf{r}) 
+    &= \frac{1}{k} \left (\nu\Sigma_{f1}\phi_1(\mathbf{r}) + \nu\Sigma_{f2}\phi_2(\mathbf{r}) \right ) \\
+ -\nabla D(\mathbf{r})_2 \nabla \phi_2 (\mathbf{r}) + \Sigma_{a2}(\mathbf{r}) \phi_2 (\mathbf{r}) 
+    &= \Sigma_{s1\to 2}\phi_1(\mathbf{r}) \, ,
+ \end{split}
+ \label{eq:twogroupdiff}
+\end{equation}
+where the notations are consistent as \CHAPTER{chapter:multigroup}.
+All parameters including the cross sections are defined in the technical report published from Argonne national laboratory\cite{center1977benchmark}.
+The basic core layout is shown in \FIGURE{fig:IAEA},
 
-
-\begin{figure*}[t!]
+\begin{figure*}[htb!]
+\label{fig:IAEA}
 \centering
-\begin{tikzpicture}[scale=.4]
-
+\begin{tikzpicture}[scale=.6]
 \begin{scope}<->;
-
 % GRID
-
  \draw[step=1.0,gray,very thin, dashed,opacity=0.4] (0.0,0.0) grid (17.0, 17.0); 
   
 % AXES
@@ -89,3 +101,166 @@
 \caption{Geometry as modeled for the IAEA 2-D diffusion benchmark.  Material properties can be found in the benchmark documentation.  Materials 0 and 1 are fuel, material 2 represents control, while material 3 represents the outer reflector.}
 \label{fig:iaea2d}
 \end{figure*}
+
+where the west and south boundary are reflect, and the north and east boundary are vaccum.
+The mesh-center, finite-volume approximation was employed on a uniform, 45 $\times$ 45 spatial mesh.
+The discrete ordinates transport code DETRAN was used to generate the explicit system matrix $\mathbf{A}$ as a .out file.
+Upon discretization, the entire set of equations was cast in terms of the fission source density, i.e., $\mathbf{f} = \nu\Sigma_{f1}\phi_1(\mathbf{r}) + \nu\Sigma_{f2}\phi_2(\mathbf{r})$, which results in a $2025 \times 2025$ operator. 
+Hence, problem(1) is not a relatively large one, but it proved to be a valuable test case for the method, and, therefore, ensure a reasonable computing time while debugging the code.
+
+Note that the eigenvalue is typically updated by fission rate.
+At the time of the study, the in-house transport solver used the ratios of fluxes for the eigenvalue update.
+However, the code has since been updated to use the ratio of fission densities, and found a negligible difference in results.
+
+All calculations were starting with a vector of which each element was sampled from the uniform distribution $U[0, 1]$. 
+This randomized starting vector helps to ensure that all eigenmodes can be present.
+A formal sensitivity study was not performed to understand how this initial guess impacts the algorithm performance, but scoping studies suggest there is little impact on the numbers of iterations required for any particular algorithm.
+In this case, a reference solution was computed using the implicitly-restarted Arnoldi method as implemented in SciPy \cite{scipy}.
+All DMD calculations were performed using the Python package {\tt PyDMD} \cite{pydmd}.
+
+\subsection{Test problem for DMD-FPM(n)}
+
+To illustrate the performance of this method, a simple 1-D test problem was designed to resemble a slab BWR core.
+This testing case was initially used to verifying the stability of the Discrete Generalized multigroup method by \citet{rahnema_generalized_2008}. 
+The geometry of the 2-group BWR test case is shown in \FIG{fig:BWRconfig}.
+\begin{figure*}[htb!]
+    \centering
+    \begin{minipage}[c]{\textwidth}
+        \centering
+        \includestandalone[mode=buildnew, width=0.85\linewidth]{tex/figures/core1}
+    \end{minipage}
+    \begin{minipage}[c]{\textwidth}
+        \centering
+        \includestandalone[mode=buildnew, width=0.3\linewidth]{tex/figures/assemblies}
+    \end{minipage}
+    \begin{minipage}[c]{\textwidth}
+        \centering
+        \includestandalone[mode=buildnew, width=0.7\linewidth]{tex/figures/core_materials}
+    \end{minipage}
+    \caption{Configuration for the BWR Test Problem\cite{rahnema_generalized_2008}}
+    \label{fig:BWRconfig}
+\end{figure*}
+
+This core configuration had two unique assemblies.  
+Three fuel types were used, including  4.5 \% enriched $UO_2$ , 2.5\% enriched $UO_2$ , and 4.5 \% enriched $UO_2$ with 5 wt\% $Gd_2O_3$.
+Fuel pins for the second problem were 3.2512 cm thick with 1.1176 cm of moderator on each side.
+The baseline pincell discretization consisted of 18 mesh cells of fuel enclosed by six mesh cells of moderator;therefore, each pincell will includes 30 mesh points.
+Boundary conditions on both sides for this case were vacuum.
+
+Also, the the well-studied 2-D C5G7 benchmark were analyzed \cite{oecd_nuclear_energy_agency_benchmark_2003}, in order to verify the performance of algorithm for multi-dimensional problems.
+
+Here, the neutron transport equation for both 1-D and 2-D problems are solved by the discrete ordinates method in a Fortran in-house code unotran, and all DMD calculations were also performed using the PyDMD \cite{pydmd}.
+An S4 Gauss-Legendre quadrature was used with the diamond difference approximation.
+The reference eigenvalue and eigenvector were computed using full power iteration (i.e., fully converging the scattering source at each eigen iteration).
+The DMD-FPM($n$) algorithm proposed above was implemented using an in-house code, which solves the neutron transport equation using the discrete ordinates method in Fortran, and all DMD calculations were performed using the Python package {\tt PyDMD} \cite{pydmd}.
+
+
+\section{Results for DMD-PM(n)}
+As mentioned in the previous chapters, the major cost of the power method is from solving the $\mathbf{Ax =b}$, particularly sweeping over each energy group and spatial mesh points for the discrete ordinates method.
+In this case, the computational time is proportional to the number of iterations, the number of iterations is used as the indicator of computational cost in the following comparisons.
+
+\subsection{Skipping Ahead with DMD-PM(n)}
+As a first test of the method of DMD-PM($n$), the goal was to verify the accuracy that DMD predicted eigenmodes can improve with.
+A series of $n$ power iterations was performed to generate the snapshots, then the dominant eigenmode
+was reconstructed as a function of iteration using \EQ{eq:dmd_predict}.
+The absolute error with respect to the reference eigenmode was computed as the euclidean norm of the differences, which is defined as 
+\begin{equation}
+ ||\mathbf{e}|| =  ||\mathbf{x}^{*}_i-\mathbf{x}_{ref}||_2   \, .
+ \label{eq:flatten}
+\end{equation}
+The results shown in \FIGURE{fig:skipahead} are predicted using different number $n$ of snapshots where ``time'' is increasing.
+Shown in parentheses is the number of equivalent power iterations to which the final, saturated error in the DMD prediction corresponds.
+For example, application of 30 power iterations leads to a DMD surrogate that can predict an eigenmode with an accuracy equal to 149 power iterations, a substantial skip ahead in the number of iterations.
+
+\begin{figure}[htb]%t=top, b=bottom, h=here
+    \centering
+    \includegraphics[height=4.0in]{tex/figures/skipahead.pdf}
+   \caption{Error in the DMD-predicted, dominant eigenmode as a function of iteration.  The legend shows the number of power iterations $n$ used to construct the surrogate, and in parentheses is the effective number of power iterations the DMD surrogate can produce.}
+  \label{fig:skipahead}
+\end{figure}
+
+The error shown in \FIGURE{fig:skipahead} approaches an asymptotic, lower bound as predictions are made beyond the number of power iterations used to generate the DMD surrogate.
+As expected, a larger snapshots matrix can provide more information for learning the function and mapping a more accurate output.
+Note that the final result reaching the lower bound here is very closed to the direct solution predicted by only the dominant DMD modes $\mathbf{\Phi_0}$, which demonstrate that our modified \EQUATION{eq:f_mode} can produce the results in a same level of accuracy.
+
+\subsection{Application of Restarted DMD-PM(n)}
+As mentioned in \CHAPTER{chapter:DMD-PM}, the DMD-PM($n$) should restart from a set of snapshots multiple times until the solution converges.
+To test the performance of the iterative application of the DMD-PM($n$) scheme, we used a fixed number $n$ at every restart to research the convergence.  
+The results are shown in \FIGURE{fig:dmdpi_semilog}, which also includes the error for the unaccelerated PM and the Arnoldi method.
+Here, the Arnoldi method was used without restarts. 
+The results shown for the Arnoldi method are as a function of the size of the subspace used.
+
+Note that the restart value for Restarted DMD-PM($n$) were selected as same as the skip ahead test.
+Although a larger restart value can often promises a better acceleration, however, storing a larger number of snapshots uses more memory and costs more operators during the SVD decompostion.
+Here, we consider the each DMD extrapolation process as an iteration on the horizontal, therefore, the final end points do not match exactly.
+
+\begin{figure}[htb]%t=top, b=bottom, h=here
+    \centering
+    \includegraphics[height=4.0in]{tex/figures/dmdpi_semilog.pdf}
+    \caption{The error in the predicted eigenmode for DMD-PM($n$), where $n$ is the number of power iterations performed.  Errors are also included for the power method (PM) and Arnoldi's method.}
+    \label{fig:dmdpi_semilog}
+\end{figure}
+
+In this case, a tolerance of $10^{-14}$ is used as the symbol of convergence.
+For reference, approximately 800 unaccelerated power iterations are required to reach this standard.
+Ignoring the cost from DMD, the best DMD-PM($50$) only required around 150 iterations to reach a same level of error, which provide (5$\times$) speedup compared to unaccelerated power iterations.
+
+On the other hand, there is a significant performance difference between DMD-PM($n$) and the Arnoldi method, which is also expected.
+The Arnoldi method only requires around 40 iterations to converge.
+The Arnoldi method is based on a subspace that undergoes continuous orthonormalization, which produces a betterconditioned and, likely, richer basis than can be produced by successive application of $\mathbf{A}$ to a single vector.
+Consequently, it is inapplicable when the explicit form of $\mathbf{A}$ is not available.  
+
+\section{Results for DMD-FPM(n)}
+As mentioned in the \CHAPTER{chapter:PM}, the flattened PM eliminates the inner iterations and only apply one transport sweep each iteration.
+Therefore, we used number of sweeps as the measure for the total computational cost, which is equivalent to number of iterations.
+Two similar tests on different geometries are conducted and solved for a variety of restart values $n$ to study the optimum condition.
+The reference solutions were computed using full power method (i.e.,fully converging the scattering source at each eigen iteration).
+The error is defined as same as \EQUATION{eq:flatten}, and the tolerance of convergence is set as $10^{-8}$.
+
+\subsection{Restarted DMD-FPM(n) for 1D BWR Test Problem}
+
+To compare performance, the generalized $k-$eigenvalue problem was solved first by flattened power iteration, which used 3445 transport sweeps for this BWR problem.
+The best DMD-FPM($n$) algorithm used 40 snapshots, and required approximately 270 transport sweeps, thus providing more than an order of magnitude reduction in the computational cost.
+
+\begin{figure}[htb]%t=top, b=bottom, h=here
+    \centering
+    \includegraphics[height=4.0in]{tex/figures/dmd_ospi_semilog_1d.pdf}
+    \caption{The absolute error in the predicted eigenmode for DMD-PM-aitken(n) for the 1D BWR problem, where n is the number of transport sweeps performed.}
+    \label{fig:DMD-FPM_1d}
+\end{figure}
+
+This case shows that using a larger number of snapshots cannot promise a faster convergence for DMD-FPM($n$).
+The reason might be the error remaining from dis-matched eigenvalues.
+\subsection{Restarted DMD-FPM(n) for 2D C5G7 Test Problem}
+
+Similar the 1-D results, the results of C5G7 2-D benchmark also show that the best condition of DMD-FPM($n$) algorithm has significant speedup compared to flattened power iteration, which required 351 transport sweep to reduce error to $1e-8$ while using 30 snapshots each restart.
+For reference, approximately 1570 unaccelerated flattened power sweeps are required for this problem to be fully converged.
+As expected in this case, a small increase in error may be observed more obviously for each application of DMD-FPM($n$) due to the previously discussed eigenvalue error.
+And the best case is not using the most number of snapshots, though the difference of sweeps is relatively small.
+
+\begin{figure}[htb]%t=top, b=bottom, h=here
+    \centering
+    \includegraphics[height=4.0in]{tex/figures/dmd_ospi_semilog_c5g7.pdf}
+    \caption{2D C5G7 problem}
+    \label{fig:DMD-FPM_2d}
+\end{figure}
+
+Using DMD too frequently (i.e., small $n$) might produce a large numerical error from SVD decomposition, the error increase many level of magnitude from DMD.
+This is the reason why DMD-FPM($10$) did not reduce the error to within the target range.
+The number of transport sweeps required to reach a tolerance of $10^{-8}$ are shown in \TAB{tab:widetable}.
+
+\begin{table*}[htb]
+  \centering
+  \small
+  \caption{Number of transport sweep}
+  \begin{tabular}{lllllllll}\toprule
+      & FPM  & DMD-FPM(10)& DMD-FPM(20)& DMD-FPM(30)& DMD-FPM(40)& DMD-FPM(50)
+\\ \midrule
+$BWR$  & 3444 & 515 & 307 & 287 & 251 & 363
+\\
+$C5G7$  & 1570  & N/A & 395 & 351 & 377 & 359
+\\
+\bottomrule
+\end{tabular}
+  \label{tab:widetable}
+\end{table*}
