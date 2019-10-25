@@ -285,8 +285,6 @@ The dimensions are shown in \FIG{fig:MOX_config}.
 Here, the neutron transport equation for both 1-D and 2-D problems are solved by the discrete ordinates method, and all DMD calculations were performed using the PyDMD \cite{pydmd}.
 An S4 Gauss-Legendre quadrature was used with the diamond difference approximation.
 The reference eigenvalue and eigenvector were computed using full power iteration (i.e., fully converging the scattering source at each eigen iteration).
-The DMD-FPM($n$) algorithm proposed above was implemented using an in-house code, which solves the neutron transport equation using the discrete ordinates method in Fortran, and all DMD calculations were performed using the Python package {\tt PyDMD} \cite{pydmd}.
-
 
 \section{Results for DMD-PM(n)}
 As mentioned in the previous chapters, the major cost of the power method is from solving the $\mathbf{Ax =b}$, particularly sweeping over each energy group and spatial mesh points for the discrete ordinates method.
@@ -300,7 +298,7 @@ was reconstructed as a function of iteration using \EQ{eq:dmd_predict}.
 The absolute error with respect to the reference eigenmode was computed as the euclidean norm of the differences, which is defined as 
 \begin{equation}
  ||\mathbf{e}|| =  ||\mathbf{x}^{*}_i-\mathbf{x}_{ref}||_2   \, .
- \label{eq:flatten}
+ \label{eq:error}
 \end{equation}
 The results shown in \FIGURE{fig:skipahead} are predicted using different number $n$ of snapshots where ``time'' is increasing.
 Shown in parentheses is the number of equivalent power iterations to which the final, saturated error in the DMD prediction corresponds.
@@ -349,7 +347,7 @@ As mentioned in the \CHAPTER{chapter:PM}, the flattened PM eliminates the inner 
 Therefore, we used number of sweeps as the measure for the total computational cost, which is equivalent to number of iterations.
 Two similar tests on different geometries are conducted and solved for a variety of restart values $n$ to study the optimum condition.
 The reference solutions were computed using full power method (i.e.,fully converging the scattering source at each eigen iteration).
-The error is defined as same as \EQUATION{eq:flatten}, and the tolerance of convergence is set as $10^{-8}$.
+The error is defined as same as \EQUATION{eq:error}, and the tolerance of convergence is set as $10^{-8}$.
 
 \subsection{Restarted DMD-FPM(n) for 1D BWR Test Problem}
 
