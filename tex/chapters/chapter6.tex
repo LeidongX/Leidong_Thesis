@@ -2,14 +2,14 @@
 
 \chapter{Results and Analysis}
 \label{chapter:results}
-This section contains a complete description of the test problem modeling and further numerical analysis.
-For the purpose of illustrating the performance of using DMD-PM(n) method and the DMD-FPM(n) method, multiple tests problems were developed. 
-Three testing geometries with different dimensions were constructed totally, one that is 1-D and two that are 2-D.
-We are chasing the fundamental eigenmodes of these test cases, where the power method solutions serve as the benchmark and the snapshots resource for DMD. 
+This section contains a complete description of the test problems for modeling as well as further numerical analysis.
+For the purpose of illustrating the performance of using the DMD-PM(n) method and the DMD-FPM(n) method, multiple test problems were developed. 
+One 1-D and two 2-D test geometries were constructed.
+We are solving for the fundamental eigenmodes of these test cases, where the power method solutions serve as the benchmark and the snapshot resource for DMD. 
 
 \section{Test problem}
 The test problems considered are (1) a 2-D, IAEA diffusion benchmark, (2) a 1-D, 70-pin BWR core model, and (3) the 2-D C5G7 benchmark.
-Problem(1) is used to test DMD-PM(n) method, and Problem(2) Problem(3) are used to test the DMD-FPM(n) method.
+Problem(1) is used to test the DMD-PM(n) method, and Problem(2) Problem(3) are used to test the DMD-FPM(n) method.
 \subsection{Test problem for DMD-PM(n)}
 The well-known, two-dimensional (2-D) International Atomic Energy Agency (IAEA) diffusion benchmark was used to test the DMD acceleration algorithm proposed in \CHAPTER{chapter:DMD-PM}.
 The governing diffusion equations are
@@ -22,9 +22,9 @@ The governing diffusion equations are
  \end{split}
  \label{eq:twogroupdiff}
 \end{equation}
-where the notations are consistent as \CHAPTER{chapter:multigroup}.
-All parameters including the cross sections are defined in the technical report published from Argonne national laboratory\cite{center1977benchmark}.
-The basic core layout is shown in \FIGURE{fig:IAEA},
+where the notation defined in \CHAPTER{chapter:multigroup}.
+All parameters including the cross sections are defined in the technical report published from Argonne National Laboratory\cite{center1977benchmark}.
+The basic core layout is shown in \FIGURE{fig:IAEA}, where the west and south boundary are reflective, and the north and east boundary are vacuum.
 
 \begin{figure*}[htb!]
 \label{fig:IAEA}
@@ -102,26 +102,25 @@ The basic core layout is shown in \FIGURE{fig:IAEA},
 \label{fig:iaea2d}
 \end{figure*}
 
-where the west and south boundary are reflect, and the north and east boundary are vaccum.
 The mesh-center, finite-volume approximation was employed on a uniform, 45 $\times$ 45 spatial mesh.
-The discrete ordinates transport code DETRAN was used to generate the explicit system matrix $\mathbf{A}$ as a .out file.
+The discrete ordinates transport code DETRAN was used to generate the explicit system matrix $\mathbf{A}$.
 Upon discretization, the entire set of equations was cast in terms of the fission source density, i.e., $\mathbf{f} = \nu\Sigma_{f1}\phi_1(\mathbf{r}) + \nu\Sigma_{f2}\phi_2(\mathbf{r})$, which results in a $2025 \times 2025$ operator. 
-Hence, problem(1) is not a relatively large one, but it proved to be a valuable test case for the method, and, therefore, ensure a reasonable computing time while debugging the code.
+Hence, problem(1) is not large, but it proved to be a valuable test case for the method, and, therefore, ensured a reasonable computing time while debugging the code.
 
 Note that the eigenvalue is typically updated by fission rate.
-At the time of the study, the in-house transport solver used the ratios of fluxes for the eigenvalue update.
+At the time of the study, the in-house transport solver used the ratio of fluxes for the eigenvalue update.
 However, the code has since been updated to use the ratio of fission densities, and found a negligible difference in results.
 
-All calculations were starting with a vector of which each element was sampled from the uniform distribution $U[0, 1]$. 
+All calculations were initialized with a vector in which each element was sampled from the uniform distribution $U[0, 1]$. 
 This randomized starting vector helps to ensure that all eigenmodes can be present.
-A formal sensitivity study was not performed to understand how this initial guess impacts the algorithm performance, but scoping studies suggest there is little impact on the numbers of iterations required for any particular algorithm.
+A formal sensitivity study was not performed to understand how this initial guess impacts the algorithm performance, but scoping studies suggest there is little impact on the number of iterations required for any particular algorithm.
 In this case, a reference solution was computed using the implicitly-restarted Arnoldi method as implemented in SciPy \cite{scipy}.
 All DMD calculations were performed using the Python package {\tt PyDMD} \cite{pydmd}.
 
 \subsection{Test problem for DMD-FPM(n)}
 
 To illustrate the performance of this method, a simple 1-D test problem was designed to resemble a slab BWR core.
-This testing case was initially used to verifying the stability of the Discrete Generalized multigroup method by \citet{rahnema_generalized_2008}. 
+This testing case was adapted from previous, transport applications \citep{rahnema_generalized_2008}. 
 The geometry of the 2-group BWR test case is shown in \FIG{fig:BWRconfig}.
 \begin{figure*}[htb!]
     \centering
@@ -143,15 +142,16 @@ The geometry of the 2-group BWR test case is shown in \FIG{fig:BWRconfig}.
 
 This core configuration had two unique assemblies.  
 Three fuel types were used, including  4.5 \% enriched $UO_2$ , 2.5\% enriched $UO_2$ , and 4.5 \% enriched $UO_2$ with 5 wt\% $Gd_2O_3$.
-Fuel pins for the second problem were 3.2512 cm thick with 1.1176 cm of moderator on each side.
-The baseline pincell discretization consisted of 18 mesh cells of fuel enclosed by six mesh cells of moderator;therefore, each pincell will includes 30 mesh points.
+Fuel pins for this problem were 3.2512 cm thick with 1.1176 cm of moderator on each side.
+The baseline pincell discretization consisted of 18 mesh cells of fuel enclosed by six mesh cells of moderator;therefore, each pincell contained 30 mesh points.
 Boundary conditions on both sides for this case were vacuum.
 
-Also, the the well-studied 2-D C5G7 benchmark were analyzed \cite{oecd_nuclear_energy_agency_benchmark_2003}, in order to verify the performance of algorithm for multi-dimensional problems.
-The configure of the benchmark is adapted from the benchmark problem presented in \citet{reed_2015}.
-The configure of a quarter core contains four fuel pin assemblies and five moderator.assemblies is shown in \FIGURE{fig:C5G7_config}.
-Each fuel assembly has 17 $\times$ 17 individual pincells, and the configuration of $UO_2$ assemblyis shown in \FIG{fig:UO2_config} and the configuration of MOX assembly is shown in \FIG{fig:MOX_config}.
-Here, each pincell is discretized on a 7$\times$ Cartesian mesh. The demensions are shown in \FIG{fig:MOX_config}.
+The final test problem was the well-studied 2-D C5G7 benchmark \cite{oecd_nuclear_energy_agency_benchmark_2003}, which was used to verify the performance of algorithm for multi-dimensional problems.
+The configuration of the benchmark was adapted from \citet{reed_2015}.
+The configuration of a quarter core contains four fuel-pin assemblies and five moderator assemblies as shown in \FIGURE{fig:C5G7_config}.
+Each fuel assembly used 17 $\times$ 17 individual pincells, and the geometry of a $UO_2$ assembly is shown in \FIG{fig:UO2_config}, while that of a MOX assembly is shown in \FIG{fig:MOX_config}.
+Here, each pincell is discretized on a 7$\times$7 Cartesian mesh.
+The dimensions are shown in \FIG{fig:MOX_config}.
 \begin{figure*}[htb]
     \centering
     \begin{tikzpicture}[scale=0.6, every node/.style={scale=1}]
@@ -179,7 +179,7 @@ Here, each pincell is discretized on a 7$\times$ Cartesian mesh. The demensions 
         \draw[xshift=3.25cm,yshift=9.5cm] node[right] {{Vacuum}};
         \draw[xshift=3.25cm, yshift=-.5cm] node[right] {{Reflect}};
     \end{tikzpicture}
-    \caption{Configuration for Full-Core.  Each square represents the area of a 
+    \caption{Configuration for the C5G7 benchmark.  Each square represents the area of a 
              $17\times17$ pin assembly}
     \label{fig:C5G7_config}
 \end{figure*}
@@ -208,7 +208,7 @@ Here, each pincell is discretized on a 7$\times$ Cartesian mesh. The demensions 
         \filldraw[xshift=\x cm, yshift=\y cm, fill=blue!30!white, 
         draw=black] (.63,.63) circle (.5) node[pos=.5] {};
     \end{tikzpicture}
-    \caption{Configuration for UO$_2$ fuel bundle.  The green represents a 
+    \caption{Configuration for a UO$_2$ fuel bundle.  The green represents a 
              UO$_2$ pincell, while the blue represents a guide tube modeled as 
              a pincell filled with moderator}
     \label{fig:UO2_config}
@@ -255,7 +255,7 @@ Here, each pincell is discretized on a 7$\times$ Cartesian mesh. The demensions 
         \filldraw[xshift=\x cm, yshift=\y cm, fill=blue!30!white, 
         draw=black] (.63,.63) circle (.5) node[pos=.5] {};
     \end{tikzpicture}
-    \caption{Configuration for MOX bundle.  The light red represents 4.3\% MOX 
+    \caption{Configuration for a MOX bundle.  The light red represents 4.3\% MOX 
              fuel, the medium red represents 7.0 \% MOX fuel, and the dark red 
              represents 8.7\% MOX fuel.  The blue represents moderator (i.e.,  
              light water)}
@@ -282,7 +282,7 @@ Here, each pincell is discretized on a 7$\times$ Cartesian mesh. The demensions 
              model.}
     \label{fig:pin_cell_config}
 \end{figure*}
-Here, the neutron transport equation for both 1-D and 2-D problems are solved by the discrete ordinates method in a Fortran in-house code unotran, and all DMD calculations were also performed using the PyDMD \cite{pydmd}.
+Here, the neutron transport equation for both 1-D and 2-D problems are solved by the discrete ordinates method, and all DMD calculations were performed using the PyDMD \cite{pydmd}.
 An S4 Gauss-Legendre quadrature was used with the diamond difference approximation.
 The reference eigenvalue and eigenvector were computed using full power iteration (i.e., fully converging the scattering source at each eigen iteration).
 The DMD-FPM($n$) algorithm proposed above was implemented using an in-house code, which solves the neutron transport equation using the discrete ordinates method in Fortran, and all DMD calculations were performed using the Python package {\tt PyDMD} \cite{pydmd}.
@@ -290,7 +290,8 @@ The DMD-FPM($n$) algorithm proposed above was implemented using an in-house code
 
 \section{Results for DMD-PM(n)}
 As mentioned in the previous chapters, the major cost of the power method is from solving the $\mathbf{Ax =b}$, particularly sweeping over each energy group and spatial mesh points for the discrete ordinates method.
-In this case, the computational time is proportional to the number of iterations, the number of iterations is used as the indicator of computational cost in the following comparisons.
+In this case, the computational time is proportional to the number of iterations.
+Thus, the number of iterations is used as the indicator of computational cost in the following comparisons.
 
 \subsection{Skipping Ahead with DMD-PM(n)}
 As a first test of the method of DMD-PM($n$), the goal was to verify the accuracy that DMD predicted eigenmodes can improve with.
