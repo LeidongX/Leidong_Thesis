@@ -1,11 +1,12 @@
 \cleardoublepage
 
-\chapter{The DMD-PM(n) method and related Dynamic Mode Decomposition}
+\chapter{Dynamic Mode Decomposition}
 \label{chapter:DMD-PM}
-\section{Dynamic Mode Decomposition}
-Before introducing how to using dynamic mode decomposition to accelerate the power and flattened power method, it may be helpful to review some details of DMD.
+
+Before introducing how to using dynamic mode decomposition to accelerate the power and flattened power methods, it may be helpful to review some details of DMD.
 As mentioned in Chapter 1, many fields developed separate varieties of DMD that were combined with different numerical technologies.
-However, most of these varieties share a familiar, straightforward frame. I would like to use the most famous and widely-used one, standard DMD, as an example to represent the algorithm.
+However, most of these varieties share a familiar, straightforward frame. 
+Here, the most widely-used variant, standard DMD,will be shown as an example to represent the algorithm.
 
 To start, first consider the generic, dynamic problem defined by 
 \begin{equation}
@@ -18,8 +19,8 @@ With sufficiently small steps in time, we assume that the evolution of  $\mathbf
  \frac{d{\mathbf{x}}(t)}{dt}=\mathcal{A}\mathbf{x} \, ,
  \label{eq:linearized_model}
 \end{equation}
-where the evolution operator $\mathcal{A}$ may often not be known, and can be considered to be an implicit black box system.
-However, one can obtain the system state $\mathbf{x_n}$ at different times, which are then stacked as the past and future snapshot matrices $ \mathbf{X_0}$ and $ \mathbf{X_1}$ by
+where the evolution operator $\mathcal{A}$ may not be known and can be considered ``black-box system.
+However, one can obtain the system state $\mathbf{x}_n$ at different times, which are then stacked as the past and future snapshot matrices $ \mathbf{X}_0$ and $ \mathbf{X}_1$ 
 \begin{equation}
 \label{eq:past_data}
 \mathbf{X_0}=\left[ \mathbf{x}_0, \mathbf{x}_1, \ldots, \mathbf{x}_{m-1} \right] \, ,
@@ -29,8 +30,8 @@ and
 \label{eq:future_data}
 \mathbf{X_1}=\left[ \mathbf{x}_1, \mathbf{x}_2, \ldots, \mathbf{x}_{m} \right] \, .
 \end{equation}
-where the lower index m is the number of snapshots (observations of the quantities of interest).
-Suppose A is the discrete-time approximation of the mapping operator $\mathcal{A}$:
+
+Suppose $\mathbf{A}$ is the discrete-time approximation of the mapping operator $\mathcal{A}$:
 \begin{equation}
 \label{eq:A}
 \mathbf{A} = e^{\mathcal{A} \Delta t} \, .
@@ -38,14 +39,14 @@ Suppose A is the discrete-time approximation of the mapping operator $\mathcal{A
 Then 
 \begin{equation}
 \label{eq:x0x1}
-\mathbf{x_{k+1}} = \mathbf{A} \mathbf{x_{k}}, \quad \quad k = 0,1,...,
+\mathbf{x}_{k+1} = \mathbf{A} \mathbf{x}_{k}, \quad \quad k = 0,1,...,
 \end{equation}
-The approximation operator $\mathbf{A}$ will not fit perfectly unless the samples are computed from it, and the most desired condition can be satisfied in a least-squares/minimum-norm sense by
+The approximate operator $\mathbf{A}$ will, of course, not reproduce the $\mathbf{x}_i$ perfectly unless they are guaranteed from it, but a ``best'' approximation can be formed in a least-squares/minimum-norm sense by solving
 \begin{equation}
 \label{eq:least}
-\mathbf{A} =  \underset{\mathbf{A}}{argmin} ||\mathbf{X_1} - \mathbf{A} \mathbf{X_0}||_F \, .
+\mathbf{A} =  \underset{\mathbf{A}}{argmin} ||\mathbf{X}_1 - \mathbf{A} \mathbf{X}_0||_F \, .
 \end{equation}
-Thus the best-fit operator A is formally given by 
+Thus the best-fit operator $\mathbf{A}$ is formally given by 
 \begin{equation}
 \label{eq:fullA}
 A = \mathbf{X}_1 \mathbf{X}_0^{\dagger} \, ,
@@ -64,13 +65,13 @@ A low-rank approximation of the original dynamic system $\mathbf{\tilde{A}}$ is 
 \label{eq:reduced_dmd_1}
 \mathbf{\tilde{A}} =  \mathbf{U_r^* A U_r} \, .
 \end{equation}
-Then using \EQ{eq:fullA}, and the reduced order $\mathbf{\tilde{A}}$ is defined by
+Then using \EQ{eq:fullA}, the reduced order $\mathbf{\tilde{A}}$ is defined by
 \begin{equation}
 \label{eq:reduced_dmd_2}
 \mathbf{\tilde{A}} =  \mathbf{U_r^*} \mathbf{X_1} \mathbf{V} \bm{\Sigma}^{-1} \, .
 \end{equation}
-Now extract the r largest eigenvalue and corresponding eigenvectors from $\mathbf{\tilde{A}}$ as the DMD modes $\boldsymbol{\Phi}$, which can be treated as the leading r eigenvectors of $\mathbf{A}$.
-Note that the solution of \EQ{eq:linearized_model} is $\mathbf{x}(t) = e^{\mathcal{A}t}\mathbf{x}(0)$, and $\mathbf{A}$ is a discrete-time approximation of $e^{\mathcal{A}\Delta}$, which can be applied to the initial condition by matrix exponential to compute the solution at a particular time. 
+Now extract the $r$ largest eigenvalue and corresponding eigenvectors from $\mathbf{\tilde{A}}$ as the DMD modes $\boldsymbol{\Phi}$, which can be treated as the leading $r$ eigenvectors of $\mathbf{A}$.
+Note that the solution of \EQ{eq:linearized_model} is $\mathbf{x}(t) = e^{\mathcal{A}t}\mathbf{x}(0)$, and $\mathbf{A}$ is a discrete-time approximation of $e^{\mathcal{A}\Delta}$, which can be applied to the initial condition using the matrix exponential to compute the solution at a particular time. 
 Moreover, the discrete eigenvalues $\lambda_i$ of $\mathbf{A}$ can be used to compute the continuous eigenvalues $\omega_i= \text{log}(\lambda_i)/\Delta t$. Subsequently, the state can be reconstructed at any time $t$ by initial condition by  
 \begin{equation}
 \label{eq:dmd_predict}
@@ -87,46 +88,5 @@ The general DMD scheme is summarized as
 \item Predict the response by $\vec{x}^{DMD}(t) \approx \sum_{i=1}^{r} \vec{\phi}_i e^{\omega_it} b_i = \boldsymbol{\Phi}{\mathbf{diag}}(e^{\vec{\omega}t})\vec{b}$, where $\mathbf{b}=\boldsymbol{\Phi}^{\dag} \mathbf{x}_{0}$.
 \end{enumerate}
 
-\section{An Accelerated Power Method using DMD}
-\label{sec:dmdpi}
-The ultimate goal of this section is to obtain a strategy that uses DMD to extrapolate eigenvectors and eigenvalues from a fair size of snapshot matrices, which should be closer to the final steady state solution than the latest snapshot.
-The difficult part of this strategy is that DMD itself needs to extract information from a time dependent, dynamic system due to the prediction results required to be extrapolated in the ``future''.
-However, the power iteration does not recover the realistic physics transient process. 
 
-Note that because $\omega_i= \text{log}(\lambda_i)$ while $\Delta = 1$, $x^{DMD}(t)$ is a fictitious time step corresponding to a single power iteration.
-First, suppose that $m$ power iterations have been performed to produce the snapshot matrices $\mathbf{X}_0$ and $\mathbf{X}_1$, where the series of snapshots are not ordered by the sequence of time but by the number of power iterations.
-We follow the standard DMD approach as discussed above and generate leading r DMD modes and eigenvalues.
-Next, we can set $t$ to a significant value larger than the current number of snapshots employed and predict a new $\mathbf{x}$, which can be normalized and applied as an initial guess for a new iteration of the power method.
-
-Here, we will explore a modification from the original recovery scheme that was done in the following way.
-The eigendecomposition of $\mathbf{A}$ or the reduced-order approximation of $\mathbf{\tilde{A}}$ leads to a set of approximate eigenvectors and eigenvalues $e_j \approx \lambda_j / \lambda_0$.
-As previously discussed in \CHAPTER{chapter:PM}, the convergence of the power method requires that $\lambda_0$ is larger than any other eigenvalues, thus 
-\begin{equation}
-\label{eq:ej}
-e_0 = 1 \quad and  \quad e_j < 1,j = 1,2,3,4... \, .
-\end{equation}
-There are many strategies to select the optimal rank of DMD modes $r$ used to fit the original system $\mathbf{A}$. 
-Alternatively, because the power method can only reveal a single, dominant mode if the assumptions described in \CHAPTER{chapter:PM} are satisfied, only one mode recovered by DMD should remain at $t=\infty$, which is the fundamental eigenmode.
-This phenomena can also be proven in numerical perspective, as mentioned at \EQ{eq:ej}, all other modes with eigenvalue smaller than one will vanish eventually while apply the diagonal matrix $e^{\vec{\omega}t}$ for infinity times.
-Therefore, instead of computing all the DMD modes and predicting the response by \EQ{eq:dmd_predict}, we can simply compute only the dominant DMD mode and predict the system by 
-\begin{equation}
-\label{eq:f_mode}
-\vec{x}^{DMD}(t) \approx \vec{\phi}_0 \mathbf{b}_0 \, ,
-\end{equation}
-where $b_0= \phi^{T}_0 \mathbf{x}_{0}$.
-
-This improvement can get rid of the noise from the higher rank modes and can save a great amount of computational resources while reconstructing the system.
-In order to accelerate the power method with DMD, the following DMD-PM($n$) algorithm is proposed:
-\begin{enumerate}
- \item Guess $\mathbf{x}^{(0)}$ and normalize.
- \item Perform $n$ power iterations to produce $\mathbf{X}_0$ and $\mathbf{X}_1$
- \item Compute the DMD modes and frequencies using a rank-$r$, truncated  SVD (i.e., $r < n$)
- \item Apply \EQ{eq:dmd_predict} or \EQ{eq:f_mode} to estimate $\mathbf{x}^{(\infty)}=\mathbf{x}(\infty)$, i.e., estimate the steady-state, dominant mode after an equivalent of $\infty$ power iterations.
- \item Set $\mathbf{x}^{(0)} = \Re(\mathbf{x}(\infty)) / ||\mathbf{x}(\infty)||$.  
- \item Repeat Steps 1 through 5 until converged.
-\end{enumerate}
-By restarting the process, numerical errors caused by ill-conditioned snapshot matrices can be minimized.
-An article by \citet{roberts2019acceleration} was published in 2019 that discusses the framework for the first time.
-Stability analysis using either \EQ{eq:dmd_predict} or \EQ{eq:f_mode} and other numerical challenges are represent in \CHAPTER{chapter:results}.
-Note that the normalization in step 5 is important for reducing numerical round-off errors introduced by growing (or decaying) iterates.
 
