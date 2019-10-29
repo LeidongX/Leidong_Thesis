@@ -2,110 +2,122 @@
 
 \chapter{Introduction}
 \label{chapter:intro}
-Nuclear power was initially studied in the 1940s and has become an important source in the power industry.
+Nuclear power was initially studied in the 1940s and has become an important source of energy worldwide.
 The nuclear reactor core containing the fuel is where the chain reactions take place.
 The amount of heat generation is proportional to the neutron population in the core, which itself is proportional to the number of fission events. 
-Without estimating the desired state of neutron population, it is impossible to control the neutronic systems and generate essential design. 
-In nuclear physics, computational simulations are critical for optimizing nuclear reactor designs and helping to understand extremely complicated neutron dynamic behaviors.
-However, modeling a full core is still too computationally expensive even with the most advanced, large-scale, super computers. 
-Therefore, having an accurate and efficient approach to determine the criticality and the neutron distribution is a pivotal topic in this field.
+Without somehow modeling the neutron population, it is impossible to understand the control of the neutronic systems and to generate suitable designs. 
+In nuclear reactor physics, computational simulations play a critical role in the optimization of these designs and the prediction of the dynamics.
+However, explicit modeling a full reactor core remains too computationally expensive even with the most advanced, large-scale, super computers. 
+Therefore, accurate and efficient approaches are needed to solve the various problems of reactor physics, including determines criticality and the neutron distribution.
 
-\section{Operator Notation}
-The generalized eigenvalue form of the neutron transport equation is a fundamental problem in computational reactor physics.
+\section{Motivation}
+
+The generalized eigenvalue form of the neutron transport equation and its use for criticality analysis is central to computational reactor physics.
 The dominant eigenvector and corresponding eigenvalue of this equation can represent if a system is in steady-state conditions.
-Though criticality calculations arose from the analysis of time-dependent processes, it is sufficient to reduce the transport equation to steady-state in many cases. 
-The steady-state transport equation can be written in operator notation as
+Though the criticality problem is a simplification of the time-dependent processes, it is often sufficient to reduce the transport equation into steady-state form. 
+The steady-state transport equation can be written in the generic form
+
 \begin{equation}
- \mathbf{(I - DL^{-1}MS)} \mathbf{\mathbf{x}} = \frac{1}{k} \mathbf{DL^{-1}MF} \mathbf{\mathbf{x}}  \, ,
- \label{eq:keig}
+ \mathbf{Ax} = \frac{1}{k} \mathbf{Bx}  \, ,
+ \label{eq:Axb}
 \end{equation}
-where $\mathbf{\mathbf{x}} $ describes the scalar flux, $\mathbf{L}$ represents loss operator,  $\mathbf{F}$ represents fission operator, $\mathbf{S}$ represents the scattering operator, $\mathbf{M}$ and $\mathbf{D}$ represent moment-to-discrete and discrete-to-moment operators respectively, and the eigenvalue $k$ represents the ratio of gains to losses.
+
+where $\mathbf{x}$ describes the scalar flux, $\mathbf{A}$ represents neutron losses,  $\mathbf{B}$ represents the fission neutron gains from neutron, and the eigenvalue $k$ represents the ratio of gains to losses.
 The so called criticality of a reactor is determined by examining the dominant eigenvalue $k$, where $k=1$ is ``critical'' (the neutron population holds steady), $k<1$ is ``subcritical'' (the neutron density decreases over time), and $k > 1$ is ``supercritical'' (the neutron density increases over time).
-The eigenvector corresponding to the largest eigenvalue $k$ is usually known as fundamental (or dominant) eigenmode and corresponds to the scalar flux distribution when the system reaches steady state.
-A more generalized multigroup neutron transport equation will be presented in Chapter 2.
+The eigenvector corresponding to the largest eigenvalue $k$ is often called the fundamental (or dominant) eigenmode and corresponds to the scalar flux distribution when the system reaches steady state.
+A more generalized multigroup neutron transport equation will be presented along with its diffusion approximation in \CHAPTER{chapter:multigroup}.
 
-\section{Motivation and Objective}
-The discrete ordinates method, or the $S_n$ method\cite{lewis1984computational}, is a practical, deterministic approach that is used to discretize the  multigroup neutron transport equation.
-This discrete ordinates method is often implemented using an iterative method such as the power method (PM), the Richardson iteration method\cite{adams1993two}, or the generalized minimal residual method (GMRES)\cite{saad1986gmres} to solve for the dominant eigenpair. 
-While the specifics for of implementation differ for each iterative methods, Each of them begin with an initial approximation for the dominant eigenmode.
-This approximation is inserted into the transport equation, and is used to solve for an improved approximation, by applying the loss operator $L$.
-This process continues until the eigenmode has converged to some tolerance.
-While possible in some cases to solve for the inverse of $L$, it is inefficient or impossible for large problems.
-The various iterative methods provide a way of solving the operator equation without forming the matrix inverse by applying $L$ successively, which involves sweeping over each spatial cell and energy group.  
-The expense of these iterative methods is now proportional to the number of iterations, i.e., applications of the operator.
-Methods such as the generalized Davidson(GD) method\cite{larsen1984diffusion} and diffusion synthetic acceleration(DSA)\cite{hamilton2011numerical} are designed to to accelerate the iteration methods by incorporating a correction to the approximation at each iteration.
+The numerical solution of the transport equation requires the use of iterative techniques.
+Classical method for solving \EQ{eq:Axb} is the power method, which requires the repeated application of $\mathbf{A^{-1}B}$
+The operator $A^{-1}$ represents the solution of inhomogeneous transport (or diffusion) equation which also often requires the use of iterative teachniques, e.g., Richardson (or ``source") iteration and Gauss-Seidel iteration.
+Iterative techniques have traditionally dominated the transport community because the explcit construction of $A$ is prohibitively expensive with respect to both memory and processing costs.
+In other words, various iterative methods provide a way to solve the eigenvalue equation without formuing a matrix inverse.
+The actual application of $\mathbf{A}$ depends on the specific numerical method used (e.g., discrete ordinates or finite-volume diffusion), some details of which are described later. 
+However, the cost of any methods is proportioned to the number of application of $\mathbf{A}$, and various techniques have been explored that greatly outperform the traditional methods.
+Of these, serveral have emerged from the broader numerical linear algebra community and include the family of Krylov subspace methods (e.g., Generalized minimal residual method (Gmres)\cite{saad1986gmres} for linear systems and generalized Davidson (GD)\cite{hamilton_numerical_2007} for the generalized eigenvalue problem).
+Other methods are ``"physics driven" and include diffusion synthetic acceleration (DSA) for inhomogenous problems\cite{Alcouffe_1977,roberts_multigroup_2014}, and nonlinear diffusion and acceleration methods like CMFD\cite{smith_1983}.
 
-Within the development of computational science，some theory of data science has been employed to analyze engineering problems.
-Dynamic mode decomposition(DMD) is one of the most well-known, supervised learning approaches that has achieved great success in computational fluid dynamics.
-This data-driven technology can produce reduced-dimensional surrogate models by gathering modes from given states of time dependent data and reconstructing the output parameters.
-The primary focus of this thesis is to estimate accurate fundamental eigenmodes by DMD to accelerate the Power Method and other, related methods.
+There advanced methods work well but require specialized treatments of the transport (or diffusion) equations.
+As an alternative, data driven techniques may be able to take as input a series of unconverged iterates from a classical iterative scheme (like the power method) and produce as outpit a greatly improved estimate for the converged solution.
+Dynamic mode decomposition (DMD) is one such approaches that has emerged from the computational fluid dynamics community.
+This data-driven method can produce reduced-dimensional ``surrogate" models by gathering modes directly from a sequence of states from some time dependent process.
 
 \section{Summary of previous work}
-Before continuing, it would be useful to briefly introduce some great achievements that demonstrated the success of dynamic mode decomposition.
-DMD was initially proposed by \citet{schmid_dynamic_2010}\cite{schmid_applications_2011} to extract dynamics information from time-series data of fluids observations in 2010.
-He applied this frame on both numerical Navier-Stokes code results and experimental measures and illustrated the significant effects on quantifying fluid-dynamical problems.
-As opposed to proper orthogonal decomposition (POD)\cite{lumley2007stochastic}, DMD is a purely data-based procedure and does not decompose on an orthogonal space. 
-This method is based on Koopman analysis\cite{lasota2013chaos,mezic2005spectral} of nonlinear dynamical systems and can extract dynamic modes to describe the global behavior captured by projecting large-scale problems onto a reduced order dynamical system.
-In his work, the time-dependent dynamic systems are described in the form of a snapshots sequence,
+Before continuing, it is useful to review in brief past applications that demonstrated the utility of DMD.
+This technique was initially proposed by \citet{schmid_dynamic_2010}\cite{schmid_applications_2011} to extract dynamics information from time-series data of fluids observations.
+He applied DMD to both numerical Navier-Stokes code results and experimentally measured data, and illustrated how DMD can identify coherent structure in fluid-dynamical system.
+As opposed to proper orthogonal decomposition (POD)\cite{lumley2007stochastic}, DMD is a purely data-based procedure and does not preject a higher-order system and equations on a reduce d space . 
+DMD is shown by relative to Koopman analysis\cite{lasota2013chaos,mezic2005spectral} of nonlinear dynamical systems and can be used to extract dynamic modes to describe the global spatiotemporal behavior.
+In his work, the time-dependent dynamic systems are described in the form of snapshots of an observable $\mathbf{x_i}$ in time, or
 \begin{equation}
- \mathbf{X}^{N}_1 = \{\mathbf{x}_0, \mathbf{x}_1, \ldots, \mathbf{x}_{N} \} \, ,
+ \mathbf{X}^{N}_1 = \{\mathbf{x}_0, \mathbf{x}_1, \ldots, \mathbf{x}_{N} \} \, .
  \label{eq:snap_matrix}
 \end{equation}
-where $\mathbf{x}_i$ stands for the {\it i}th state.
-We assume that there exist a linear mapping operator $\mathbf{A}$, which can be applied on on the initial data snapshot $\mathbf{x}_0$ repeatedly and formulate snapshots sequence \EQ{eq:snap_matrix} as a Krylov subspace by
+
+We assume that there exists a linear mapping operator $\mathbf{A}$ that, when applied to the initial snapshot $\mathbf{x}_0$ repeatedly, produce snapshot sequence \EQ{eq:snap_matrix} in the form of the Krylov subspace 
+
 \begin{equation}
  \mathbf{X}^{N}_1 = \{\mathbf{x}_1,A\mathbf{x}_1,A^2\mathbf{x}_1,…,A^{N-1}\mathbf{x}_1 \} \, .
  \label{eq:Krylov_seq}
 \end{equation}
-Some famous older attempts, such as the Arnoldi method\cite{arnoldi1951principle}, use QR-decomposition $\mathbf{QR} = \mathbf{X}^{N-1}_1$ to reconstruct the mapping operator $\mathbf{A}$, which is not possible if  the explicit matrix form of  $\mathbf{A}$ is unavailable \cite{Greenbaum_1997, trefethen1997numerical}.
-When solving the neutron transport equation, the mapping operator is often unavailable due to the size of the system and the cost associated with explicitly forming this matrix.
-Instead of employing the QR-decomposition, Schmid took advantage of the SVD decomposition and obtained a robust approximation by 
+
+Schmid applied the singular value decomposition (SVD) to obtain the robust approximation
+
 \begin{equation}
 \mathbf{\tilde{A}} = \mathbf{U^H X_1^{N-1}V\Sigma^{-1}} \, ,
  \label{eq:stanard_DMD}
 \end{equation}
 where $\mathbf{X}_1^{N-1} = \mathbf{U}\Sigma \mathbf{V}^H$. 
-The eigenvector $x_i$ of $\mathbf{\tilde{A}}$ and left eigenvector matrix $\mathbf{U}$ are used to calculate the DMD modes $\mathbf{\mathbf{x}}_i$ by 
+The eigenvector $x_i$ of $\mathbf{\tilde{A}}$ and left eigenvector matrix $\mathbf{U}$ are used to define the DMD modes, 
 \begin{equation}
-\mathbf{\mathbf{x}}_i = \mathbf{U} \mathbf{x}_i \, ,
+\mathbf{\mathbf{\Psi}}_i = \mathbf{U} \mathbf{x}_i \, ,
  \label{eq:dyanmic_modes}
 \end{equation}
-and, therefore, recover the reduced order dynamic system.
-This scheme is often known as the standard DMD approach, and a more detailed discussion of the standard DMD scheme is presented in \CHAPTER{chapter:DMD-PM}.   
+and, therefore, recover the reduced the mapping operator $\mathbf{A}$.
+This scheme is often known as the standard DMD approach in the later research\cite{tu_dynamic_2014}, and a more detailed discussion of the standard DMD scheme is presented in \CHAPTER{chapter:DMD-PM}.   
 
-Many practical theories were developed based on this successfully attempt.
-One such attempt uses the past and future snapshot matrix, which is defined as $\mathbf{X}_0 \triangleq \{\mathbf{x}_0, \mathbf{x}_1, \ldots, \mathbf{x}_{N-1} \}$ and $\mathbf{X}_1 \triangleq \{\mathbf{x}_1, \mathbf{x}_1, \ldots, \mathbf{x}_{N} \} $. 
-\citet{tu_dynamic_2014} posted a delicate mathematical analysis of the DMD algorithm and developed a theoretical extension of DMD (extract DMD) using a new definition of operater $\mathbf{A}$ by    
+Many practical theories have been developed based on this original work of Schmid.
+Following \citet{tu_dynamic_2014}, let 
+\begin{equation}
+ \mathbf{X}_0 \triangleq \{\mathbf{x}_0, \mathbf{x}_1, \ldots, \mathbf{x}_{N-1} \}\, ,
+ \label{eq:x1}
+\end{equation}
+\begin{equation}
+ \mathbf{X}_1 \triangleq \{\mathbf{x}_1, \mathbf{x}_1, \ldots, \mathbf{x}_{N} \} \, .
+ \label{eq:x2}
+\end{equation}
+Exact DMD with which the operator $\mathbf{A}$ can be acquired alternatively as   
 \begin{equation}
  \mathbf{A}\triangleq \mathbf{X}_1  \mathbf{X}_0^{\dagger}\, ,
  \label{eq:exact_dmd}
 \end{equation}
 where $\mathbf{X}_0^{\dagger}$ is the pseudoinverse of $\mathbf{X}_0$. 
-The DMD modes and eigenvalues can be computed by eigendecomposition, however, it may be expensive to apply the eigendecomposition of $\mathbf{A}$ in practice.
-With minimal changes, exact DMD can also compute the modes and eigenvalue without explicitly forming or directly multiplication of $\mathbf{A}$.
-In the case of this improved extract DMD algorithm, all processes are consistent with standard DMD, except for computation of the DMD modes, which is now done by
+
+The DMD modes and eigenvalues can be found by a direct eigendecomposition; however, it may be too expensive in practice to construct the eigendecomposition of $\mathbf{A}$.
+Again, by use of SVD, one can compute DMD modes  or
 \begin{equation}
- \mathbf{\mathbf{x}}_i = \frac{1}{\lambda} \mathbf{X}_1 \mathbf{V} \mathbf{\Sigma}^{-1} \omega \, .
+ \mathbf{\mathbf{x}}_i = \frac{1}{\lambda} \mathbf{X}_1 \mathbf{V} \mathbf{\Sigma}^{-1} \mathbf{\Phi} \, ,
  \label{eq:exact_dmd_free}
 \end{equation}
+ 
+\citet{kutz_dynamic_2016} summarized many variations on the DMD algorithm and discussed the applicability of each by solving several complex systems.
+Fundamental theoretical foundations of DMD and the Koopman operator were also developed in their monograph.
 
-\citet{kutz_dynamic_2016} summarized many variations on the DMD algorithm and discussed the applicability of each by solving with various complex systems in a recent monograph.
-Fundamental theoretical foundations of DMD and the Koopman operator was also developed in this book.
-
-Soon after, this technology then was applied to nuclear reactor simulations. 
-\citet{abdo_data-driven_2018} used DMD as a direct, explicit-in-time surrogate for black-box models, e.g., to model the evolution of nuclear reactor isotopics over long time periods as well as the nonlinear response of reactor power during short transients.\cite{abdo_modeling_2019}\cite{elzohery2018comparison}
+Recent efforts applied DMD to nuclear reactor simulations. 
+For example, \citet{abdo_data-driven_2018} used DMD as a direct, explicit-in-time surrogate for black-box models, e.g., to model the evolution of nuclear reactor isotopics over long time periods as well as the nonlinear response of reactor power during short transients.\cite{abdo_modeling_2019}\cite{elzohery2018comparison}
 
 \subsection{DMD Accelerated Iterative Methods}
 As mentioned briefly, a way to achieve acceleration of iterative methods is to correct the eigenmode at each iteration to reduce the total number of iterations.
-One way to do this is to use the results from a lower-dimensional, projected system, to predict the solution to the higher-dimensional system that we wish solved.
-\citet{andersson_novel} first used DMD to accelerate iterative methods.
-A Krylov subspace storing the state-samples with time sequence as $\mathbf{V_n}$ is built up in a same way as \EQ{eq:Krylov_seq}.
+One way to do this is to use the results from a lower-dimensional, projected system to predict the solution to the higher-dimensional system that we wish to solve.
+
+\citet{andersson_novel} firstly used DMD to accelerate iterative methods.
+Snapshot matrix $\mathbf{X_0}$ and $\mathbf{X_1}$ is built up in a same way as \EQ{eq:x1} and \EQ{eq:x2}.
 Then the Gram-Schmidt algorithm is applied by $\mathbf{V_n} = \mathbf{{E_n U_n}}$ to orthogonalize the subspace.
-Most applications avoid the SVD because the Gram-Schmidt algorithm only works with two state vectors each time, and the SVD requires the whole subspace matrix $V_n$. 
+SVD decomposition is avoided because the Gram-Schmidt algorithm only works with two state vectors each time, and the SVD requires the whole subspace matrix $V_n$. 
 Moreover, Gram-Schmidt algorithm is obviously a more suitable approach for parallel computations. 
 The reduced projection of the system matrix $\mathbf{\tilde{A}}$ is obtained by 
 \begin{equation}
- \mathbf{\tilde{A}} = \mathbf{E}_n^T \mathbf{V}_{n+1} \mathbf{U}_n^{-1}  \, ,
+ \mathbf{\tilde{A}} = \mathbf{E}_n^T \mathbf{X}_{1} \mathbf{U}_n^{-1}  \, ,
  \label{eq:andersson_reduce}
 \end{equation}
 and is implemented into iterative linear relation $\mathbf{x}^{(n+1)} = \mathbf{A}\mathbf{x}^{(n)} + \mathbf{b}$.
@@ -119,10 +131,9 @@ By performing this process several times to correct the solution, both the numbe
 Then, \citet{mcclarren_acceleration_2018} presented a novel acceleration technique for improving the convergence of Richardson(source) iteration for source-driven neutronics problems.
 Richardson iteration can be expressed as 
 \begin{equation}
- \mathbf{x}^{(n+1)} = (\mathbf{I}-\mathbf{A})\mathbf{x}^{(n)} + \mathbf{b} \, ,
+ \mathbf{x}^{(n+1)} = (\mathbf{I}-\mathbf{A})\mathbf{x}^{(n)} + \mathbf{b} \, .
  \label{eq:richardson}
 \end{equation}
-where the sequence of $\mathbf{x}^{(n)}$ was often saved to build a Krylov subspace. 
 A feature in his modified DMD acceleration algorithm was that a set successive differences $\mathbf{x}^{(n)}-\mathbf{x}^{(n-1)}$ was used as the snapshots in the data matrix $\mathbf{Y}_+$ and $\mathbf{Y}_-$, while the standard DMD with SVD decomposition was applied to form the approximation system $\mathbf{\tilde{A}}$.
 The algorithm is as follows
 \begin{enumerate}
@@ -135,13 +146,17 @@ where $U$ is the left unitary matrix from SVD decomposition of $\mathbf{Y}_-$ an
  (\mathbf{I} - \mathbf{\tilde{A}}) \Delta y = \mathbf{U}^T(\mathbf{x}^{K} - \mathbf{x}^{K-1})\, .
  \label{eq:McClarren}
 \end{equation}
-McClarren's results of a homogeneous slab problem and a multi-dimensional pip problem suggest that a sequence of Richardson iterations followed by corrections reduces the number of iterations required by about one order of magnitude.
+McClarren's results of a homogeneous slab problem and a multi-dimensional pipe problem suggest that a sequence of Richardson iterations followed by corrections reduces the number of iterations required by about one order of magnitude.
 
 All of these past successes shows that DMD has potential to estimate the converged dominant modes of a reactor system by extrapolating forward from observed snapshots, even though the sequence of iterations from power method does not means ``real time''.
 
-To achieve these goals, In the following chapters the methods will be expanded in certain ways.
+\section{Objective}
+The primary focus of this thesis is to estimate accurate fundamental eigenmodes using DMD to accelerate the power method and other, related methods.
+\citet{roberts2019acceleration} proposed a restarted, DMD-accelerated power method scheme (DMD-PM($n$)), then, \citet{xu_acceleration} applied this theory on the flattened power method (or fixed-point iteration (FPI)).
+To achieve these goals, we will expand this theory previous achievements in certain ways in the following chapters.
 \CHAPTER{chapter:multigroup} will introduce the multigroup neutron transport and diffusion equations, and \CHAPTER{chapter:PM} discusses the mathematical background of the power and flatten power methods.
-Following that, a restarted, DMD-accelerated power method scheme (DMD-PM(n)) is presented in \CHAPTER{chapter:DMD-PM}, while a DMD-based, accelerated, flattened power
+Following that, DMD-PM($n$) is presented in \CHAPTER{chapter:DMD-PM}, while a DMD-based, accelerated, flattened power
 method DMD-FPM(n) is presented in \CHAPTER{chapter:DMD-FPM(n)}.
 Then, the results using either of acceleration schemes on compute analyzing a 1-D boiling water reactor(BWR) model and the famous 2-D C5G7 test problem, are discussed in \CHAPTER{chapter:results}.
 \CHAPTER{chapter:conclusion} will include conclusions and future work including the possibility of combining this theory with other methods. 
+
