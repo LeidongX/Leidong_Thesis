@@ -1,22 +1,17 @@
-% +--------------------------------------------------------------------+
-% | Sample Chapter 2
-% +--------------------------------------------------------------------+
-
 \cleardoublepage
 
-\chapter{MultiGroup Transport and Diffusion Equation}
+\chapter{The MultiGroup Transport and Diffusion Equation}
 \label{chapter:multigroup}
-The operator form of neutron transport equation mentioned in \CHAPTER{chapter:intro} is elegant in mathematically sense and applicable in numerical simulation.
-This section contains a complete description of the multigroup transport and diffusion equation to describe neutron dynamics.
+
+This chapter contains a complete description of the multigroup transport and diffusion equation to describe neutron dynamics, which provides a more detailed discussion of the neutronic systems mentioned in \EQ{eq:Axb}. 
 
 \section{Transport Theory}
 
 According to uncertainty principle, it is impossible to measure the location, moving direction, and moving speed of neutrons, therefore, neutron transport equation is employed to model the neutron particle kinetics and neutron population in the systems.
-Neutron transport is a extension of Boltzmann transport equation, which was initially used to describes the statistical behaviour of particles in the dynamic thermal systems.
-This equation was developed and applied to calculate the neutron distributions within the development of nuclear reactors after 1940s.
-It is impossible to solve the full neutron transport equation for the realistic three-dimensional problem based on current computational power.
-In order to solve the problem in a reasonable computational time, we need to discretize energy variable and make further assumption, including scalar flux is separable in energy, to reduce difficulty of the problem.
-After these assumptions, the neutron transport equation reduces to
+Neutron transport can be well modeled by linearization of the Boltzmann transport equation, which was initially used to describes the statistical behaviour of particles in the dynamic thermal systems.
+This equation was developed and applied to determine the neutron distributions within the development of nuclear reactors as early as the 1940s.
+It is impossible to solve the full neutron transport equation analytically for any realistic, three-dimensional problems.
+Instead, approximations are made to simplify the often, intractable dependency of neutron cross sections on energy, the standard multigroup equations are defined 
 
 \begin{equation}
 \begin{split}
@@ -35,7 +30,7 @@ In addition, $\Sigma_{t,g}$, $\Sigma_{s,g\prime g}$, and $\Sigma_{f,g}$ represen
 $\chi_g$ is the fission spectrum, $\nu$ is the average number of neutrons emitted per fission, and the $k$-eigenvalue (or ``multiplication factor'') represents the balance of neutron gains (by fission) to losses (by absorption and leakage).  
 As mentioned in the last chapter, the value of $k$ indicate if the reactor is critical, subcritical or supercritical.
 
-There are two basic types of the neutron transport problems, fixed source problem and eigenvalue (criticality) problem.  
+There are two basic types of the neutron transport problems： fixed source problem and eigenvalue (criticality) problem.  
 The fixed source problems are solved for determining the neutron population distribution while a known external neutron source exists, which are often used for shielding and detector calculations.
 On the other hand, eigenvalue problem is focus on the neutron asymptotic behavior caused by fission, which are commonly solved to analyze criticality of the nuclear reactors with different geometries.
 k-eigenvalue problem mentioned in \CHAPTER{chapter:intro} is the most common type of eigenvalue problem.
@@ -43,26 +38,95 @@ Both fixed-source and criticality problem can be solved using either determinist
 Based on our research attempts, we think the DMD-PM($n$) method and DMD-FPM($n$) should also be able to accelerate Monte Carlo method. 
 However, we only focus on using DMD to accelerate the deterministic approach on solving eigenvalue problems in this thesis.
 
+\section{Operator Notation}
+The multigroup neutron transport \EQUATION{eq:transport} can be defined in operator form, which is more convenient during numerical implementation. First, Let a discrete-to-moment operator $\mathbf{D}$ satisfy
+\begin{equation}
+ \phi_g = \mathbf{D} \psi_g  \, ,
+ \label{eq:operatorD}
+\end{equation}
+where the spatial index are implicit. Also a moment-to-discrete operator M satisfy 
+\begin{equation}
+ \psi_g = \mathbf{M} \phi_g  \, .
+ \label{eq:operatorM}
+\end{equation}
+Then we can define the loss operator 
+\begin{equation}
+ \mathbf{L}(\cdot) = (\bm{\hat{\Omega}} \cdot \nabla + \Sigma_t(\mathbf{r}))(\cdot) \, ,
+ \label{eq:operatorL}
+\end{equation}
+Finally, the notation of the multigroup transport equation generalizes to \cite{slaybaugh_multigrid_2013}
+\begin{equation}
+\mathbf{L}_g \psi_g = \mathbf{M} \sum\limits^{N_g}_{g'=1} (\mathbf{S}_{gg'} + \frac{1}{k} \mathbf{X}_g \mathbf{F}_{g'}) \phi_{g'} +q_g   \, ,
+ \label{eq:operator_transport}
+\end{equation}
+where $\mathbf{S} = \Sigma_s(\mathbf{r})$, $\mathbf{F}$ represent the fission operator, $\mathbf{X}$ represent the fission spectrum in operator form $\chi_g$. 
+
+To simplify, we can define the space-angle transport sweep operator $\mathbf{DL^{-1}}$ and multiply it on both side of \EQ{eq:operator_transport}, which leads ti the similar form 
+\begin{equation}
+  \mathbf{D} \psi =  \mathbf{DL^{-1}MS}\phi + \frac{1}{k} \mathbf{DL^{-1}MF} \phi  \, ,
+ \label{eq:operatortrans}
+\end{equation}
+In practise, we are only interested in the scalar flux, and angular flux is rarely stored explicitly, therefore, the transport equation can be represented using only the scalar flux by substitution of \EQ{eq:operatorD} into \EQ{eq:operatortrans}, which yields
+\begin{equation}
+  \mathbf{(I - DL^{-1}MS)} \mathbf{\phi} = \frac{1}{k} \mathbf{DL^{-1}MF} \mathbf{\phi}  \, ,
+ \label{eq:keig}
+\end{equation}
+or the \EQUATION{eq:Axb}, where
+\begin{equation}
+  \mathbf{A} = \mathbf{(I - DL^{-1}MS)}  \, ,
+ \label{eq:AG}
+\end{equation}
+is the within-group transport operator, and 
+\begin{equation}
+  \mathbf{B} = \mathbf{DL^{-1}MF}  \, ,
+ \label{eq:B}
+\end{equation}
+which represents the fission source.
+
 \section{Diffusion Theory}
 Neutron diffusion theory is sufficiently accurate to provide an approximate calculation of transport equation in a relatively simple mathematical description.
 This theory is simplified from neutron transport theory based on three important assumptions\cite{stacey2018nuclear}.
-First, the scalar flux $\phi$ is assumed to be slow enough to be described by expansion in a Taylor series:
-
-\begin{equation}
- \phi(\mathbf{r}) = \phi(0) + \mathbf{{r}} \cdot \nabla \phi(0) + \frac{1}{2}[r^2 \nabla^2 \phi(0)] + \cdot \cdot \cdot  \, ,
- \label{eq:taylor}
-\end{equation}
-
-where $r$ is only the first two term, flux and current, are retained.
-
-We also assume that absorption is small relative to scattering, which means the absorption cross section $\Sigma_s$ is smaller than the scattering cross section $\Sigma_a$, where the $\Sigma_a$ is often approximate as ``removal" cross section and computed by 
-
+First, absorption is small relative to scattering, which means the absorption cross section $\Sigma_s$ is smaller than the scattering cross section $\Sigma_a$, where the $\Sigma_a$ is often approximate as ``removal" cross section and computed 
 \begin{equation}
 \Sigma_{ag} = \Sigma_{rg} = \Sigma_{tg} -  \sum\limits^{N_g}_{g'=1} \Sigma_{s g g'}\, .
  \label{eq:absorption}
 \end{equation}
-
-At last, all the neutrons are scattered isotropically, which ignores the angle dependency of scattering.
+We also assume that the source, including external source and fission source, is isotropic, and scattering is at most linearly anisotropic.
+At last, the angular flux $\psi$ is assumed to be at most linearly anisotropic, or:
+\begin{equation}
+ \psi(\bm{\hat{\Omega}}) = \frac{1}{4\pi}\phi +\bm{\hat{\Omega}} \, ,
+ \label{eq:taylor}
+\end{equation}
+which are the first two terms in a Legendre polynomial series expanding the flux.
+We can integrate both sides of \EQ{eq:transport}, which leads
+\begin{equation}
+\begin{split}
+  \int_{\bm{\hat{\Omega}}} [( \bm{\hat{\Omega}} & \cdot \nabla \psi_g(\vec{r},\bm{\hat{\Omega}}) +
+    \Sigma_{t g}(\vec{r}) \psi_{g}(\vec{r},\bm{\hat{\Omega}})] d\bm{\hat{\Omega}} = \\
+   & \int_{\bm{\hat{\Omega}}} [\frac{1}{4\pi} \sum\limits^{N_g}_{g'=1} \Sigma_{s g g'}(\vec{r}) \phi_{g'}(\vec{r}) + \frac{\chi_g}{4\pi k} \sum\limits^{N_g}_{g'=1} \nu\Sigma_{fg'}(\vec{r}) \phi_{g'}(\vec{r})] d\bm{\hat{\Omega}} + s(\vec{r},\bm{\hat{\Omega}}) \, ,
+\end{split}
+ \label{eq:intg_transport}
+\end{equation}
+where the neutron current is defined
+\begin{equation}
+ J = \frac{d}{dx} \int_{\bm{\hat{\Omega}}} \bm{\hat{\Omega}} \psi d \bm{\hat{\Omega}} \, ,
+ \label{eq:current}
+\end{equation}
+According out assumption of isotropic, the RHS can be treated as a single source term Q, which leads
+\begin{equation}
+ \nabla \cdot J + \Sigma_t \phi = Q \, .
+ \label{eq:diffusion_ez}
+\end{equation}
+Further defining in Fick's law 
+\begin{equation}
+  J = - D\nabla \phi \, ,
+ \label{eq:Fick}
+\end{equation}
+so that \EQ{eq:diffusion_ez} become 
+\begin{equation}
+ \nabla \cdot - D \nabla \phi + \Sigma_t \phi = Q \, .
+ \label{eq:diffusion_ez2}
+\end{equation}
 A generalized one-speed multigroup diffusion equation is now done with these assumptions by:
 \begin{equation}
   -\nabla \cdot D_g(r) \nabla \phi_g(\vec{r}) + \Sigma_{r g}(\vec{r}) \phi_{g}(\vec{r}) = \sum\limits^{N_g}_{g'=1} \Sigma_{s g g'}(\vec{r}) \phi_{g'}(\vec{r}) +\frac{\chi_g}{k} \sum\limits^{N_g}_{g'=1} \nu\Sigma_{fg'}(\vec{r}) \phi_{g'}(\vec{r}) \, ,
@@ -74,6 +138,7 @@ where the group diffusion coefficient can be approximated by
 \label{eq:diff_coef}
 \end{equation}
 A two-group neutron diffusion \EQUATION{eq:twogroupdiff} is used in one of our numerical tests and discussed in \CHAPTER{chapter:results}.
+
 
 
 

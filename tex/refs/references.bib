@@ -410,3 +410,50 @@ author={Aitken, A. C.}, year={1927}, pages={289--305}}
   publisher={John Wiley \& Sons}
 }
 
+
+
+@article{roberts_multigroup_2014,
+	title = {Multigroup diffusion preconditioners for multiplying fixed-source transport problems},
+	volume = {274},
+	issn = {00219991},
+	url = {https://linkinghub.elsevier.com/retrieve/pii/S0021999114004410},
+	doi = {10.1016/j.jcp.2014.06.034},
+	abstract = {Several preconditioners based on multigroup diffusion are developed for application to multiplying ﬁxed-source transport problems using the discrete ordinates method. By starting from standard, one-group, diffusion synthetic acceleration (DSA), a multigroup diffusion preconditioner is constructed that shares the same ﬁne mesh as the transport problem. As a cheaper but effective alternative, a two-grid, coarse-mesh, multigroup diffusion preconditioner is examined, for which a variety of homogenization schemes are studied to generate the coarse mesh operator. Finally, a transport-corrected diffusion preconditioner based on application of the Newton–Shulz algorithm is developed. The results of several numerical studies indicate the coarse-mesh, diffusion preconditioners work very well. In particular, a coarse-mesh, transport-corrected, diffusion preconditioner reduced the computational time of multigroup GMRES by up to a factor of 17 and outperformed best-case Gauss–Seidel results by over an order of magnitude for all problems studied.},
+	language = {en},
+	urldate = {2019-10-28},
+	journal = {Journal of Computational Physics},
+	author = {Roberts, Jeremy A. and Forget, Benoit},
+	month = oct,
+	year = {2014},
+	pages = {455--472},
+	file = {Roberts 和 Forget - 2014 - Multigroup diffusion preconditioners for multiplyi.pdf:C\:\\Users\\johnn\\Zotero\\storage\\B67NTWPE\\Roberts 和 Forget - 2014 - Multigroup diffusion preconditioners for multiplyi.pdf:application/pdf}
+}
+
+@article{Alcouffe_1977,
+author = {R. E. Alcouffe},
+title = {Diffusion Synthetic Acceleration Methods for the Diamond-Differenced Discrete-Ordinates Equations},
+journal = {Nuclear Science and Engineering},
+volume = {64},
+number = {2},
+pages = {344-355},
+year  = {1977},
+publisher = {Taylor & Francis},
+doi = {10.13182/NSE77-1},
+URL = {https://doi.org/10.13182/NSE77-1},
+eprint = { https://doi.org/10.13182/NSE77-1}
+}
+
+
+@article{slaybaugh_multigrid_2013,
+	title = {Multigrid in energy preconditioner for {Krylov} solvers},
+	volume = {242},
+	issn = {0021-9991},
+	url = {http://www.sciencedirect.com/science/article/pii/S0021999113001228},
+	doi = {https://doi.org/10.1016/j.jcp.2013.02.012},
+	abstract = {We have added a new multigrid in energy (MGE) preconditioner to the Denovo discrete-ordinates radiation transport code. This preconditioner takes advantage of a new multilevel parallel decomposition. A multigroup Krylov subspace iterative solver that is decomposed in energy as well as space-angle forms the backbone of the transport solves in Denovo. The space-angle-energy decomposition facilitates scaling to hundreds of thousands of cores. The multigrid in energy preconditioner scales well in the energy dimension and significantly reduces the number of Krylov iterations required for convergence. This preconditioner is well-suited for use with advanced eigenvalue solvers such as Rayleigh Quotient Iteration and Arnoldi.},
+	journal = {Journal of Computational Physics},
+	author = {Slaybaugh, R. N. and Evans, T. M. and Davidson, G. G. and Wilson, P. P. H.},
+	year = {2013},
+	keywords = {Krylov, Multigrid, Neutron transport, Preconditioning},
+	pages = {405 -- 419}
+}
