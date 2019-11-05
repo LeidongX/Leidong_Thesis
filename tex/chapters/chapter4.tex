@@ -83,11 +83,10 @@ where $\mathbf{b}=\boldsymbol{\Phi}^{\dag} \mathbf{x}_{0}$.
 The general DMD scheme is summarized as
 \begin{enumerate}
 \item Compute SVD decomposition of the forward snapshots matrix, i.e., $ \mathbf{X_0} = \mathbf{U_r} \boldsymbol{\Sigma_r} \mathbf{V_r^{*}}$, where r indicates the rank of matrix.
-\item Compute $\mathbf{\tilde{A}}=\mathbf{U_r^{*}X_1}\mathbf{V_r}\boldsymbol{\Sigma}_{\mathbf{r}}^{-1}$, where $\mathbf{A}$ and $\mathbf{\tilde{A}}$ are similar matrices.
+\item Compute $\mathbf{\tilde{A}}=\mathbf{U_r^{*}AU_r}=\mathbf{U_r^{*}X_1}\mathbf{V_r}\boldsymbol{\Sigma}_{\mathbf{r}}^{-1}$, where $\mathbf{A}$ and $\mathbf{\tilde{A}}$ are similar matrices.
 \item Compute the eigendecomposition $\mathbf{\tilde{A} \tilde{W}}=\boldsymbol{\Lambda}\mathbf{\tilde{W}}$.
-\item Calculate the DMD modes as ${\boldsymbol{\Phi}}={\mathbf{X_2V_r}}\boldsymbol{\Sigma}_\mathbf{r}^{-1}{\mathbf{\tilde{W}}}$.
+\item Calculate the DMD modes as ${\boldsymbol{\Phi}}={\mathbf{X_1V_r}}\boldsymbol{\Sigma}_\mathbf{r}^{-1}{\mathbf{\tilde{W}}}$.
 \item Predict the response by $\vec{x}^{DMD}(t) \approx \sum_{i=1}^{r} \vec{\phi}_i e^{\omega_it} b_i = \boldsymbol{\Phi}{\mathbf{diag}}(e^{\vec{\omega}t})\vec{b}$, where $\mathbf{b}=\boldsymbol{\Phi}^{\dag} \mathbf{x}_{0}$.
 \end{enumerate}
-
 
 
