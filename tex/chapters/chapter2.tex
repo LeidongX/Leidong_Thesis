@@ -1,32 +1,131 @@
-% +--------------------------------------------------------------------+
-% | Sample Chapter 2
-% +--------------------------------------------------------------------+
-
 \cleardoublepage
 
-% +--------------------------------------------------------------------+
-% | Replace "This is Chapter 2" below with the title of your chapter.
-% | LaTeX will automatically number the chapters.                      
-% +--------------------------------------------------------------------+
+\chapter{The MultiGroup Transport and Diffusion Equation}
+\label{chapter:multigroup}
 
-\chapter{MultiGroup Transport and Diffusion Equation}
-\label{makereference2}
+This chapter contains a complete description of the multigroup transport and diffusion equations used to describe steady-state neutron systems, and, thus, provides a more detailed representation of the eigenvalue problem defined by \EQ{eq:Axb}. 
 
-To refer to Chapter~\ref{makereference1}, use the slash ref command
-along with the "makereference" label which was assigned back at the
-beginning of Chapter 1.
+\section{Transport Theory}
 
-\section{Page Number References}
-\label{makereference2.1} It is possible to refer to a specific page
-number, such as page~\pageref{makereference1}.  Add a slash label
-command and a unique name for each page to be referenced later in
-the text.
+Neutron transport can be well modeled by linearization of the Boltzmann transport equation, which was initially used to describes the statistical behaviour of particles in the dynamic thermal systems.
+This equation was developed and applied to determine the neutron distributions within the development of nuclear reactors as early as the 1940s.
+It is impossible to solve the full neutron transport equation analytically for any realistic, three-dimensional problems.
+Instead, approximations are made to simplify the often, intractable dependence of neutron cross sections on energy leading to the multigroup transport equation 
 
-\section{Referring to Sections Within Chapter 1}
-\label{makereference2.2} It is possible to refer to sections within
-a chapter.  Add a slash label command and a unique name with the
-section number for each section to be referenced later in the text.
-Here is an example of a figure in section~\ref{makereference1.1} and
-an example of a table in section~\ref{makereference1.2}.  In
-section~\ref{makereference1.3}, we looked at examples of
-bibliographic citations.
+\begin{equation}
+\begin{split}
+  \bm{\hat{\Omega}} & \cdot \nabla \psi_g(\vec{r},\bm{\hat{\Omega}}) +
+    \Sigma_{t g}(\vec{r}) \psi_{g}(\vec{r},\bm{\hat{\Omega}}) = \\
+   & \frac{1}{4\pi} \sum\limits^{N_g}_{g'=1} \Sigma_{s g g'}(\vec{r}) \phi_{g'}(\vec{r}) +
+    \frac{\chi_g}{4\pi k} \sum\limits^{N_g}_{g'=1} \nu\Sigma_{fg'}(\vec{r}) \phi_{g'}(\vec{r}) 
+    + s(\vec{r},\bm{\hat{\Omega}})\, ,
+\end{split}
+\label{eq:transport}
+\end{equation}
+
+where $\phi_g$ represents the scalar flux and $\psi_g$ is the angular flux in the discretized energy interval (or ``group").  
+Here, $\mathbf{r}$ and $\bm{\hat{\Omega}}$ indicate the position vector and angle of travel.
+In addition, $\Sigma_{t,g}$, $\Sigma_{s,g\prime g}$, and $\Sigma_{f,g}$ represent the group dependent cross sections for total, scattering, and fission reactions, respectively.
+Moreover, $\chi_g$ is the fission spectrum, $\nu$ is the average number of neutrons emitted per fission, and the $k$-eigenvalue (or ``multiplication factor'') represents the balance of neutron gains (by fission) to losses (by absorption and leakage).  
+As mentioned in the last chapter, the value of $k$ indicates weather the reactor is critical, subcritical or supercritical.
+
+There are two basic types of the neutron transport problems: fixed-source problems and eigenvalue (criticality) problems.  
+The fixed-source problems are solved to determine the neutron population distribution given a known, external neutron source and are common for shielding and detector applications'.
+On the other hand, the eigenvalue problem is used to describe the neutron population from a fission chain reaction, and, hence, are important for analysis of criticality in nuclear reactors and related systems.
+The k-eigenvalue problem mentioned in \CHAPTER{chapter:intro} is the most common type of eigenvalue problem.
+Both fixed-source and criticality problems can be solved using deterministic methods or stochastic methods.
+Based on our research attempts, we think the DMD-PM($n$) method and DMD-FPM($n$) should also be able to accelerate the Monte Carlo method. 
+However, we only focus on using DMD to accelerate deterministic approaches to solving eigenvalue problems.
+
+\section{Operator Notation}
+The multigroup neutron transport \EQUATION{eq:transport} can be defined in operator form, which is more convenient during numerical implementation. 
+First, let a discrete-to-moment operator $\mathbf{D}$ satisfy
+\begin{equation}
+ \phi_g = \mathbf{D} \psi_g  \, ,
+ \label{eq:operatorD}
+\end{equation}
+where the spatial dependence (continuous or discretized) is implicit. Also a moment-to-discrete operator $\mathbf{M}$ satisfies
+\begin{equation}
+ \psi_g = \mathbf{M} \phi_g  \, .
+ \label{eq:operatorM}
+\end{equation}
+Then, we can define the operator 
+\begin{equation}
+ \mathbf{L}_g(\cdot) = (\bm{\hat{\Omega}} \cdot \nabla + \Sigma_{tg}(\mathbf{r}))(\cdot) \, ,
+ \label{eq:operatorL}
+\end{equation}
+With this the notation, the multigroup transport equation generalizes to \cite{slaybaugh_multigrid_2013}
+\begin{equation}
+\mathbf{L}_g \psi_g = \mathbf{M} \sum\limits^{N_g}_{g'=1} (\mathbf{S}_{gg'} + \frac{1}{k} \mathbf{X}_g \mathbf{F}_{g'}) \phi_{g'} +q_g   \, ,
+ \label{eq:operator_transport}
+\end{equation}
+where $\mathbf{S} = \Sigma_s(\mathbf{r})$, $\mathbf{F}$ represent the fission operator, $\mathbf{X}$ represent the fission spectrum in operator form $\chi_g$. 
+
+To simplify, we can define the space-angle transport sweep operator $\mathbf{DL^{-1}}$ and multiply it on both side of \EQ{eq:operator_transport}, which leads to
+\begin{equation}
+  \mathbf{D} \psi =  \mathbf{DL}^{-1}\mathbf{MS}\phi + \frac{1}{k} \mathbf{DL^{-1}MF} \phi  \, ,
+ \label{eq:operatortrans}
+\end{equation}
+In practice, we are only interested in the scalar flux, and the angular flux is rarely stored explicitly. Therefore, the transport equation can be represented using only the scalar flux by substitution of \EQ{eq:operatorD} into \EQ{eq:operatortrans}, which yields
+\begin{equation}
+  \mathbf{(I - DL^{-1}MS)} \mathbf{\phi} = \frac{1}{k} \mathbf{DL^{-1}MF} \mathbf{\phi}  \, ,
+ \label{eq:keig}
+\end{equation}
+which is equivalent to \EQUATION{eq:Axb} with
+\begin{equation}
+  \mathbf{T} = \mathbf{(I - DL^{-1}MS)}  \, ,
+ \label{eq:AG}
+\end{equation}
+ and 
+\begin{equation}
+  \mathbf{B} = \mathbf{DL^{-1}MF}  \, .
+ \label{eq:B}
+\end{equation}
+
+\section{Diffusion Theory}
+Neutron diffusion theory is sufficiently accurate for many reactor problems.
+This theory is simplified from neutron transport theory and can be formally derived by assuming the angular flux is at most linearly anisotropic and that the source, including external sources and fission sources, is isotropic.\cite{stacey2018nuclear}.
+
+We also assume that the source, including external source and fission source, is isotropic, and scattering is at most linearly anisotropic.
+However, we illustrate a more heuristic derivation.
+First, integrate both sides of \EQ{eq:transport} to obtain
+\begin{equation}
+\begin{split}
+  \int_{\bm{\hat{\Omega}}} [( \bm{\hat{\Omega}} & \cdot \nabla \psi_g(\vec{r},\bm{\hat{\Omega}}) +
+    \Sigma_{t g}(\vec{r}) \psi_{g}(\vec{r},\bm{\hat{\Omega}})] d\bm{\hat{\Omega}} = \\
+   & \int_{\bm{\hat{\Omega}}} [\frac{1}{4\pi} \sum\limits^{N_g}_{g'=1} \Sigma_{s g g'}(\vec{r}) \phi_{g'}(\vec{r}) + \frac{\chi_g}{4\pi k} \sum\limits^{N_g}_{g'=1} \nu\Sigma_{fg'}(\vec{r}) \phi_{g'}(\vec{r})] d\bm{\hat{\Omega}} + s(\vec{r},\bm{\hat{\Omega}}) \, .
+\end{split}
+ \label{eq:intg_transport}
+\end{equation}
+The neutron current is defined as 
+\begin{equation}
+ \mathbf{J} = \int_{4\pi} \bm{\hat{\Omega}} \psi d \bm{\hat{\Omega}} \, .
+ \label{eq:current}
+\end{equation}
+The right hand side can be treated as a single source term Q, which leads to the continuity equation
+\begin{equation}
+ \nabla \cdot \mathbf{J}_g + \Sigma_{tg} \phi_g = Q \, .
+ \label{eq:diffusion_ez}
+\end{equation}
+Substitution of Fick's law, i.e., 
+\begin{equation}
+  \mathbf{J} = - D\nabla \phi \, ,
+ \label{eq:Fick}
+\end{equation}
+into \EQ{eq:diffusion_ez} leads to 
+\begin{equation}
+ \nabla \cdot - D \nabla \phi + \Sigma_t \phi = Q \, .
+ \label{eq:diffusion_ez2}
+\end{equation}
+or
+\begin{equation}
+  -\nabla \cdot D_g(r) \nabla \phi_g(\vec{r}) + \Sigma_{r g}(\vec{r}) \phi_{g}(\vec{r}) = \sum\limits^{N_g}_{g'=1} \Sigma_{s g g'}(\vec{r}) \phi_{g'}(\vec{r}) +\frac{\chi_g}{k} \sum\limits^{N_g}_{g'=1} \nu\Sigma_{fg'}(\vec{r}) \phi_{g'}(\vec{r}) \, ,
+\label{eq:diffusion}
+\end{equation}
+where the group diffusion coefficient can be defined using
+\begin{equation}
+   D_g(r) = \frac{1}{3\Sigma_t}\, .
+\label{eq:diff_coef}
+\end{equation}
+or more accurate definitions.
+A two-group neutron diffusion \EQUATION{eq:twogroupdiff} is used in one of our numerical tests and discussed in \CHAPTER{chapter:results}.
