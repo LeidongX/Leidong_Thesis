@@ -373,7 +373,7 @@ And the best case is not using the most number of snapshots, though the differen
 \begin{figure}[htb]%t=top, b=bottom, h=here
     \centering
     \includegraphics[height=4.0in]{tex/figures/dmd_ospi_semilog_c5g7.pdf}
-    \caption{The absolute error in the predicted eigenmode for DMD-PM-aitken(n) for the 2D C5G7 problem, where n is the number of transport sweeps performed.}
+    \caption{The absolute error in the predicted eigenmode for DMD-PM-Aitken(n) for the 2D C5G7 problem, where n is the number of transport sweeps performed.}
     \label{fig:DMD-FPM_2d}
 \end{figure}
 
@@ -388,12 +388,11 @@ The number of transport sweeps required to reach a tolerance of $10^{-8}$ are sh
   \begin{tabular}{lllllllll}\toprule
       & FPM  & DMD-FPM(10)& DMD-FPM(20)& DMD-FPM(30)& DMD-FPM(40)& DMD-FPM(50)
 \\ \midrule
-$BWR$  & 3444 & 515 & 307 & 287 & 251 & 363
+$BWR$  & 3444 & 515 & 307 & 267 & 256 & 363
 \\
-$C5G7$  & 1570  & N/A & 395 & 351 & 377 & 359
+$C5G7$  & 1570  & N/A & 395 & 351 & 377 & 395
 \\
 \bottomrule
 \end{tabular}
   \label{tab:widetable}
 \end{table*}
-
