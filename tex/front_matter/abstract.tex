@@ -13,12 +13,11 @@
 % | number of words in your abstract.
 % +--------------------------------------------------------------------+
 
-An algorithm based on dynamic mode decomposition (DMD) is presented for acceleration of the power method (PM) and flattened power method (FPM), which takes advantage of prediction from a restarted DMD process to correct an unconverged solution.
-The power method is a simple iterative scheme for determining the dominant eigenmode, and its variants, such as flattened power method, have been used to solve the of k-eigenvalue problem in reactor analysis.
+An algorithm based on dynamic mode decomposition (DMD) is presented for acceleration of the power method (PM) and flattened power method (FPM) that takes advantage of prediction from a restarted DMD process to correct an unconverged solution.
+The power method is a simple iterative scheme for determining the dominant eigenmode, and its variants, such as flattened power method, have long been used to solve the k-eigenvalue problem in reactor analysis.
 DMD is a data driven technique that extracts dynamics information from time-series data with which a reduced-order surrogate model can be constructed.
-DMD-accelerated PM (DMD-PM) and DMD-accelerated FPM (DMD-FPM) generate ``snapshots'' from a few iterations and extrapolatein ``fictitious time'' to estimate of a more accurate eigenvector from the dominant mode.  
-This process is repeated until the solution is converged within a suitable tolerance.
-
+DMD-accelerated PM (DMD-PM) and DMD-accelerated FPM (DMD-FPM) generate ``snapshots'' from a few iterations and extrapolate space in ``fictitious time'' to produce a more accurate estimate of the dominant mode.  
+This process is repeated until the solution is converged to within a suitable tolerance.
 To illustrate the performance of both two schemes, a 1-D test problem designed to resemble a boiling water reactor (BWR) and the well-studied 2-D C5G7 benchmark were analyzed.
 Compared to the PM without acceleration, these tests have demonstrated that DMD-PM and DMD-FPM method can reduce the number of iterations significantly.
 
