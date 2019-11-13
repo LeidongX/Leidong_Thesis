@@ -1,6 +1,92 @@
-
 \cleardoublepage
 
+\chapter{Dynamic Mode Decomposition}
+\label{chapter:DMD-PM}
 
-\chapter{DMD-PM(n) and related Dynamic Mode Decomposition}
+Before introducing how to use dynamic mode decomposition to accelerate the power and flattened power methods, we will first review the details of DMD.
+As mentioned in Chapter 1, the details of DMD are different based on the application.
+However, most of these varieties share a familiar, straightforward frame. 
+Here, the most widely-used variant (called ``standard DMD'' here) will be shown as an example to represent the algorithm.
+
+To start, first consider the generic, dynamic problem defined by 
+\begin{equation}
+  \frac{d{\mathbf{x}}}{dt}=\mathbf{f}(\mathbf{x},t) \, ,
+  \label{eq:dynamic_problem}
+\end{equation}
+where $\mathbf{x} \in \mathbb{R}^{n}$ is the $n$-dimensional state vector at time $t$. 
+With sufficiently small steps in time, the evolution of  $\mathbf{x}$ can be well approximated by a relationship of the form 
+\begin{equation}
+ \frac{d{\mathbf{x}}(t)}{dt}=\mathcal{A}\mathbf{x} \, ,
+ \label{eq:linearized_model}
+\end{equation}
+where the evolution operator $\mathcal{A}$ may be unknown and can be considered a ``black-box'' system.
+However, one can obtain the system state $\mathbf{x}_n$ at different times, which are then stacked as the past and future snapshot matrices $ \mathbf{X}_0$ and $ \mathbf{X}_1$, i.e., 
+\begin{equation}
+\label{eq:past_data}
+\mathbf{X_0}=\left[ \mathbf{x}_0, \mathbf{x}_1, \ldots, \mathbf{x}_{m-1} \right] \, ,
+\end{equation}
+and
+\begin{equation}
+\label{eq:future_data}
+\mathbf{X_1}=\left[ \mathbf{x}_1, \mathbf{x}_2, \ldots, \mathbf{x}_{m} \right] \, .
+\end{equation}
+
+Suppose $\mathbf{A}$ is the discrete-time approximation of the mapping operator $\mathcal{A}$:
+\begin{equation}
+\label{eq:A}
+\mathbf{A} = e^{\mathcal{A} \Delta t} \, .
+\end{equation}
+Then,
+\begin{equation}
+\label{eq:x0x1}
+\mathbf{x}_{k+1} = \mathbf{A} \mathbf{x}_{k}, \quad \quad k = 0,1,...,\, .
+\end{equation}
+In general, the approximate operator $\mathbf{A}$ not reproduce the $\mathbf{x}_i$ exactly, but a ``best'' approximation can be formed in a least-squares or minimum-norm sense by solving
+\begin{equation}
+\label{eq:least}
+\mathbf{A} =  \underset{\mathbf{A}}{argmin} ||\mathbf{X}_1 - \mathbf{A} \mathbf{X}_0||_F \, .
+\end{equation}
+Thus, the best-fit operator $\mathbf{A}$ is formally given by 
+\begin{equation}
+\label{eq:fullA}
+A = \mathbf{X}_1 \mathbf{X}_0^{\dagger} \, ,
+\end{equation}
+where $\mathbf{X}_0^{\dagger}$ is the Moore-Penrose generalized inverse of $\mathbf{X}_1$.
+It is possible (and typical) to use SVD factorization to find the inverse of $\mathbf{X}_1$ by
+\begin{equation}
+\label{eq:svd}
+\mathbf{X}_0 = \mathbf{U} \bm{\Sigma} \mathbf{V}^{*} \rightarrow \mathbf{X}_0^{\dagger} = \mathbf{V} \bm{\Sigma}^{-1} \mathbf{U}^* \, ,
+\end{equation}
+where $\mathbf{U} \in \mathbb{C}^{m\times n}$, $\mathbf{V} \in \mathbb{C}^{n\times n}$, $\bm{\Sigma} \in \mathbb{C}^{n\times n}$, and $*$ indicate the conjugate transposes. 
+
+However, considering that the number of unknowns in this matrix is often large during numerical simulations, the matrix $\mathbf{A}$ is not computed explicitly.
+A low-rank approximation of the original dynamic system $\mathbf{\tilde{A}}$ is formed, i.e.,
+\begin{equation}
+\label{eq:reduced_dmd_1}
+\mathbf{\tilde{A}} =  \mathbf{U_r^* A U_r} \, .
+\end{equation}
+Then using \EQ{eq:fullA}, the reduced order $\mathbf{\tilde{A}}$ is defined by
+\begin{equation}
+\label{eq:reduced_dmd_2}
+\mathbf{\tilde{A}} =  \mathbf{U_r^*} \mathbf{X_1} \mathbf{V} \bm{\Sigma}^{-1} \, .
+\end{equation}
+Now extract the $r$ largest eigenvalue and corresponding eigenvectors from $\mathbf{\tilde{A}}$ as the DMD modes $\boldsymbol{\Phi}$, which can be treated as the leading $r$ eigenvectors of $\mathbf{A}$.
+Note that the solution of \EQ{eq:linearized_model} is $\mathbf{x}(t) = e^{\mathcal{A}t}\mathbf{x}(0)$, and $\mathbf{A}$ is a discrete-time approximation of $e^{\mathcal{A}\Delta}$, which can be applied to the initial condition using the matrix exponential to compute the solution at a particular time. 
+Moreover, the discrete eigenvalues $\lambda_i$ of $\mathbf{A}$ can be used to compute the continuous eigenvalues $\omega_i= \text{log}(\lambda_i)/\Delta t$.
+Subsequently, the state can be reconstructed at any time $t$ by initial condition by  
+\begin{equation}
+\label{eq:dmd_predict}
+\vec{x}^{DMD}(t) \triangleq \sum_{i=1}^{r} \vec{\phi}_i e^{\omega_it} b_i \, ,
+\end{equation}
+where $\mathbf{b}=\boldsymbol{\Phi}^{\dag} \mathbf{x}_{0}$. 
+
+The general DMD scheme is summarized as
+\begin{enumerate}
+\item Compute SVD decomposition of the forward snapshots matrix, i.e., $ \mathbf{X_0} = \mathbf{U_r} \boldsymbol{\Sigma_r} \mathbf{V_r^{*}}$, where r indicates the rank of matrix.
+\item Compute $\mathbf{\tilde{A}}=\mathbf{U_r^{*}AU_r}=\mathbf{U_r^{*}X_1}\mathbf{V_r}\boldsymbol{\Sigma}_{\mathbf{r}}^{-1}$, where $\mathbf{A}$ and $\mathbf{\tilde{A}}$ are similar matrices.
+\item Compute the eigendecomposition $\mathbf{\tilde{A} \tilde{W}}=\boldsymbol{\Lambda}\mathbf{\tilde{W}}$.
+\item Calculate the DMD modes as ${\boldsymbol{\Phi}}={\mathbf{X_1V_r}}\boldsymbol{\Sigma}_\mathbf{r}^{-1}{\mathbf{\tilde{W}}}$.
+\item Predict the response by $\vec{x}^{DMD}(t) \approx \sum_{i=1}^{r} \vec{\phi}_i e^{\omega_it} b_i = \boldsymbol{\Phi}{\mathbf{diag}}(e^{\vec{\omega}t})\vec{b}$, where $\mathbf{b}=\boldsymbol{\Phi}^{\dag} \mathbf{x}_{0}$.
+\end{enumerate}
+
 

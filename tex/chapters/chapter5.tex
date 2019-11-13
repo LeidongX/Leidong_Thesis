@@ -1,35 +1,93 @@
-% +--------------------------------------------------------------------+
-% | Sample Chapter 2
-% +--------------------------------------------------------------------+
-
 \cleardoublepage
 
-% +--------------------------------------------------------------------+
-% | Replace "This is Chapter 2" below with the title of your chapter.
-% | LaTeX will automatically number the chapters.                      
-% +--------------------------------------------------------------------+
+\chapter{The DMD-PM(n) Method and The DMD-FPM(n) Method}
+\label{chapter:DMD-FPM(n)}
 
-\chapter{DMD-FPM(n) methods}
-\label{makereference2}
+\section{An Accelerated Power Method using DMD}
+\label{sec:dmdpi}
+The ultimate goal of this section is to develop a method that uses DMD to extrapolate eigenvectors and eigenvalues from a reasonably small number size of snapshots in order to produce an estimated eigenvector close to the final, steady-state solution.
+The difficult part of this strategy is that DMD itself needs to extract information from a time dependent, dynamic system due to extrapolating the prediction results in the ``future''.
+However, the power iteration does not recover the realistic physics transient process. 
+
+Note that because $\omega_i= \text{log}(\lambda_i)$ while $\Delta = 1$, $x^{DMD}(t)$ is a ``fictitious'' time step corresponding to a single power iteration.
+First, suppose that $m$ power iterations have been performed to produce the snapshot matrices $\mathbf{X}_0$ and $\mathbf{X}_1$, where the series of snapshots are not ordered by the sequence of time but rather by the number of power iterations.
+We follow the standard DMD approach as discussed in \CHAPTER{chapter:DMD-PM} and generate leading $r$ DMD modes and eigenvalues.
+Next, we can set $t$ to a value much larger than the current number of snapshots employed and predict a new $\mathbf{x}$, which can be normalized and applied as an initial guess for a new application of the power method.
+
+Here, we will explore a modification from the original recovery scheme.
+The eigendecomposition of $\mathbf{A}$ or the reduced-order approximation of $\mathbf{\tilde{A}}$ leads to a set of approximate eigenvectors and eigenvalues $e_j \approx \lambda_j / \lambda_0$.
+As previously discussed in Section~\ref{sec:convergence}, the convergence of the power method requires that $\lambda_0$ is larger than any other eigenvalues, thus 
+\begin{equation}
+\label{eq:ej}
+e_0 = 1 \quad and  \quad e_j < 1,j = 1,2,3,4... \, .
+\end{equation}
+There are many strategies to select the optimal rank of DMD modes $r$ used to fit the original system $\mathbf{A}$. 
+Alternatively, because the power method can only reveal a single, dominant mode if the assumptions described in \CHAPTER{chapter:PM} are satisfied, only one mode recovered by DMD should remain at $t=\infty$, which is the fundamental eigenmode.
+This phenomena can also be proven in numerical perspective, as mentioned at \EQ{eq:ej}, all other modes with eigenvalue smaller than one will vanish eventually when the diagonal matrix $e^{\vec{\omega}t}$ is applied at $t=\infty$.
+Therefore, instead of computing all the DMD modes and predicting the response by \EQ{eq:dmd_predict}, we can simply compute only the dominant DMD mode and predict the steady-state solution 
+\begin{equation}
+\label{eq:f_mode}
+\vec{x}^{DMD}(\infty) \approx \vec{\phi}_0 \mathbf{b}_0 \, ,
+\end{equation}
+where $b_0= \vec{\phi}_0^{T} \mathbf{x}_{0}$.
+
+This simplification eliminates the noise from higher modes, which decreases the cost of reconstructing the future solution.
+In order to accelerate the power method with DMD, the following DMD-PM($n$) algorithm is proposed:
+\begin{enumerate}
+ \item Guess $\mathbf{x}^{(0)}$ and normalize.
+ \item Perform $n$ power iterations to produce $\mathbf{X}_0$ and $\mathbf{X}_1$
+ \item Compute the DMD modes and frequencies using a rank-$r$, truncated  SVD (i.e., $r < n$)
+ \item Apply \EQ{eq:dmd_predict} or \EQ{eq:f_mode} to estimate $\mathbf{x}^{(\infty)}=\mathbf{x}(\infty)$, i.e., estimate the steady-state, dominant mode after an equivalent of $\infty$ power iterations.
+ \item Set $\mathbf{x}^{(0)} = \Re(\mathbf{x}(\infty)) / ||\mathbf{x}(\infty)||$.  
+ \item Repeat Steps 1 through 5 until converged.
+\end{enumerate}
+By restarting the process, numerical errors caused by ill-conditioned snapshot matrices can be minimized.
+Stability analysis using either \EQ{eq:dmd_predict} or \EQ{eq:f_mode} and other numerical challenges are represent in \CHAPTER{chapter:results}.
+Note that the normalization in step 5 is important for reducing numerical round-off errors introduced by growing (or decaying) iterates.
+
+\section{The DMD-FPM(n) Method}
+
+As mentioned in \CHAPTER{chapter:PM}, the flattened power method is a more efficient approach for solving the multigroup neutron transport equation.
+We have discussed a restarted, DMD-accelerated power method scheme, which suggest that there is potential to develop this algorithm to fit the flattened power method.
+This section contains a complete description of an accelerated flattened power method using DMD.
+
+The basic framework of DMD-FPM($n$) is similar to DMD-PM($n$).
+The main difference is that the snapshots are now generated by the flattened power method.
+In short, a set of flattened power iterations are performed, then, DMD uses the snapshots to correct the dominant mode and eigenvalue, which is used to continue power iterations.
+The process can be repeated until the results converge, which leads to a {\it restarted} DMD-FPM (or DMD-FPM($n$)).
+
+\subsection{Aitken Extrapolation}
+Note that not only is the eigenvector required at every restarting point but also the corresponding eigenvalue.
+The updated eigenvalue in the DMD-PM($n$) algorithm is equal to the norm of the DMD predicted eigenmodes. 
+One significant drawback of the flattened power method is that we cannot compute the corresponding eigenvalue by the DMD response, because the eigenvalue has already been applied to the snapshots of neutron flux.
+In other words, there is no easy way to find the eigenvalue $k$ associated with the predicted $\mathbf{x}$, which is projected forward in ``time".
+Therefore, there would be an inherent mismatch between the accelerated dominant eigenvector and its eigenvalue.
+
+Many mathematical approaches were tested to extrapolate an eigenvalue to match the DMD eigenvector. 
+A first attempt used the last computed eigenvalue, i.e., an eigenvalue that may be the equivalent of tens or hundreds of flattened power iterations in the ``past."
+However, the error caused by that choice of eigenvalue tended to reduce the improvement of the DMD extrapolation significantly, which erased all the improvement from DMD sometimes.
+Another attempt was to insert the eigenvalue as the first element in the snapshot, which did not work either.
+The reason might be that we modified the standard DMD algorithm, and only dominant modes were used.
+Some other failures include linear and polynomial extrapolation. 
+In order to predict a more appropriate eigenvalue, Aitken extrapolation was employed \cite{aitken_1927} as
+\begin{equation}
+k_{aitken} = k_{i-2} - \frac{(k_{i-1}-k_{i-2})^2}{(k_i - 2k_{i-1} + k_{i-2})}\, ,
+\end{equation}
+where $k_i$ is the eigenvalue from the ith iteration of the flattened power iteration.
+Although Aitken extrapolation does not eliminate the error from eigenvector/eigenvalue mismatch completely, significant improvement in numerical tests were observed.
+
+The procedure for applying DMD to the flattened power iteration with Aitken extrapolation is summarized as follows.
+\begin{enumerate}
+ \item Assume $k_{(0)}$, $\mathbf{x}_{(0)}$ and normalize.
+ \item Perform $n$ flattened operator applications (\EQ{eq:flatten}) to produce $\mathbf{X}_0$ and $\mathbf{X}_1$.
+ \item Compute the DMD modes and frequencies using a rank-$r$, truncated  SVD (i.e., $r < n$).
+ \item Apply equation $\mathbf{x}_{0}=\frac{b_0 \vec{\phi}^{}_0}{ ||b_0 \vec{\phi}^{}_0||}$ to estimate $\mathbf{x}^{(\infty)}=\mathbf{x}(\infty)$, i.e., estimate the steady-state, dominant mode after an equivalent of $\infty$ power iterations.
+ \item Update $k_{(0)}$ by Aitken extrapolation.
+ \item Repeat Steps 1 through 5 until converged.
+\end{enumerate}
+
+Both DMD-PM($n$) and DMD-FPM($n$) are tested to verify the performance to accelerate solving neutron transport/diffusion problem.
+The testing cases and numerical analysis are presented in the following chapter. 
 
 
-\section{Monte Carlo and the Method of Successive Generations}
 
-To refer to Chapter~\ref{makereference1}, use the slash ref command
-along with the "makereference" label which was assigned back at the
-beginning of Chapter 1.
-
-\section{Page Number References}
-\label{makereference2.1} It is possible to refer to a specific page
-number, such as page~\pageref{makereference1}.  Add a slash label
-command and a unique name for each page to be referenced later in
-the text.
-
-\section{Referring to Sections Within Chapter 1}
-\label{makereference2.2} It is possible to refer to sections within
-a chapter.  Add a slash label command and a unique name with the
-section number for each section to be referenced later in the text.
-Here is an example of a figure in section~\ref{makereference1.1} and
-an example of a table in section~\ref{makereference1.2}.  In
-section~\ref{makereference1.3}, we looked at examples of
-bibliographic citations.
