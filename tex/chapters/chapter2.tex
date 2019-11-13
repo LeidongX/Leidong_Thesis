@@ -63,7 +63,7 @@ where $\mathbf{S} = \Sigma_s(\mathbf{r})$, $\mathbf{F}$ represent the fission op
 
 To simplify, we can define the space-angle transport sweep operator $\mathbf{DL^{-1}}$ and multiply it on both side of \EQ{eq:operator_transport}, which leads to
 \begin{equation}
-  \mathbf{D} \psi =  \mathbf{DL^{-1}MS}\phi + \frac{1}{k} \mathbf{DL^{-1}MF} \phi  \, ,
+  \mathbf{D} \psi =  \mathbf{DL}^{-1}\mathbf{MS}\phi + \frac{1}{k} \mathbf{DL^{-1}MF} \phi  \, ,
  \label{eq:operatortrans}
 \end{equation}
 In practice, we are only interested in the scalar flux, and the angular flux is rarely stored explicitly. Therefore, the transport equation can be represented using only the scalar flux by substitution of \EQ{eq:operatorD} into \EQ{eq:operatortrans}, which yields
@@ -129,10 +129,3 @@ where the group diffusion coefficient can be defined using
 \end{equation}
 or more accurate definitions.
 A two-group neutron diffusion \EQUATION{eq:twogroupdiff} is used in one of our numerical tests and discussed in \CHAPTER{chapter:results}.
-
-
-
-
-
-
-
