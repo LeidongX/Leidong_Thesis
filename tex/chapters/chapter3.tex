@@ -1,32 +1,114 @@
-% +--------------------------------------------------------------------+
-% | Sample Chapter 2
-% +--------------------------------------------------------------------+
-
 \cleardoublepage
 
-% +--------------------------------------------------------------------+
-% | Replace "This is Chapter 2" below with the title of your chapter.
-% | LaTeX will automatically number the chapters.                      
-% +--------------------------------------------------------------------+
+\chapter{The Power and Flattened-Power Methods}
+\label{chapter:PM}
 
-\chapter{Power Method and Flattened Power Method}
-\label{makereference2}
+This chapter contains a general description of the power method and the flattened-power method and desribes their application to the k-eigenvalue neutron transport problem.
+All the eigenvalues and eigenvectors of a system matrix can be calculated by solving the characteristic equation,
+\begin{equation}
+det(\mathbf{A} -\lambda \mathbf{I} ) = 0 \, ,
+\label{eq:characteristic}
+\end{equation}
+where I represents the identity matrix.
+However, the computational cost of solving this equation directly can be extremely high for large systems. 
 
-To refer to Chapter~\ref{makereference1}, use the slash ref command
-along with the "makereference" label which was assigned back at the
-beginning of Chapter 1.
+Iterative algorithms solve the eigenvalue problem by producing sequences that converge to the eigenvalues or the eigenvectors.
+In common applications, the eigenvalue sequences and eigenvector sequences are expressed as sequences of similar matrices. 
+Those sequences will converge to a triangular or diagonal form, which reveal the eigenvalues directly. 
 
-\section{Page Number References}
-\label{makereference2.1} It is possible to refer to a specific page
-number, such as page~\pageref{makereference1}.  Add a slash label
-command and a unique name for each page to be referenced later in
-the text.
+Such iterative algorithms have been used for a variety of applications.
+Throughout scientific computing, some algorithms might not be applicable to general systems, but might be applied to hermitian or symmetric systems.
+On the other hand, the cost per iteration and the convergence rates can also depend greatly on the problem, which could be more than an order of magnitude sometimes. 
 
-\section{Referring to Sections Within Chapter 1}
-\label{makereference2.2} It is possible to refer to sections within
-a chapter.  Add a slash label command and a unique name with the
-section number for each section to be referenced later in the text.
-Here is an example of a figure in section~\ref{makereference1.1} and
-an example of a table in section~\ref{makereference1.2}.  In
-section~\ref{makereference1.3}, we looked at examples of
-bibliographic citations.
+Some of those iterative algorithms can produce all the eigenpairs or eigenvalues. 
+However, as mentioned in last chapter, only the largest eigenvalue and corresponding eigenvector are relevant in the k-eigenvalue transport problem.
+Although there are many iterative methods used for this type of eigenvalue problem, such as the QR algorithm, the Bisection method and the Jacobi eigenvalue algorithm, the traditional power iteration is the simplest method to determine the fundamental mode and corresponding eigenvalue.
+This method goes by many names such as power iteration and Von Mises iteration\cite{mises1929praktische}.
+Moreover, some of the more advanced eigenvalue algorithms are in some sense variations of the power iteration; for example, Arnoldi iteration \cite{arnoldi1951principle}, like the power method, requires the repeated application of $\mathbf{A}$, but takes advantage of the whole Krylov subspace. 
+
+\section{The Power Method}
+The power method is a simple algorithm for identifying the largest real eigenvalue of a matrix $\mathbf{A}$ and its corresponding eigenvector. The basic algorithm is summarized by the following steps:
+\begin{enumerate}
+  \item Let $\lambda^{(0)}_0 =1 $ and $\mathbf{x}^{(0)}_0$ be a random, real vector normalized such the $||\mathbf{x}^{(0)}_0|| = 1$.
+  \item Set $\mathbf{x}^{(i)}_0=\mathbf{A}\mathbf{x}^{(i-1)}_0$, where $(i)$ represents the $i$th iteration.
+  \item Update $\lambda_{i} = k||\mathbf{x}^{(i)}_0||$ and set  $\mathbf{x}_{(i)} =\frac{\mathbf{x}^{}_{i}}{||\mathbf{x}^{}_{i}||}$.
+  \item Repeat steps 2 and 3 for $i = 1, 2, \ldots$ until $||\mathbf{x}^{}_{(i)} - \mathbf{x}^{}_{(i-1)}|| < \tau$ for some tolerance $\tau$.
+\end{enumerate}
+Here the subscripts (i) indicates the iteration.
+
+\section{Convergence}
+\label{sec:convergence}
+The convergence rate is an important evaluation criteria on for comparing iterative method. 
+In practice, the rate of convergence of the power method depends on the relative magnitudes of the leading eigenvalues. 
+In other words, the usefulness of the power method depends upon the ratio $|\lambda_1|/|\lambda_0|$.
+
+The initial guess $\mathbf{x}^{(0)}_0$ can be expressed as a sum of the weighted eigenvectors of $\mathbf{A}$, i.e.,
+\begin{equation}
+\begin{split}
+  \mathbf{x}^{(0)} 
+     &=  c_0' \mathbf{x}_0 + c_1' \mathbf{x}_1 + c_2'  \mathbf{x}_2 \ldots \,  \\
+     &=  c_0' \left (\mathbf{x}_0 + \frac{c_1'}{c_0'} \mathbf{x}_1 + \frac{c_2'}{c_0'} \mathbf{x}_2 \ldots  \right ) \\
+     &=  c_0' \left (\mathbf{x}_0 + c_1 \mathbf{x}_1 + c_2 \mathbf{x}_2 \ldots  \right )\, .         
+\end{split}
+\end{equation}
+Because normalization of an eigenvector is arbitrary, let $c_0' = 1$.
+Then, application of the operator $\mathbf{A}$ to this initial guess leads to 
+\begin{equation}
+\begin{split}
+  \mathbf{A} \mathbf{x}^{(0)} 
+   &=  \mathbf{A} \mathbf{x}_0  +  c_1 \mathbf{A} \mathbf{x}_1 + c_2 \mathbf{A} \mathbf{x}_2 + \ldots \\
+   &= \lambda_0 \mathbf{x}_0 + c_1 \lambda_1 \mathbf{x}_1 + c_2 \lambda_2 \mathbf{x}_2 + \ldots \\ 
+   &= \lambda_0 \left ( \mathbf{x}_0 + c_1 \frac{\lambda_1}{\lambda_0} \mathbf{x}_1 + c_2 \frac{\lambda_2}{\lambda_0} \mathbf{x}_2 + \ldots \right ) \, .
+\end{split}
+\end{equation}
+Consequently, the repeated application of $\mathbf{A}$ yields
+\begin{equation}
+\begin{split}
+  \mathbf{A}^n \mathbf{x}^{(0)} 
+   &= \lambda^n_0 \left ( \mathbf{x}_0 + c_1 \left( \frac{\lambda_1}{\lambda_0} \right)^n \mathbf{x}_1 + c_2 \left ( \frac{\lambda_2}{\lambda_0} \right )^n \mathbf{x}_2 + \ldots \right ) \, ,
+\end{split}
+\end{equation}
+which shows that if $|\lambda_0| > |\lambda_1|$, then $\mathbf{A}^n \mathbf{x}^{(0)}_0$ will tend toward the direction $\mathbf{x}_0$ at a rate governed by the ``dominance ratio'' $|\lambda_1|/|\lambda_0|$. 
+Because $\lambda^n_0$ may grow without bound (or vanish), normalization is required during the iteration, as is included in the algorithm above.
+
+As long as the fundamental mode and its corresponding eigenvalue are real and the initial guess $\mathbf{x}^{(0)}$ is not perpendicular to the fundamental mode $\mathbf{x}_0$ (i.e., $\mathbf{x}^T_0\mathbf{x}^{(0)} \neq 0$), the power method will converge to the dominant eigenpair $(\mathbf{x}_0, \lambda_0)$.
+
+\section{Application to the K-eigenvalue}
+
+Consider again \EQ{eq:Axb}, the k-eigenvalue problem.
+Such a problem is a generalized eigenvalue problem.
+In order to apply the power method to this problem, one must set $\mathbf{A=T^{-1}F}$ and recognize $k_0= \lambda_0$, the dominant eigenvalue shown in \CHAPTER{chapter:multigroup}, the operator $\mathbf{T}$ is the discrete-ordinates equation, while $\mathbf{T} = (\mathbf{I  - DL^{-1}MS})$ when diffusion is applied.
+Because the matrix $\mathbf{T}$ is readily constructed in the diffusion approximation, the application of $\mathbf{T}^{-1}$ implies a straightforward converged solution of a linear system. 
+However, for transport, the process is much more complicated, and the operator $\mathbf{T}$ is rarely constructed in practice.
+Each application of $\mathbf{T}^{-1}$ requires a complete solution of the inhomogeneous multigroup equation $\mathbf{Tx}^{i} = \mathbf{Fx}^{i-1}$.
+Because $\mathbf{T}$ is not formed explicitly, iterative techniques based on the application of $\mathbf{T}$ are needed. 
+The number of transport sweeps (over space and angle) is a good measure for the total computational cost of a method because a sweep is the single most computationally expensive operation.
+To to distinguish it from power iterations, the iterations required to solve the inhomogeneous equation needed to invert $\mathbf{T}$ are called inner iterations.
+As a result, the power method leads to two, nested iteration levels: the outer iteration(eigeniteration) and inner(source iteration).
+
+\section{Flattened Power iteration}
+
+The power method can be modified in many ways to improve the overall efficiency, and one possible way is achieved by varying the level of precision of the inner iterations.
+For example, by setting the inner tolerance to be proportional to the current outer residual or some other measure of the current level of error in the outer iteration, one reduce time spent solving the multigroup equation with unconverged fission sources.
+Another would be to fix the number of inner iterations for each outer iteration.
+Note that the scattering and fission sources are not completely converged in every outer iteration while either of the inner iteration strategies is used.
+\citep{gill_newtons_2011}
+
+The outer iteration in the full power method often requires fewer and fewer inner iterations to converge when it gets close to the final solution, and, therefore, eventually just one inner iteration may be required the solution.  
+This observation has lead to an important alternative often used in practice, called {\it flattened} power iteration (FPI), in which a single (space-angle-energy) transport sweep is performed for every power iteration.
+The flattened power method converges the scattering and fission sources simultaneously.
+
+The scattering matrix is moved to the right side of Equation \ref{eq:keig}, and, thus, step 2 from the full power iteration becomes 
+\begin{equation}
+ \mathbf{x}^{(i)} =  \mathbf{DL^{-1}M} (\mathbf{S} + \frac{1}{k} \mathbf{F})\mathbf{x}^{(i-1)}   \, .
+ \label{eq:flatten}
+\end{equation}
+
+In this formulation, the inner iteration level is eliminated, by using a single sweep over all the phase-space variable when validating on the neutron flux from the previous iteration,  
+Compared to the traditional power iteration, the computational cost of a single iteration in FPI in this form is obviously cheaper.
+Although this scheme may require more outer-most iterations (i.e., updates of $k$), the total cost of solving the k-eigenvalue problem is often reduced significantly.\citep{gill_newtons_2011}
+Another great feature of this approach is easy to incorporate in existing power method implementation by limiting the number of inner iterations to one. 
+
+
+
+
