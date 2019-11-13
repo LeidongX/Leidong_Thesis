@@ -1,137 +1,203 @@
-% +--------------------------------------------------------------------+
-% | Sample Chapter 1
-% |
-% | This file provides examples of how to
-% | - insert a figure with a caption
-% | - construct a table with a caption
-% | - create subsections within the chapter
-% | - insert a reference to a Figure or Table
-% | - make a citation
-% +--------------------------------------------------------------------+
-
 \cleardoublepage
 
-% +--------------------------------------------------------------------+
-% | Replace "Chapter Title" below with the title of your chapter.
-% | LaTeX will automatically number the chapters.
-% +--------------------------------------------------------------------+
-
 \chapter{Introduction}
-\label{makereference1}
+\label{chapter:intro}
+Nuclear power was initially studied in the 1940s and has become an important source of energy worldwide.
+The nuclear reactor core containing the fuel is where the chain reactions take place.
+The amount of heat generation is proportional to the neutron population in the core, which itself is proportional to the number of fission events. 
+Without somehow modeling the neutron population, it is impossible to understand the control of the neutronic systems and to generate suitable designs. 
+In nuclear reactor physics, computational simulations play a critical role in the optimization of these designs and the prediction of the dynamics.
+However, explicit modeling a full reactor core remains too computationally expensive even with the most advanced, large-scale, super computers. 
+Therefore, accurate and efficient approaches are needed to solve the various problems of reactor physics, including determining criticality and the neutron distribution.
 
-In this chapter there examples of various features you may want to
-incorporate into your document. Here's an example of a figure
-inserted into the text:
+\section{Motivation}
 
-\begin{figure}[htb]%t=top, b=bottom, h=here
+The generalized eigenvalue form of the neutron transport equation and its use for criticality analysis is central to computational reactor physics.
+The dominant eigenvector and corresponding eigenvalue of this equation can represent a system in steady-state conditions.
+Though the criticality problem is a simplification of the time-dependent processes, it is often sufficient to reduce the transport equation into steady-state form. 
+The steady-state transport equation can be written in the generic form
 
-    \includegraphics[height=2.5in]{tex/figures/graph.png}
+\begin{equation}
+ \mathbf{Ax} = \frac{1}{k} \mathbf{Bx}  \, ,
+ \label{eq:Axb}
+\end{equation}
 
-    \caption[Optional: Short caption to appear in List of
-    Figures]{Full caption to appear below the Figure}
+where $\mathbf{x}$ describes the scalar flux, $\mathbf{A}$ represents neutron losses,  $\mathbf{B}$ represents the fission neutron gains from neutron, and the eigenvalue $k$ represents the ratio of gains to losses.
+The so-called criticality of a reactor is determined by examining the dominant eigenvalue $k$, where $k=1$ is ``critical'' (the neutron population holds steady), $k<1$ is ``subcritical'' (the neutron density decreases over time), and $k > 1$ is ``supercritical'' (the neutron density increases over time).
+The eigenvector corresponding to the largest eigenvalue $k$ is often called the fundamental (or dominant) eigenmode and corresponds to the scalar flux distribution when the system reaches steady state.
+A more generalized multigroup neutron transport equation will be presented along with its diffusion approximation in \CHAPTER{chapter:multigroup}.
 
-    \label{figure1}
-\end{figure}
+The numerical solution of the transport equation requires the use of iterative techniques.
+A classical method for solving \EQ{eq:Axb} is the power method, which requires the repeated application of $\mathbf{A^{-1}B}$.
+The operator $\mathbf{A}^{-1}$ represents the solution of inhomogeneous transport (or diffusion) equation which also often requires the use of iterative techniques, e.g., Richardson (or ``source") iteration and Gauss-Seidel iteration.
+Iterative techniques have traditionally dominated the transport community because the explicit construction of $\mathbf{A}$ is prohibitively expensive with respect to both memory and processing costs.
+In other words, various iterative methods provide a way to solve the eigenvalue equation without forming a matrix inverse.
+The actual application of $\mathbf{A}$ depends on the specific numerical method used (e.g., discrete ordinates or finite-volume diffusion), some details of which are described later. 
+However, the cost of any methods is proportional to the number of applications of $\mathbf{A}$, and various techniques have been explored that greatly outperform the traditional methods.
+Of these, several have emerged from the broader numerical linear algebra community and include the family of Krylov subspace methods, e.g., Generalized minimal residual method (GMRES)\cite{saad1986gmres} for linear systems and generalized Davidson (GD)\cite{hamilton_numerical_2007} for the generalized eigenvalue problem.
+Other methods are ``physics driven" and include diffusion synthetic acceleration (DSA) for inhomogenous problems\cite{Alcouffe_1977,roberts_multigroup_2014}, and nonlinear diffusion acceleration methods like CMFD\cite{smith_1983}.
 
-% +--------------------------------------------------------------------+
-% |To create cross-references to figures, tables and segments
-% |of text, LaTeX provides the following commands:
-% |   \label{marker}
-% |   \ref{marker}
-% |   \pageref{marker}
-% | where {marker} is a unique identifier.
-% |
-% | In the line above, we use \label{figure1} to mark a location
-% | we wish to refer to later.  LATEX replaces \ref by the number of
-% | the chapter, section, subsection, figure, or table after which the
-% | corresponding \label command was issued. \pageref prints the page
-% | number of the page where the \label command occurred.
-% |
-% +--------------------------------------------------------------------+
+These advanced methods work well but require specialized treatments of the transport (or diffusion) equations.
+As an alternative, data driven techniques may be able to take as input a series of unconverged iterates from a classical iterative scheme (like the power method) and produce as output a greatly improved estimate for the converged solution.
+Dynamic mode decomposition (DMD) is one such approaches that has emerged from the computational fluid dynamics community.
+This data-driven method can produce reduced-dimensional ``surrogate" models by gathering modes directly from a sequence of states from some time dependent process.
 
-See the file chapter1.tex for examples of the commands used to
-insert a figure or table, add a caption, etc.  Here is an example of
-a table:
+\section{Summary of previous work}
+Before continuing, it is useful to review in brief past applications that demonstrated the utility of DMD.
+This technique was initially proposed by \citet{schmid_dynamic_2010}\cite{schmid_applications_2011} to extract dynamics information from time-series data of fluids observations.
+He applied DMD to both numerical Navier-Stokes code results and experimentally measured data, and illustrated how DMD can identify coherent structure in fluid-dynamical system.
+As opposed to proper orthogonal decomposition (POD)\cite{lumley2007stochastic}, DMD is a purely data-based procedure and does not project a higher-order system and equations on a reduced space . 
+DMD was shown to be relatived to Koopman analysis\cite{lasota2013chaos,mezic2005spectral} of nonlinear dynamical systems and can be used to extract dynamic modes to describe the global spatiotemporal behavior.
+In Schmid's original work, the time-dependent dynamic systems are described in the form of snapshots of an observable $\mathbf{x}_i$ in time, or
+\begin{equation}
+ \mathbf{X}^{N}_1 = \{\mathbf{x}_0, \mathbf{x}_1, \ldots, \mathbf{x}_{N} \} \, .
+ \label{eq:snap_matrix}
+\end{equation}
 
-\begin{table}[ht]
+We assume that there exists a linear mapping operator $\mathbf{A}$ that, when applied to the initial snapshot $\mathbf{x}_0$ repeatedly, produces the snapshot sequence \EQ{eq:snap_matrix} in the form of the Krylov subspace 
 
-% +--------------------------------------------------------------------+
-% | We include the command \begin{center} to center the table
-% | horizontally on the page.  Note use of the command \end{center}
-% | to turn off centering after the table is defined.
-% +--------------------------------------------------------------------+
-    \begin{center}
+\begin{equation}
+ \mathbf{X}^{N}_1 = \{\mathbf{x}_0,A\mathbf{x}_1,A^2\mathbf{x}_1,…,A^{N-1}\mathbf{x}_1 \} \, .
+ \label{eq:Krylov_seq}
+\end{equation}
 
-% +--------------------------------------------------------------------+
-% | The table is created with this command
-% |
-% | \begin{tabular}[pos]{table spec}
-% |
-% | The "pos" argument specifies the vertical position of the table
-% | relative to the baseline of the surrounding text.  Use t, b, or c
-% | to specify alignment at the top, bottom, or center.
-% |
-% | The "table spec" command defines the format of the table
-% |   l for a column of left-aligned text
-% |   r for a column of right-aligned text
-% |   c for centered text
-% |   p{width} for a column containing justified text with line breaks
-% |   | for a vertical line
-% |
-% |  In this example, the caption is made to appear above the table
-% |  by positioning the \caption command before the \begin{tabular
-% |  command. To position the caption below the table, insert the
-% |  \caption command after the \end{tabular} command.
-% +--------------------------------------------------------------------+
-    \caption{Caption to appear above the table}
-    \begin{tabular}[c]{|c|c|c|}
-        \hline
-        Column 1 Heading & Column 2 Heading & Column 3 Heading \\
-        \hline
-        Col 1 Row 1 & Col 2 Row 1 & Col 3 Row 1\\
-        Col 1 Row 2 & Col 2 Row 2 & Col 3 Row 2\\
-        Col 1 Row 3 & Col 2 Row 3 & Col 3 Row 3\\
-        \hline
-    \end{tabular}
+Schmid applied the singular value decomposition (SVD) to obtain the robust approximation
 
-    \label{table1}
-   \end{center}
-\end{table}
+\begin{equation}
+\mathbf{\tilde{A}} = \mathbf{U^H X_1^{N-1}V\Sigma^{-1}} \, ,
+ \label{eq:stanard_DMD}
+\end{equation}
+where $\mathbf{X}_1^{N-1} = \mathbf{U}\Sigma \mathbf{V}^H$. 
+The eigenvector $\mathbf{x}_i$ of $\mathbf{\tilde{A}}$ and left eigenvector matrix $\mathbf{U}$ are used to define the DMD modes, 
+\begin{equation}
+\mathbf{\mathbf{\Psi}}_i = \mathbf{U} \mathbf{x}_i \, ,
+ \label{eq:dyanmic_modes}
+\end{equation}
+and, therefore, recover the reduced the mapping operator $\mathbf{A}$.
+This scheme is often referred to as the ``standard'' DMD approach in later research\cite{tu_dynamic_2014}, and a more detailed discussion of the standard DMD scheme is presented in \CHAPTER{chapter:DMD-PM}.   
 
+Many practical theories have been developed based on this original work of Schmid.
+Following \citet{tu_dynamic_2014}, let 
+\begin{equation}
+ \mathbf{X}_0 \triangleq \{\mathbf{x}_0, \mathbf{x}_1, \ldots, \mathbf{x}_{N-1} \}\, ,
+ \label{eq:x1}
+\end{equation}
+\begin{equation}
+ \mathbf{X}_1 \triangleq \{\mathbf{x}_1, \mathbf{x}_1, \ldots, \mathbf{x}_{N} \} \, .
+ \label{eq:x2}
+\end{equation}
+To proposed an ``exact'' DMD with which the operator $\mathbf{A}$ can be acquired alternatively as   
+\begin{equation}
+ \mathbf{A}\triangleq \mathbf{X}_1  \mathbf{X}_0^{\dagger}\, ,
+ \label{eq:exact_dmd}
+\end{equation}
+where $\mathbf{X}_0^{\dagger}$ is the pseudoinverse of $\mathbf{X}_0$. 
 
+The DMD modes and eigenvalues can be found by a direct eigendecomposition; however, it may be too expensive in practice to construct the eigendecomposition of $\mathbf{A}$.
+Again, by use of SVD, one can compute DMD modes  or
+\begin{equation}
+ \mathbf{\mathbf{x}}_i = \frac{1}{\lambda} \mathbf{X}_1 \mathbf{V} \mathbf{\Sigma}^{-1} \mathbf{\Phi} \, .
+ \label{eq:exact_dmd_free}
+\end{equation}
+ 
+\citet{kutz_dynamic_2016} summarized many variations on the DMD algorithm and illustrated the applicability of each to several complex systems.
+Fundamental theoretical foundations of DMD and the Koopman operator were also developed in their monograph.
 
-% +--------------------------------------------------------------------+
-% | Replace \section headings below with the title of your
-% | subsections.  LaTeX will automatically number the subsections 1.1,
-% | 1.2, 1.3, etc.
-% +--------------------------------------------------------------------+
+Recent efforts applied DMD to nuclear reactor simulations. 
+For example, \citet{abdo_data-driven_2018} used DMD as a direct, explicit-in-time surrogate for black-box models, e.g., to model the evolution of nuclear reactor isotopics over long time periods as well as the nonlinear response of reactor power during short transients.\cite{abdo_modeling_2019}\cite{elzohery2018comparison}
 
-\section{Making References to Figures or Tables}
-\label{makereference1.1}
+\subsection{DMD Accelerated Iterative Methods}
+As mentioned briefly, a way to achieve acceleration of iterative methods is to correct the solution estimated at each iteration to reduce the total number of iterations.
+One way to do this is to use the results from a lower-dimensional, projected system to predict the solution to the higher-dimensional system that we wish to solve.
 
-It is possible to create cross-references and hyperlinks to items or
-sections within your paper.  For example, here is a reference to
-Fig.~\ref{figure1} mentioned at the beginning of this chapter and a
-reference to the Table~\ref{table1}.
+\citet{andersson_novel} first used DMD to accelerate the convergence of a time-dependent finite-volume silver for compressible flow to steady-state conditions.
+Their time-stepping method can be written in the form 
+\begin{equation}
+ \mathbf{x}_{n+1} = \mathbf{Ax}_n + \mathbf{b} \, ,
+ \label{eq:andersson_1}
+\end{equation}
+where n donated time. Here, difference of consecutive samples are used to define the snapshots matrix 
+\begin{equation}
+ \mathbf{V}_- = \{\mathbf{x}_2-\mathbf{x}_1,..., \mathbf{x}_{n+1}-\mathbf{x}_{n} \} \, ,
+ \label{eq:andersson_snapshot-}
+\end{equation}
+\begin{equation}
+ \mathbf{V}_+ = \{\mathbf{x}_3-\mathbf{x}_2,..., \mathbf{x}_{n+2}-\mathbf{x}_{n+1} \} \, ,
+ \label{eq:andersson_snapshot+}
+\end{equation}
+They defined the QR decomposition 
+\begin{equation}
+ \mathbf{V}_- = \mathbf{QR} \, ,
+ \label{eq:andersson_qr}
+\end{equation}
+with which
+\begin{equation}
+ \mathbf{V}_+ = \mathbf{AV}_{-} = \mathbf{AQR} \, ,
+ \label{eq:andersson_av}
+\end{equation}
+and, hence
+\begin{equation}
+ \mathbf{Q}^{T} \mathbf{V}_{+} = \mathbf{Q}^{T} \mathbf{AQR} = \mathbf{\tilde{A}R} \, ,
+ \label{eq:andersson_qv1}
+\end{equation}
+or
+\begin{equation}
+ \mathbf{\tilde{A}} = \mathbf{Q}^{T}  \mathbf{V}_+ \mathbf{R}^{-1} \, .
+ \label{eq:andersson_qv2}
+\end{equation}
+Because steady state implies $\mathbf{x}_{n+1} = \mathbf{x}_{n}$, one actually seeks $\mathbf{x}$ such that $\mathbf{Ax=B}$.
+Given an unconverged iterate $\mathbf{x}_{n+1}$ define $\mathbf{V}_n = \mathbf{x}_{n+1} - \mathbf{x}_{n}$ and solve 
+\begin{equation}
+ \mathbf{(I-A)V}_n + \mathbf{(I-A)x}_{n+1} = \mathbf{b} \, ,
+ \label{eq:andersson_ia1}
+\end{equation}
+or
+\begin{equation}
+ \mathbf{(I-A)V}_n = (\mathbf{x}_{n+2} - \mathbf{x}_{n+1}) \, .
+ \label{eq:andersson_ia2}
+\end{equation}
+Now let $\mathbf{x}_n = \mathbf{Q} \mathbf{y}_n$. Then 
+\begin{equation}
+\begin{split}
+   \mathbf{Q}^T \mathbf{(I - A)} \mathbf{Q} \mathbf{y}_n & = \mathbf{(I - \tilde{A})} \mathbf{y}_n\\
+   & = \mathbf{Q}^T (\mathbf{x}_{n+2} - \mathbf{x}_{n+1}) \, .
+\end{split}
+\label{eq:andersson_xy}
+\end{equation}
+By noting $\mathbf{x}^{improved}_{n+2} \approx \mathbf{x}_{n+1} + \mathbf{Q} \mathbf{(I-\tilde{A})}^{-1} \mathbf{Q}^T (\mathbf{x}_{n+2} - \mathbf{x}_{n+1})$.
+In other words, the solution is updated by solving a lower-dimensional problem.
+By performing this process several times to correct the solution, both the number of iterations and the average fluctuation were reduced almost 30\% for compressible flow problems. 
 
-\section{Making a Reference to a Chapter Subsection}
-\label{makereference1.2}
+Then, \citet{mcclarren_acceleration_2018} presented an equivalent acceleration technique for improving the convergence of Richardson(source) iteration for source-driven neutronics problems.
+Richardson iteration can be expressed as 
+\begin{equation}
+ \mathbf{x}^{(n+1)} = (\mathbf{I}-\mathbf{A})\mathbf{x}^{(n)} + \mathbf{b} \, .
+ \label{eq:richardson}
+\end{equation}
+Their algorithm also employed a set of successive differences $\mathbf{x}^{(n)}-\mathbf{x}^{(n-1)}$ to produce data matrices $\mathbf{V}_+$ and $\mathbf{V}_-$, while the standard DMD with SVD decomposition was applied to form the approximation $\mathbf{\tilde{A}}$.
+The algorithm is as follows
+\begin{enumerate}
+ \item Perform R source iterations: $\mathbf{x}^{l} = \mathbf{A} \mathbf{x}^{l-1} +b$
+ \item Compute K source iterations to form $\mathbf{V}_+$ and $\mathbf{V}_-$. The last column of $Y_-$ we call $\mathbf{x}^{K-1}$ 
+ \item Compute $\mathbf{x} = \mathbf{x}^{K-1} + \mathbf{U} \Delta y$.
+\end{enumerate} 
+where $U$ is the left unitary matrix from SVD decomposition of $\mathbf{V}_-$ and $\Delta y$ is computed by 
+\begin{equation}
+ (\mathbf{I} - \mathbf{\tilde{A}}) \Delta y = \mathbf{U}^T(\mathbf{x}^{K} - \mathbf{x}^{K-1})\, .
+ \label{eq:McClarren}
+\end{equation}
+McClarren's results of a homogeneous slab problem and a multi-dimensional pipe problem suggest that a sequence of Richardson iterations followed by corrections reduces the number of iterations required by about one order of magnitude.
 
-In this section, we refer back to text mentioned in
-Section~\ref{makereference1.1} on page~\pageref{makereference1.1}.
+These past applications show that DMD has the potential to accelerated a wide variety of simple iterative methods, including the power method.
 
-\section{Making a Citation}
-\label{makereference1.3}
+\section{Objective}
 
-%Here's an example of a citation to a single
-%work.~\citep{CT:Weiner:1999} It's also possible to make multiple
-%citations.~\citep{CT:Phillips:1985, ARP:Loy:1974}
-%
-%This template uses BibTeX to manage and format citations.  BibTeX is
-%not the only way to create a bibliography within LaTeX, but it's
-%generally considered to be the best option for long documents like a
-%thesis or dissertation.~\citep{CT:Gould:1988}  There are a few more
-%sample citations in this paragraph so you can see examples of how
-%in-text references are made and how the bibliography is
-%formatted.~\citep{ARP:Melinger:1991} See the file "BibTeX Guide.pdf"
-%for information on how to use BibTeX.
+The primary focus of this thesis is to estimate accurate fundamental eigenmodes using DMD to accelerate the power method and other, related methods.
+\citet{roberts2019acceleration} proposed a restarted, DMD-accelerated power method scheme (DMD-PM($n$)), and, \citet{xu_acceleration} then extended this theory to the flattened power method (or fixed-point iteration (FPI)).
+To achieve these goals, we will expand this theory previous achievements in certain ways in the following chapters.
+\CHAPTER{chapter:multigroup} will introduce the multigroup neutron transport and diffusion equations, and \CHAPTER{chapter:PM} discusses the mathematical background of the power and flatten power methods.
+Following that, DMD-PM($n$) is presented in \CHAPTER{chapter:DMD-PM}, while a DMD-based, accelerated, flattened power
+method DMD-FPM(n) is presented in \CHAPTER{chapter:DMD-FPM(n)}.
+Then, the results using either of acceleration schemes on compute analyzing a 1-D boiling water reactor(BWR) model and the famous 2-D C5G7 test problem, are discussed in \CHAPTER{chapter:results}.
+\CHAPTER{chapter:conclusion} will include conclusions and future work including the possibility of combining this theory with other methods. 
+

@@ -6,57 +6,454 @@
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
 % The following is a conference paper
-@STRING( JFM = "Journal of Fluid Mechanics.")
 
+@article{andersson_novel,
+	title = {A {Novel} {Solver} {Acceleration} {Technique} {Based} on {Dynamic} {Mode} {Decomposition}},
+	abstract = {The speed-up of ﬁnite-volume solvers for compressible ﬂows is a diﬃcult task. There are several ways to achieve solver speed-up, more or less diﬃcult to implement and more or less suitable for implementation in a parallel, unstructured type of solver. Examples of such techniques are the multi-grid method and Implicit Residual Smoothening (IRSM). In this article, a solver acceleration technique based on Dynamic Mode Decomposition (DMD) is proposed. The technique does not depend on data format or mesh structure and is thus as straightforward to implement in an unstructured parallel code as in a structured sequential one. The main idea behind the proposed method is that it is possible to use the information available in ﬂow ﬁeld modes extracted using the DMD technique to ﬁnd a correction that will bring the solution closer to a steady-state condition, i.e. the method is only applicable to steady-state problems. In the presented work the proposed DMD-based acceleration technique has been implemented in a massively parallel block-structured ﬁnite-volume Navier-Stokes solver for compressible ﬂows. The method has been tested on a turbine cascade case with promising results. To the knowledge of the authors, the proposed method is not previously published in the open literature.},
+	language = {en},
+	journal = {Conference: 6th European Conference on Computational Fluid Dynamics (ECFD VI)},
+	author = {Andersson, N and Eriksson, L},
+	month = dec,
+	year = {2013},
+	pages = {20},
+}
+
+%%
+
+@article{mcclarren_acceleration_2018,
+	title = {Acceleration of {Source} {Iteration} using the {Dynamic} {Mode} {Decomposition}},
+	url = {http://arxiv.org/abs/1812.05241},
+	abstract = {We present a novel acceleration technique for improving the convergence of source iteration for discrete ordinates transport calculations. Our approach uses the idea of the dynamic mode decomposition (DMD) to estimate the slowly decaying modes from source iteration and remove them from the solution. The memory cost of our acceleration technique is that the scalar ﬂux for a number of iterations must be stored; the computational cost is a singular value decomposition of a matrix comprised of those stored scalar ﬂuxes. On 1-D slab geometry problems we observe an order of magnitude reduction in the number of transport sweeps required compared to source iteration and that the number of sweeps required is independent of the scattering ratio in the problem. These observations hold for an extremely heterogeneous problem and a 2-D problem. In 2-D we do observe that the effectiveness of the approach slowly degrades as the mesh is reﬁned, but is still about one order of magnitude faster than source iteration.},
+	language = {en},
+	urldate = {2019-04-01},
+	journal = {arXiv:1812.05241 [physics]},
+	author = {McClarren, Ryan G. and Haut, Terry S.},
+	month = dec,
+	year = {2018},
+	note = {arXiv: 1812.05241},
+	keywords = {Physics - Computational Physics},
+	annote = {Comment: 4 pages},
+	file = {McClarren and Haut - 2018 - Acceleration of Source Iteration using the Dynamic.pdf:C\:\\Users\\johnn\\Zotero\\storage\\LK5VCRQG\\McClarren and Haut - 2018 - Acceleration of Source Iteration using the Dynamic.pdf:application/pdf}
+}
 @article{schmid_dynamic_2010,
 	title = {Dynamic mode decomposition of numerical and experimental data},
 	volume = {656},
 	issn = {0022-1120, 1469-7645},
+	url = {http://www.journals.cambridge.org/abstract_S0022112010001217},
 	doi = {10.1017/S0022112010001217},
 	language = {en},
 	urldate = {2018-09-21},
-	journal = JFM,
+	journal = {Journal of Fluid Mechanics},
 	author = {Schmid, Peter J.},
 	month = aug,
 	year = {2010},
 	pages = {5--28},
-    annote  = {In this paper, the authors propose a decomposition technology, dynamic mode decomposition(DMD), based on Koopman analysis of nonlinear dynamical systems. This method extracted dynamic modes describe the global behavior captured from numerical and experimental data to project large-scale problems onto a reduced order dynamical system. Compare to proper orthogonal decomposition(POD), DMD directly applied on data and does not decomposite on orthogonal space. Schmid applied this frame on both numerical Navier–Stokes code results and experimental measures and illustrated the significant essential on quantifying fluid-dynamical problems.\\ \\ At section 2, Schmid shows the initial idea of DMD algorithm which is usually called standard DMD in the following publications. Instead of employing QR-decomposition, he took advantage of SVD decomposition and obtain a robust approximation by $\tilde{S} = U^HV_2^NW\Sigma^{-1}$, where $V^{N-1}_1 = U\Sigma W^H$. The eigenvector $y_i$ of matrix $S$ and left eigenvector matrix U would be used to form the final dynamic modes $\phi_i$. Compare to the standard DMD, the tradition method use the least square solution to form matrix $S$ from QR-decomposition by $a = R^{−1}Q^Hv_N$, where $QR = V^{N-1}_1$. Also, some older attempts using Arnoldi method and Hessenberg matrix by $AQ \approx QH$ and $H = RSR^{−1}$ is not applicable because projections the matrix $A$ has to be available. Here $V^{N}_1 = \{v_1,Av_1,A^2v_1,…,A^{N-1}v_1 \} $ is the Krylov sequence based on the initial data snapshot $v_1$ and the linear map $A$ connect two snapshots ordered by sequence.      }	
-
+	file = {Schmid - 2010 - Dynamic mode decomposition of numerical and experi.pdf:C\:\\Users\\johnn\\Zotero\\storage\\3JFT8X6M\\Schmid - 2010 - Dynamic mode decomposition of numerical and experi.pdf:application/pdf}
 }
 
-
-@article{abdo_3_nodate,
-	title = {3 {Modeling} isotopic evolution with surrogates based on dynamic mode 4 decomposition},
+@article{schmid_applications_2011,
+	title = {Applications of the dynamic mode decomposition},
+	volume = {25},
+	issn = {0935-4964, 1432-2250},
+	url = {http://link.springer.com/10.1007/s00162-010-0203-9},
+	doi = {10.1007/s00162-010-0203-9},
+	abstract = {The decomposition of experimental data into dynamic modes using a data-based algorithm is applied to Schlieren snapshots of a helium jet and to time-resolved PIV-measurements of an unforced and harmonically forced jet. The algorithm relies on the reconstruction of a low-dimensional inter-snapshot map from the available ﬂow ﬁeld data. The spectral decomposition of this map results in an eigenvalue and eigenvector representation (referred to as dynamic modes) of the underlying ﬂuid behavior contained in the processed ﬂow ﬁelds. This dynamic mode decomposition allows the breakdown of a ﬂuid process into dynamically revelant and coherent structures and thus aids in the characterization and quantiﬁcation of physical mechanisms in ﬂuid ﬂow.},
 	language = {en},
-	author = {Abdo, Mohammad and Elzohery, Rabab and Roberts, Jeremy A},
-	pages = {10},
-	year = {2019},
-	journal = {PHYSOR 2018},
-    annote  = {In this paper, the authors used DMD to produce a surrogate model based on two-dimensional full core data over six years and researched related uncertainties. They employed standard DMD(Algorithm I, Tu, 2014) to build the projections-based, reduced-order model. They defined the forward-sensitivity matrix $S = \phi ^{DMD} diag(e^{wt})\phi ^{DMD\dag}$ where $\omega= log(\lambda_i)/\Delta t$ and use this and covariance matrix of initial condition $C_0$ to compute response covariance by $C^{DMD} = SC_0S^{T}$. In the conclusion, they mention the DMD model has difficulty in catching the spatial dependent bias.}
-}
-
-@article{zhang_model_2017,
-	address = {Denver, Colorado},
-	title = {Model order reduction using {DMD} modes and adjoint {DMD} modes},
-	booktitle = {8th {AIAA} {Theoretical} {Fluid} {Mechanics} {Conference}},
-	publisher = {American Institute of Aeronautics and Astronautics},
-	author = {Zhang, Wei and Wei, Mingjun},
+	number = {1-4},
+	urldate = {2018-10-29},
+	journal = {Theoretical and Computational Fluid Dynamics},
+	author = {Schmid, P. J. and Li, L. and Juniper, M. P. and Pust, O.},
 	month = jun,
-	year = {2017},
-	journal = {AIAA AVIATION Forum},
-	annote  = {Zhang and Wei used DMD modes and their adjoint modes to build simple Galerkin models in a low-order space. Traditional DMD has non-orthogonal bases which increase the difficulty in reducing the order of the model.  We can calculate adjoint DMD modes by $ \phi^{ad} = U (w^l) ^{*} $ where $w^l$ is the left eigenvector of $ \tilde{A} $. Then the projection of snapshot on adjoint modes is $a(i,t) = (x_t,\phi^{ad}_i)$. The variable could be expand by $a$ and stand DMD modes, which could be written as $u(x,t) = \sum^r_{i=0} a_i(t) \phi_i(x) $. Then we can project our governing equation by $(\phi^{ad},\frac{\partial u}{\partial t})$. Since there is natural bi-orthogonality between DMD modes and adjoint DMD modes $(\phi^{ad}_j,\phi_i) = \delta_{ij}$, the projection will lead to a sets of ODEs of $\frac{\partial a_i}{\partial t}$.   }
+	year = {2011},
+	pages = {249--259},
+	file = {Schmid et al. - 2011 - Applications of the dynamic mode decomposition.pdf:C\:\\Users\\johnn\\Zotero\\storage\\EMWWL2C3\\Schmid et al. - 2011 - Applications of the dynamic mode decomposition.pdf:application/pdf}
 }
 
+@article{tu_dynamic_2014,
+	title = {On {Dynamic} {Mode} {Decomposition}: {Theory} and {Applications}},
+	volume = {1},
+	issn = {2158-2491},
+	shorttitle = {On {Dynamic} {Mode} {Decomposition}},
+	url = {http://arxiv.org/abs/1312.0041},
+	doi = {10.3934/jcd.2014.1.391},
+	abstract = {Originally introduced in the ﬂuid mechanics community, dynamic mode decomposition (DMD) has emerged as a powerful tool for analyzing the dynamics of nonlinear systems. However, existing DMD theory deals primarily with sequential time series for which the measurement dimension is much larger than the number of measurements taken. We present a theoretical framework in which we deﬁne DMD as the eigendecomposition of an approximating linear operator. This generalizes DMD to a larger class of datasets, including nonsequential time series. We demonstrate the utility of this approach by presenting novel sampling strategies that increase computational eﬃciency and mitigate the eﬀects of noise, respectively. We also introduce the concept of linear consistency, which helps explain the potential pitfalls of applying DMD to rank-deﬁcient datasets, illustrating with examples. Such computations are not considered in the existing literature, but can be understood using our more general framework. In addition, we show that our theory strengthens the connections between DMD and Koopman operator theory. It also establishes connections between DMD and other techniques, including the eigensystem realization algorithm (ERA), a system identiﬁcation method, and linear inverse modeling (LIM), a method from climate science. We show that under certain conditions, DMD is equivalent to LIM.},
+	language = {en},
+	number = {2},
+	urldate = {2019-10-04},
+	journal = {Journal of Computational Dynamics},
+	author = {Tu, Jonathan H. and Rowley, Clarence W. and Luchtenburg, Dirk M. and Brunton, Steven L. and Kutz, J. Nathan},
+	month = dec,
+	year = {2014},
+	note = {arXiv: 1312.0041},
+	keywords = {Mathematics - Numerical Analysis, Physics - Fluid Dynamics, Primary: 37M10, 65P99, Secondary: 47B33},
+	pages = {391--421},
+	file = {Tu 等。 - 2014 - On Dynamic Mode Decomposition Theory and Applicat.pdf:C\:\\Users\\johnn\\Zotero\\storage\\H5UTKQBU\\Tu 等。 - 2014 - On Dynamic Mode Decomposition Theory and Applicat.pdf:application/pdf}
+}
 
-@article{proctor_dynamic_2016,
-	title = {Dynamic {Mode} {Decomposition} with {Control}},
-	volume = {15},
-	issn = {1536-0040},
-	annote  = {Kutz’ group propose a modified version of DMD called DMD with control (DMDc). Compare to DMD, DMDc assume the system could be written as: $x_{k+1} \approx Ax_k + Bu_k  $ where $u_k$ should be the sparse current control. The main difference from the DMD algorithm is that the input data matrix is constructed by $\Omega = [X,U]^T$ and reduced-order approximation of A computed by $\tilde{A} =\hat{U}^{*} X' \tilde{V} \tilde{\Sigma}^{-1} \tilde{U}^{*}_1 \hat{U} $ where $X'$ is the truncated SVD output matrix of $\Omega$ . The map B could be either known or unknown. For unknown case, we assume $X' \approx G \Omega$, then $[A B] = X' [X U]^T$},
-	journal = {SIAM Journal on Applied Dynamical Systems},
-	author = {Proctor, Joshua L. and Brunton, Steven L. and Kutz, J. Nathan},
-	month = jan,
+@book{kutz_dynamic_2016,
+	series = {Other {Titles} in {Applied} {Mathematics}},
+	title = {Dynamic {Mode} {Decomposition}},
+	isbn = {978-1-61197-449-2},
+	url = {https://epubs.siam.org/doi/book/10.1137/1.9781611974508},
+	abstract = {The integration of data and scientific computation is driving a paradigm shift across the engineering, natural, and physical sciences. Indeed, there exists an unprecedented availability of high-fidelity measurements from time-series recordings, numerical simulations, and experimental data. When data is coupled with readily available algorithms and innovations in machine (statistical) learning, it is possible to extract meaningful spatiotemporal patterns that dominate dynamic activity. A direct implication of such data-driven modeling strategies is that we can gain traction on understanding fundamental scientific processes and also enhance our capabilities for prediction, state estimation, and control of complex systems. The ability to discover underlying principles from data has been called the fourth paradigm of scientific discovery [131]. Mathematical techniques geared toward characterizing patterns in data and capitalizing on the observed low-dimensional structures fall clearly within this fourth paradigm and are in ever-growing demand.},
+	urldate = {2019-10-04},
+	publisher = {Society for Industrial and Applied Mathematics},
+	author = {Kutz, J. and Brunton, S. and Brunton, B. and Proctor, J.},
+	month = nov,
 	year = {2016},
-	pages = {142--161},
+	doi = {10.1137/1.9781611974508},
+	file = {Snapshot:C\:\\Users\\johnn\\Zotero\\storage\\7AAHR8J5\\1.html:text/html;全文:C\:\\Users\\johnn\\Zotero\\storage\\ALCZY9RE\\Kutz 等。 - 2016 - Dynamic Mode Decomposition.pdf:application/pdf}
 }
-%%
+
+@article{abdo_data-driven_2018,
+	title = {{DATA}-{DRIVEN} {SURROGATE} {MODEL} {TO} {PREDICT} {ISOTOPIC} {COMPOSITION} {USING} {DYNAMIC} {MODE} {DECOMPOSITION}},
+	abstract = {Reduced-Order Modeling (ROM) has become an indispensable tool for reducing the cost of repetitive executions common to Sensitivity Analysis (SA), Uncertainty Characterization (UC). Presented here is the application of Dynamic Mode Decomposition (DMD) to build a data-driven, reduced-complexity surrogate that predicts the fuel concentration of a single TRIGA fuel element over time. The ultimate goal is to produce a surrogate for rapid determination of the composition of KSU TRIGA MARK II research reactor at any time within its forty years of operation. Such a surrogate would enable forward or inverse propagation of uncertainties from the initial fuel loadings and recent measurements, and enhance the current core model and reduce these uncertainties. The methodology was applied ﬁrst to single fuel elements to assess the reliability of the predictions when both testing and training data come from the same conﬁguration.The resulting surrogate was then tested with different initial conditions from a different fuel element. The tests verify that even with some perturbations of the initial conditions the DMD surrogate is able to predict the concentrations of the isotopes of interest. These single elements tests represent a ﬁrst step towards modeling the whole core and propagating uncertainties in the fuel composition over the 40 year period.},
+	language = {en},
+	author = {Abdo, Mohammad and Elzohery, Rabab and Roberts, Jeremy},
+	year = {2018},
+	pages = {12},
+	file = {Abdo et al. - 2018 - DATA-DRIVEN SURROGATE MODEL TO PREDICT ISOTOPIC CO.pdf:C\:\\Users\\johnn\\Zotero\\storage\\26DH87Q4\\Abdo et al. - 2018 - DATA-DRIVEN SURROGATE MODEL TO PREDICT ISOTOPIC CO.pdf:application/pdf}
+}
+
+@article{abdo_modeling_2019,
+	title = {Modeling isotopic evolution with surrogates based on dynamic mode decomposition},
+	volume = {129},
+	issn = {03064549},
+	url = {https://linkinghub.elsevier.com/retrieve/pii/S030645491930060X},
+	doi = {10.1016/j.anucene.2019.01.048},
+	abstract = {Dynamic Mode Decomposition (DMD) was used to produce surrogates for the evolution of spatiallyvarying nuclide compositions in a TRIGA reactor. First, the method was explored by applying it to a single fuel element in which the data used was produced from the Polaris sequence in SCALE-6.2. Then the method was applied to a full core for which the data used to produce the surrogate was generated from a two-dimensional TRITON/NEWT model of a 78-element TRIGA core depleted over six full-power years. The surrogates have explicit time dependence and exhibited high accuracy for major nuclides in the problem studied. Then the analysis was extended to explore the propagation of time-dependent uncertainties in isotopic composition. The fuel element case showed potential where the full core generalization results revealed that the surrogates eigenpairs are sensitive to the perturbations in the data and hence failed to capture the whole space. Suggestions to address these difﬁculties were presented in the conclusion section.},
+	language = {en},
+	urldate = {2019-02-18},
+	journal = {Annals of Nuclear Energy},
+	author = {Abdo, Mohammad and Elzohery, Rabab and Roberts, Jeremy A.},
+	month = jul,
+	year = {2019},
+	pages = {280--288},
+	file = {Abdo et al. - 2019 - Modeling isotopic evolution with surrogates based .pdf:C\:\\Users\\johnn\\Zotero\\storage\\UPS3Y4SB\\Abdo et al. - 2019 - Modeling isotopic evolution with surrogates based .pdf:application/pdf}
+}
+
+@article{elzohery2018comparison,
+  title={Comparison between gaussian processes and dmd surrogates for isotopic composition prediction},
+  author={Elzohery, R and Abdo, M and Roberts, J},
+  journal={Transactions of the American Nuclear Society},
+  volume={118},
+  pages={459--462},
+  year={2018}
+}
+@article{gill_newtons_2011,
+	title = {Newton’s {Method} for the {Computation} of \textit{k} -{Eigenvalues} in {S} $_{\textrm{ \textit{{N}} }}$ {Transport} {Applications}},
+	volume = {168},
+	issn = {0029-5639, 1943-748X},
+	url = {https://www.tandfonline.com/doi/full/10.13182/NSE10-01},
+	doi = {10.13182/NSE10-01},
+	abstract = {Recently, Jacobian-Free Newton-Krylov (JFNK) methods have been used to solve the k-eigenvalue problem in diffusion and transport theories. We propose an improvement to Newton’s method (NM) for solving the k-eigenvalue problem in transport theory that avoids costly within-group iterations or iterations over energy groups. We present a formulation of the k-eigenvalue problem where a nonlinear function, whose roots are solutions of the k-eigenvalue problem, is written in terms of a generic fixed-point iteration (FPI). In this way any FPI that solves the k-eigenvalue problem can be accelerated using the Newton approach, including our improved formulation. Calculations with a one-dimensional multigroup SN transport implementation in MATL AB provide a proof of principle and show that convergence to the fundamental mode is feasible. Results generated using a three-dimensional Fortran implementation of several formulations of NM for the well-known Takeda and C5G7-MOX benchmark problems confirm the efficiency of NM for realistic k-eigenvalue calculations and highlight numerous advantages over traditional FPI.},
+	language = {en},
+	number = {1},
+	urldate = {2019-06-17},
+	journal = {Nuclear Science and Engineering},
+	author = {Gill, Daniel F. and Azmy, Yousry Y. and Warsa, James S. and Densmore, Jeffery D.},
+	month = may,
+	year = {2011},
+	pages = {37--58},
+	file = {Gill et al. - 2011 - Newton’s Method for the Computation of iki -E.pdf:C\:\\Users\\johnn\\Zotero\\storage\\7XQPVA4G\\Gill et al. - 2011 - Newton’s Method for the Computation of iki -E.pdf:application/pdf}
+}
+
+@book{Greenbaum_1997,
+author = {Greenbaum, Anne.},
+title = {Iterative Methods for Solving Linear Systems},
+publisher = {Society for Industrial and Applied Mathematics},
+year = {1997},
+doi = {10.1137/1.9781611970937},
+address = {},
+edition   = {},
+URL = {https://epubs.siam.org/doi/abs/10.1137/1.9781611970937},
+eprint = {https://epubs.siam.org/doi/pdf/10.1137/1.9781611970937}
+}
+
+@book{trefethen1997numerical,
+  title={Numerical linear algebra},
+  author={Trefethen, Lloyd N and Bau III, David},
+  volume={50},
+  year={1997},
+  publisher={Siam}
+}
+
+@article{larsen1984diffusion,
+  title={Diffusion-synthetic acceleration methods for discrete-ordinates problems},
+  author={Larsen, Edward W},
+  journal={Transport Theory and Statistical Physics},
+  volume={13},
+  number={1-2},
+  pages={107--126},
+  year={1984},
+  publisher={Taylor \& Francis}
+}
+@phdthesis{hamilton2011numerical,
+  title={Numerical solution of the k-eigenvalue problem},
+  author={Hamilton, Steven Paul},
+  year={2011},
+  school={Emory University}
+}
+
+@article{mises1929praktische,
+  title={Praktische Verfahren der Gleichungsaufl{\"o}sung.},
+  author={Mises, RV and Pollaczek-Geiringer, Hilda},
+  journal={ZAMM-Journal of Applied Mathematics and Mechanics/Zeitschrift f{\"u}r Angewandte Mathematik und Mechanik},
+  volume={9},
+  number={2},
+  pages={152--164},
+  year={1929},
+  publisher={Wiley Online Library}
+}
+
+@article{arnoldi1951principle,
+  title={The principle of minimized iterations in the solution of the matrix eigenvalue problem},
+  author={Arnoldi, Walter Edwin},
+  journal={Quarterly of applied mathematics},
+  volume={9},
+  number={1},
+  pages={17--29},
+  year={1951}
+}.
+
+@book{lumley2007stochastic,
+  title={Stochastic tools in turbulence},
+  author={Lumley, John L},
+  year={2007},
+  publisher={Courier Corporation}
+}
+
+@article{saad1986gmres,
+  title={GMRES: A generalized minimal residual algorithm for solving nonsymmetric linear systems},
+  author={Saad, Youcef and Schultz, Martin H},
+  journal={SIAM Journal on scientific and statistical computing},
+  volume={7},
+  number={3},
+  pages={856--869},
+  year={1986},
+  publisher={SIAM}
+}
+@article{adams1993two,
+  title={A two-grid acceleration scheme for the multigroup SN equations with neutron upscattering},
+  author={Adams, BT and Morel, JE},
+  journal={Nuclear Science and Engineering},
+  volume={115},
+  number={3},
+  pages={253--264},
+  year={1993},
+  publisher={Taylor \& Francis}
+}
+
+@book{lasota2013chaos,
+  title={Chaos, fractals, and noise: stochastic aspects of dynamics},
+  author={Lasota, Andrzej and Mackey, Michael C},
+  volume={97},
+  year={2013},
+  publisher={Springer Science \& Business Media}
+}
+
+@article{mezic2005spectral,
+  title={Spectral properties of dynamical systems, model reduction and decompositions},
+  author={Mezi{\'c}, Igor},
+  journal={Nonlinear Dynamics},
+  volume={41},
+  number={1-3},
+  pages={309--325},
+  year={2005},
+  publisher={Springer}
+}
+
+@article{lewis1984computational,
+  title={Computational methods of neutron transport},
+  author={Lewis, Elmer Eugene and Miller, Warren F},
+  year={1984}
+}
+
+@article{pydmd,
+  Author = {Demo, Nicola and Tezzele, Marco and Rozza, Gianluigi},
+  Title = {{PyDMD: Python Dynamic Mode Decomposition}},
+  Journal = {The Journal of Open Source Software},
+  Volume = {3},
+  Number = {22},
+  Pages = {530},
+  Year = {2018},
+  Doi = {https://doi.org/10.21105/joss.00530}
+}
+
+@techreport{center1977benchmark,
+  title={Benchmark Problem Book, Report ANL-7416 (Suppl. 2)},
+  author={Center, Argonne Code},
+  institution={Argonne National Laboratory, Argonne, IL},
+  year={1977}
+}
+
+@article{roberts2019acceleration,
+  title={Acceleration of the Power Method with Dynamic Mode Decomposition},
+  author={Roberts, Jeremy A and Xu, Leidong and Elzohery, Rabab and Abdo, Mohammad},
+  journal={arXiv preprint arXiv:1904.09493},
+  year={2019}
+}
+
+@article{xu_acceleration,
+	title = {{ACCELERATION} {OF} {THE} {FLATTENED} {POWER} {METHOD} {WITH} {DYNAMIC} {MODE} {DECOMPOSITION}},
+	language = {en},
+	journal = {ANS Transactions},
+	author = {Xu, Leidong and Reed, Richard L and Roberts, Jeremy A},
+	pages = {4},
+	file = {Xu et al. - ACCELERATION OF THE FLATTENED POWER METHOD WITH DY.pdf:C\:\\Users\\johnn\\Zotero\\storage\\DPBGN8P8\\Xu et al. - ACCELERATION OF THE FLATTENED POWER METHOD WITH DY.pdf:application/pdf}
+}
+
+@article{aitken_1927, 
+title={XXV.---On Bernoulli's Numerical Solution of Algebraic Equations}, 
+volume={46}, DOI={10.1017/S0370164600022070}, 
+journal={Proceedings of the Royal Society of Edinburgh}, publisher={Royal Society of Edinburgh Scotland Foundation}, 
+author={Aitken, A. C.}, year={1927}, pages={289--305}}
+
+@Misc{scipy,
+  author =    {Eric Jones and Travis Oliphant and Pearu Peterson and others},
+  title =     {{SciPy}: Open source scientific tools for {Python}},
+  year =      {2001--},
+  url = "http://www.scipy.org/",
+  note = {[Online; accessed April 20, 2019]}
+}
+
+
+@article{gibson_stability_2014,
+	title = {On the stability of the {Discrete} {Generalized} {Multigroup} method},
+	volume = {65},
+	issn = {03064549},
+	url = {https://linkinghub.elsevier.com/retrieve/pii/S0306454913006294},
+	doi = {10.1016/j.anucene.2013.11.032},
+	abstract = {This paper investigates the stability of the recondensation procedure of the Discrete Generalized Multigroup method and proposes alternatives to improve stability of the original formulation. Instabilities are shown to happen when employing a simple Picard ﬁxed point iteration and an ill-informed group mapping scheme. This work presents a mapping procedure that improves stability of the original method for ﬁne group calculations. Additionally, a relaxation scheme, Krasnoselskij iteration, is introduced to the ﬁxed point iteration to further improve the stability characteristics and remove the need for ﬁne group ﬂux updates. Both improvements are applied on heterogeneous problems using the SHEM361 and the NG2042 group structures. The results indicate improved stability from a well-informed group mapping and demonstrate the possibility of eliminating the need for ﬁne group ﬂux updates.},
+	language = {en},
+	urldate = {2019-06-24},
+	journal = {Annals of Nuclear Energy},
+	author = {Gibson, Nathan A. and Forget, Benoit},
+	month = mar,
+	year = {2014},
+	pages = {421--432},
+	file = {Gibson and Forget - 2014 - On the stability of the Discrete Generalized Multi.pdf:/home/leidong/Zotero/storage/73FCCT9Q/Gibson and Forget - 2014 - On the stability of the Discrete Generalized Multi.pdf:application/pdf}
+}
+
+
+@article{rahnema_generalized_2008,
+	title = {Generalized {Energy} {Condensation} {Theory}},
+	volume = {160},
+	issn = {0029-5639, 1943-748X},
+	url = {https://www.tandfonline.com/doi/full/10.13182/NSE160-41},
+	doi = {10.13182/NSE160-41},
+	abstract = {A generalization of multigroup energy condensation theory has been developed. The new method generates a solution within the few-group framework that exhibits the energy spectrum characteristic of a many-group transport solution, without the computational time usually associated with such solutions. This is accomplished by expanding the energy dependence of the angular flux in a set of general orthogonal functions. The expansion leads to a set of equations for the angular flux moments in the few-group framework. The zeroth moment generates the standard few-group equation while the highermoment equations generate the detailed spectral resolution within the few-group structure. It is shown that by carefully choosing the orthogonal function set (e.g., Legendre polynomials), the higher-moment equations are only coupled to the zeroth-order equation and not to each other. The decoupling makes the new method highly competitive with the standard few-group method since the computation time associated with determining the higher moments becomes negligible as a result of the decoupling. The method is verified in several one-dimensional benchmark problems typical of boiling water reactor configurations with mild to high heterogeneity.},
+	language = {en},
+	number = {1},
+	urldate = {2019-10-23},
+	journal = {Nuclear Science and Engineering},
+	author = {Rahnema, Farzad and Douglass, Steven and Forget, Benoit},
+	month = sep,
+	year = {2008},
+	pages = {41--58},
+	file = {Rahnema et al. - 2008 - Generalized Energy Condensation Theory.pdf:/home/leidong/Zotero/storage/JZTHIHJ6/Rahnema et al. - 2008 - Generalized Energy Condensation Theory.pdf:application/pdf}
+}
+
+
+@book{oecd_nuclear_energy_agency_benchmark_2003,
+	address = {Issy-les-Moulineaux, France},
+	title = {Benchmark on deterministic transport calculations without spatial homogenisation: a 2-{D}/3-{D} {MOX} fuel assembly benchmark},
+	isbn = {978-92-64-02139-6},
+	shorttitle = {Benchmark on deterministic transport calculations without spatial homogenisation},
+	language = {en},
+	publisher = {Nuclear Energy Agency, Organisation for Economic Cooperation and Development},
+	author = {{OECD Nuclear Energy Agency}},
+	year = {2003},
+	note = {OCLC: 61895507},
+	file = {OECD Nuclear Energy Agency - 2003 - Benchmark on deterministic transport calculations .pdf:/home/leidong/Zotero/storage/K3QKY9Z7/OECD Nuclear Energy Agency - 2003 - Benchmark on deterministic transport calculations .pdf:application/pdf}
+}
+
+@phdthesis{hamilton_numerical_2007,
+	title = {Numerical {Solution} of the k-{Eigenvalue} {Problem}},
+	language = {en},
+	school = {Emory University},
+	author = {Hamilton, Steven Paul},
+	year = {2007},
+	file = {Hamilton - 2007 - Numerical Solution of the k-Eigenvalue Problem.pdf:/home/leidong/Zotero/storage/N5PDK95G/Hamilton - 2007 - Numerical Solution of the k-Eigenvalue Problem.pdf:application/pdf}
+}
+
+@article{smith_1983,
+    author="SMITH, K. S.",
+    title="Nodal method storage reduction by nonlinear iteration",
+    journal="Trans. Am. Nucl. Soc.",
+    ISSN="",
+    publisher="",
+    year="1983",
+    month="",
+    volume="44",
+    number="",
+    pages="265-266",
+    URL="https://ci.nii.ac.jp/naid/80002095029/en/",
+    DOI="",
+}
+
+
+
+@phdthesis{reed_2015,
+	title = {Applications of the {Karhunen}-{Loéve} {Transform} for {Basis} {Generation} in the {Response} {Matrix} {Method}},
+	language = {en},
+	year = {2015},
+	school = {Kansas State University},
+	author = {Reed, Richard},
+	file = {Reed - Applications of the Karhunen-Loéve Transform for B.pdf:/home/leidong/Zotero/storage/YJSTL6IU/Reed - Applications of the Karhunen-Loéve Transform for B.pdf:application/pdf}
+}
+
+@book{stacey2018nuclear,
+  title={Nuclear reactor physics},
+  author={Stacey, Weston M},
+  year={2018},
+  publisher={John Wiley \& Sons}
+}
+
+
+
+@article{roberts_multigroup_2014,
+	title = {Multigroup diffusion preconditioners for multiplying fixed-source transport problems},
+	volume = {274},
+	issn = {00219991},
+	url = {https://linkinghub.elsevier.com/retrieve/pii/S0021999114004410},
+	doi = {10.1016/j.jcp.2014.06.034},
+	abstract = {Several preconditioners based on multigroup diffusion are developed for application to multiplying ﬁxed-source transport problems using the discrete ordinates method. By starting from standard, one-group, diffusion synthetic acceleration (DSA), a multigroup diffusion preconditioner is constructed that shares the same ﬁne mesh as the transport problem. As a cheaper but effective alternative, a two-grid, coarse-mesh, multigroup diffusion preconditioner is examined, for which a variety of homogenization schemes are studied to generate the coarse mesh operator. Finally, a transport-corrected diffusion preconditioner based on application of the Newton–Shulz algorithm is developed. The results of several numerical studies indicate the coarse-mesh, diffusion preconditioners work very well. In particular, a coarse-mesh, transport-corrected, diffusion preconditioner reduced the computational time of multigroup GMRES by up to a factor of 17 and outperformed best-case Gauss–Seidel results by over an order of magnitude for all problems studied.},
+	language = {en},
+	urldate = {2019-10-28},
+	journal = {Journal of Computational Physics},
+	author = {Roberts, Jeremy A. and Forget, Benoit},
+	month = oct,
+	year = {2014},
+	pages = {455--472},
+	file = {Roberts 和 Forget - 2014 - Multigroup diffusion preconditioners for multiplyi.pdf:C\:\\Users\\johnn\\Zotero\\storage\\B67NTWPE\\Roberts 和 Forget - 2014 - Multigroup diffusion preconditioners for multiplyi.pdf:application/pdf}
+}
+
+@article{Alcouffe_1977,
+author = {R. E. Alcouffe},
+title = {Diffusion Synthetic Acceleration Methods for the Diamond-Differenced Discrete-Ordinates Equations},
+journal = {Nuclear Science and Engineering},
+volume = {64},
+number = {2},
+pages = {344-355},
+year  = {1977},
+publisher = {Taylor & Francis},
+doi = {10.13182/NSE77-1},
+URL = {https://doi.org/10.13182/NSE77-1},
+eprint = { https://doi.org/10.13182/NSE77-1}
+}
+
+
+@article{slaybaugh_multigrid_2013,
+	title = {Multigrid in energy preconditioner for {Krylov} solvers},
+	volume = {242},
+	issn = {0021-9991},
+	url = {http://www.sciencedirect.com/science/article/pii/S0021999113001228},
+	doi = {https://doi.org/10.1016/j.jcp.2013.02.012},
+	abstract = {We have added a new multigrid in energy (MGE) preconditioner to the Denovo discrete-ordinates radiation transport code. This preconditioner takes advantage of a new multilevel parallel decomposition. A multigroup Krylov subspace iterative solver that is decomposed in energy as well as space-angle forms the backbone of the transport solves in Denovo. The space-angle-energy decomposition facilitates scaling to hundreds of thousands of cores. The multigrid in energy preconditioner scales well in the energy dimension and significantly reduces the number of Krylov iterations required for convergence. This preconditioner is well-suited for use with advanced eigenvalue solvers such as Rayleigh Quotient Iteration and Arnoldi.},
+	journal = {Journal of Computational Physics},
+	author = {Slaybaugh, R. N. and Evans, T. M. and Davidson, G. G. and Wilson, P. P. H.},
+	year = {2013},
+	keywords = {Krylov, Multigrid, Neutron transport, Preconditioning},
+	pages = {405 -- 419}
+}
