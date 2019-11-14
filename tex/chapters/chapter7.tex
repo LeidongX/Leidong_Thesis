@@ -12,16 +12,16 @@
 \chapter{Conclusions and Future Work}
 \label{chapter:conclusion}
 \section{Summary}
-First, the principal objective of this thesis was to accurately estimate fundamental eigenmodes by DMD to accelerate the power method and flattened power method for multigroup neutron transport/diffusion problems.
+First, the principal objective of this thesis was to accurately estimate fundamental eigenmodes by using DMD to accelerate the power method and flattened power method for multigroup neutron transport/diffusion problems.
 Although DMD is a useful tool for extracting information from data, often it can only be applied on the snapshots from the time-dependent dynamic systems.
-In \CHAPTER{chapter:DMD-FPM(n)}, we have presented a new scheme for identifying fundamental eigenvector by a improved DMD algorithm using only the dominant DMD modes, which allows us to correct the solution by a more accurate estimation of the steady solution. 
+In \CHAPTER{chapter:DMD-FPM(n)}, we have presented a new scheme for identifying fundamental eigenvector by an improved DMD algorithm using only the dominant DMD modes, which allows us to correct the solution by a more accurate estimation of the steady solution. 
 This restarted version DMD-PM($n$) can be applied repeatedly to accelerate the power method.
 
-Flattened iterations update the fission and scattering source at the same time and reduced the total number of transport sweeps in practice, which has been widely used as an  more efficient alternative of the power method.
-Therefore, we also explored a similar scheme DMD-FPM($n$) to improve the convergence rate of the flattened power method, 
+Flattened iterations update the fission and scattering source at the same time and reduced the total number of transport sweeps in practice, and, thus, are widely used as an  more efficient alternative of the power method.
+Therefore, we also explored a similar scheme DMD-FPM($n$) to improve the convergence rate of the flattened power method.
 Because the eigenvalue cannot be computed by the eigenvector from flattened operator, the Aitken method is employed to extrapolate the eigenvalues corresponding to the DMD prediction.
 
-To base the comparison, three test problems were conducted, which include (1) a 2-D, IAEA diffusion benchmark, (2) a 1-D, 70-pin BWR core model, and (3) the 2-D C5G7 benchmark.
+For the comparison, three test problems were conducted, which include (1) a 2-D, IAEA diffusion benchmark, (2) a 1-D, 70-pin BWR core model, and (3) the 2-D C5G7 benchmark.
 Through all the numerical examples, we demonstrated that both acceleration schemes provide promising speedup. 
 The choice of number of snapshots to DMD greatly impacts the effectiveness, the DMD-PM(50) case used only 25\% number of power iterations to solve the IAEA diffusion problem.
 This scheme has also been used to produce a approximation of higher-order modes.
@@ -32,9 +32,10 @@ However, the failure of DMD-FPM($10$) in solving C5G7 case indicate that DMD mig
 In this case, the DMD should be stopped, and using only the power or flattened power method to reduce the error to within the target range.
 
 \section{Future Research}
+
 In this section, we describe the future direction and substantial value of using these methods in other areas.
 While these results are promising, the performance of both schemes are not expected to outperform some other popular methods, such as the generalized Davidson method\cite{hamilton2011numerical} and coarse-mesh finite difference\cite{smith_1983}.
-In reactor analysis, the use of stochastic methods, such as the famous Monte Carlo simulations, is widespread.
+In reactor analysis, the use of stochastic methods (i.e. Monte Carlo simulations) is widespread.
 Following this thesis, application of DMD-PM($n$) and DMD-FPM($n$) may be able to accelerate Monte Carlo eigenvalue problems for convergence by regressing the distribution tendency of neutron population from DMD modes.
 In this way, only a small size of neutron populations are sufficient to generate snapshots and extract information, which might be comparable to the other acceleration methods.
 
