@@ -85,6 +85,22 @@ Because $\mathbf{T}$ is not formed explicitly, iterative techniques based on the
 The number of transport sweeps (over space and angle) is a good measure for the total computational cost of a method because a sweep is the single most computationally expensive operation.
 To to distinguish it from power iterations, the iterations required to solve the inhomogeneous equation needed to invert $\mathbf{T}$ are called inner iterations.
 As a result, the power method leads to two, nested iteration levels: the outer iteration(eigeniteration) and inner(source iteration).
+This algorithm is summarized as following.
+
+\begin{algorithm}[H]
+\SetAlgoLined
+\KwResult{dominant eigenvalue and steady-state neutron flux}
+ initialize scalar flux $\phi^{0}$ and eigenvalue $k$ \;
+ \While{RHS not converged}{
+    compute fission source (b = $\frac{1}{k} \mathbf{DL^{-1}MF} \mathbf{\phi}^{i-1}$)\;
+  \While{LHS not converged}{
+    compute scattering source ($\mathbf{T}\mathbf{\phi}^{i}= b$)\;
+  }
+    update eigenvalue $k$\;
+    normalize eigenvector $\phi^{i}$ \;
+ }
+ \caption{Power Method for K-eigenvalue Problem}
+\end{algorithm}
 
 \section{Flattened Power iteration}
 
@@ -108,7 +124,3 @@ In this formulation, the inner iteration level is eliminated, by using a single 
 Compared to the traditional power iteration, the computational cost of a single iteration in FPI in this form is obviously cheaper.
 Although this scheme may require more outer-most iterations (i.e., updates of $k$), the total cost of solving the k-eigenvalue problem is often reduced significantly.\citep{gill_newtons_2011}
 Another great feature of this approach is easy to incorporate in existing power method implementation by limiting the number of inner iterations to one. 
-
-
-
-

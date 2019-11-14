@@ -26,7 +26,6 @@ All parameters including the cross sections are defined in the technical report 
 The basic core layout is shown in \FIGURE{fig:IAEA}, where the west and south boundary are reflective, and the north and east boundary are vacuum.
 
 \begin{figure*}[htb!]
-\label{fig:IAEA}
 \centering
 \begin{tikzpicture}[scale=.6]
 \begin{scope}<->;
@@ -98,7 +97,7 @@ The basic core layout is shown in \FIGURE{fig:IAEA}, where the west and south bo
 \end{scope}
 \end{tikzpicture}
 \caption{Geometry as modeled for the IAEA 2-D diffusion benchmark.  Material properties can be found in the benchmark documentation.  Materials 0 and 1 are fuel, material 2 represents control, while material 3 represents the outer reflector.}
-\label{fig:iaea2d}
+\label{fig:IAEA}
 \end{figure*}
 
 The mesh-center, finite-volume approximation was employed on a uniform, 45 $\times$ 45 spatial mesh.
@@ -315,6 +314,7 @@ As expected, a larger snapshots matrix can provide more information for learning
 Note that the final result reaching the lower bound here is very closed to the direct solution predicted by only the dominant DMD modes $\mathbf{\Phi_0}$, which demonstrate that our modified \EQUATION{eq:f_mode} can produce results with the same level of accuracy.
 
 \subsection{Application of Restarted DMD-PM(n)}
+
 As mentioned in \CHAPTER{chapter:DMD-PM}, the DMD-PM($n$) should restart from a set of snapshots multiple times until the solution converges.
 To test the performance of the iterative application of the DMD-PM($n$) scheme, we used a fixed number $n$ at every restart to research the convergence.  
 The results are shown in \FIGURE{fig:dmdpi_semilog}, which also includes the error for the unaccelerated PM and the Arnoldi method.
@@ -341,7 +341,60 @@ The Arnoldi method only requires around 40 iterations to converge.
 The Arnoldi method is based on a subspace that undergoes continuous orthonormalization, which produces a better-conditioned and, likely, richer basis than can be produced by successive application of $\mathbf{A}$ to a single vector.
 Consequently, it is inapplicable when the explicit form of $\mathbf{A}$ is not available.  
 
+\subsection{Restarted DMD-PM(n) for Higher Modes}
+Note that DMD-PM($n$) is based on construction of Krylov subspace, therefore, it should be able to recover the higher-order modes approximately.
+However, an unrestarted DMD-PM approximation produces to an ill-conditioned basis and, hence, cannot produce approximations for higher-order modes with reliable accuracy.
+Moreover, the iterative DMD-PM($n$) using \EQ{eq:f_mode} throws away all higher-order modes upon the restart.
+In order to reconstruct the higher-order modes, the dominant mode was kept with a small contribution from the next two modes in order to capture the three modes with the largest eigenvalues, instead of using only the dominant DMD modes.
+Specifically, the initial guess at each restarts was computed by $\mathbf{x}_0 + \epsilon ( \mathbf{x}_1 + \mathbf{x}_2)$, where $\epsilon$ is a small value (here, $10^{-4}$).
+Consequently, the next iteration contains some contribution from the higher-order space.
+
+The reference modes are shown in Figure~\ref{fig:ref_modes}.
+The largest three eigenvalues and their corresponding modes were recovered using the second, third, or fourth iterations of DMD-PM($30$) as approximations for the first three eigenpairs of the original system.
+Errors in higher-order mode estimates were found to depend on the randomized initial guess for the first power iteration, and the representative values of the absolute errors in the DMD-PM($n$) approximations are shown in Figure~\ref{fig:appx_modes}, where computed eigenvectors were normalized to unity. 
+
+As can be observed, the error in the dominant mode after two iterations ($1.77\times 10^{-7}$) is nearly unchanged from the case in which higher modes are not kept ($1.54\times 10^{-7})$; see Figure \ref{fig:dmdpi_semilog}.
+However, the performance does degrade somewhat thereafter, with errors after three and four iterations of approximately $4.94\times 10^{-9}$ and $1.38\times 10^{-10}$, respectively, compared to $9.90\times 10^{-11}$ and $3.00\times 10^{-12}$ in Figure~\ref{fig:dmdpi_semilog}.
+
+The absolute errors in the two higher-order modes (and their eigenvalues) are much larger than the error for the dominant mode, similarly, these errors are also decreasing with each iteration.
+The third and fourth iteration also degrade for the two higher-order modes, especially the third largest eigenpairs. 
+The error of the second order modes reach $1.28\times 10^{-3}$, and still provide fair improvement in the fourth iteration.
+Meanwhile, the error of the third order eigenpair only reach $5.18\times 10^{-2}$ after 3 iterations and keep in a same level in the next iteration.
+
+\begin{figure*}[htb]
+ \centering
+    \includegraphics[width=0.64\textwidth]{tex/figures/ref_modes.pdf}\\
+    \caption{First three reference eigenmodes; the corresponding eigenvalue ratios are shown above.}
+    \label{fig:ref_modes}
+\end{figure*}
+
+\begin{figure*}[!]
+ \begin{subfigure}[b]{\textwidth}
+  \centering
+    \includegraphics[width=0.60\textwidth]{tex/figures/appx_modes_2_3.pdf}\\
+    \caption{Two iterations of DMD-PI(30) with retention of 3 approximate modes.}
+    \label{fig:appx_modes_2_3}
+ \end{subfigure}
+ 
+ \begin{subfigure}[b]{\textwidth}
+  \centering
+   \includegraphics[width=0.60\textwidth]{tex/figures/appx_modes_3_3.pdf}\\
+   \caption{Three iterations of DMD-PI(30) with retention of 3 approximate modes.}
+   \label{fig:appx_modes_3_3}
+ \end{subfigure}
+ 
+ \begin{subfigure}[b]{\textwidth}
+  \centering
+   \includegraphics[width=0.60\textwidth]{tex/figures/appx_modes_4_3.pdf}\\
+   \caption{Four iterations of DMD-PI(30) with retention of 3 approximate modes.}
+   \label{fig:appx_modes_4_3}
+ \end{subfigure}
+ \caption{Shown in the top row of each subfigure are the first three modes as computed from several applications of DMD-PM($30$).   The second row shows the error $\mathbf{e}_i = \mathbf{x}_i^{\text{reference}}-\mathbf{x}_i^{\text{approximate}}$.  The corresponding $e_i \approx \lambda_i/\lambda_0$ (top row) and norm of the error $||\mathbf{e}_i||_2$ (bottom row) are also shown.}
+ \label{fig:appx_modes}
+\end{figure*}
+
 \section{Results for DMD-FPM(n)}
+
 As mentioned in the \CHAPTER{chapter:PM}, the flattened PM eliminates the inner iterations and only apply one transport sweep each iteration.
 Therefore, we used number of sweeps as the measure for the total computational cost, which is equivalent to number of iterations.
 Two similar tests on different geometries are conducted and solved for a variety of restart values $n$ to study the optimum condition.
