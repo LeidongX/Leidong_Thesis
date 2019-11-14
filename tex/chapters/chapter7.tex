@@ -12,20 +12,24 @@
 \chapter{Conclusions and Future Work}
 \label{chapter:conclusion}
 \section{Summary}
-In this section, we summarize the main findings in this thesis.
 First, the principal objective of this thesis was to accurately estimate fundamental eigenmodes by DMD to accelerate the power method and flattened power method for multigroup neutron transport/diffusion problems.
-Some successful cases using DMD on producing reduced order surrogate models or accelerating iterative methods were introduced in \CHAPTER{chapter:intro}.
-Some backgrounds, including the power method, the flattened power method and the multigroup transport/diffusion theory, were explored in \CHAPTER{chapter:multigroup} and \CHAPTER{chapter:PM}, in order to to understand the potential circumstances for the acceleration schemes.
+Although DMD is a useful tool for extracting information from data, often it can only be applied on the snapshots from the time-dependent dynamic systems.
+In \CHAPTER{chapter:DMD-FPM(n)}, we have presented a new scheme for identifying fundamental eigenvector by a improved DMD algorithm using only the dominant DMD modes, which allows us to correct the solution by a more accurate estimation of the steady solution. 
+This restarted version DMD-PM($n$) can be applied repeatedly to accelerate the power method.
 
-Although DMD is a useful tool for extracting information from data, often it can only be applied on time-dependent dynamic systems. 
-In \CHAPTER{chapter:DMD-PM}, we have presented a new definition for identifying fundamental eigenvector by a improved DMD algorithm, which avoids computing all the DMD modes.   
-The approach DMD-PM($n$) allows us to correct current results by a accurate estimation of the steady solution. 
-This restarted version of this scheme can be applied repeatedly to accelerate the power method.
-We also explored a similar variety DMD-FPM($n$) based this scheme to improve the efficiency of the flattened power method, where the key is to take advantage of Aitken extrapolation to match the eigenvalues.
+Flattened iterations update the fission and scattering source at the same time and reduced the total number of transport sweeps in practice, which has been widely used as an  more efficient alternative of the power method.
+Therefore, we also explored a similar scheme DMD-FPM($n$) to improve the convergence rate of the flattened power method, 
+Because the eigenvalue cannot be computed by the eigenvector from flattened operator, the Aitken method is employed to extrapolate the eigenvalues corresponding to the DMD prediction.
 
-Three test problems were conducted, which include (1) a 2-D, IAEA diffusion benchmark, (2) a 1-D, 70-pin BWR core model, and (3) the 2-D C5G7 benchmark.
-Through numerical examples, we demonstrated that both acceleration schemes provide promising speedup compared to unaccelerated schemes. 
-The DMD-PM(n) method used only 25\% full power iterations for the 2-D, IAEA diffusion problem, As can be expected, DMD-FPM(n) provided approximately a 5x$-$10x speedup for the cases studied.
+To base the comparison, three test problems were conducted, which include (1) a 2-D, IAEA diffusion benchmark, (2) a 1-D, 70-pin BWR core model, and (3) the 2-D C5G7 benchmark.
+Through all the numerical examples, we demonstrated that both acceleration schemes provide promising speedup. 
+The choice of number of snapshots to DMD greatly impacts the effectiveness, the DMD-PM(50) case used only 25\% number of power iterations to solve the IAEA diffusion problem.
+This scheme has also been used to produce a approximation of higher-order modes.
+Unfortunately, the accuracy of the two higher-order modes are not as good as the dominant mode.
+Although DMD-PM($n$) might not be competitive with other advance acceleration schemes (e.g., the Arnold method), there do exist applications for which access to iterates is only available in a postprocessing sense.
+As can be expected, DMD-FPM($n$) provided approximately a 5x$-$10x speedup for the two cases studied.
+However, the failure of DMD-FPM($10$) in solving C5G7 case indicate that DMD might produce a large numerical error from SVD when the results are closed to the steady-state solution, because the snapshots are linearly dependent.
+In this case, the DMD should be stopped, and using only the power or flattened power method to reduce the error to within the target range.
 
 \section{Future Research}
 In this section, we describe the future direction and substantial value of using these methods in other areas.
@@ -35,7 +39,4 @@ Following this thesis, application of DMD-PM($n$) and DMD-FPM($n$) may be able t
 In this way, only a small size of neutron populations are sufficient to generate snapshots and extract information, which might be comparable to the other acceleration methods.
 
 Although Aitken extrapolation could estimate the eigenvalues corresponding to DMD responses, errors still exist at almost every restart point, and, therefore, reducing the desired accuracy. 
-More Work can also be done to study to match the eigenvalues, which can improve the performance while a great amount of restarted process is required in the large scale systems.
-
-
-
+More work can also be done in the future to compute the corresponding eigenvalues, which can improve the performance while a great amount of restarted process is required in the large scale systems.

@@ -71,9 +71,13 @@ Then using \EQ{eq:fullA}, the reduced order $\mathbf{\tilde{A}}$ is defined by
 \mathbf{\tilde{A}} =  \mathbf{U_r^*} \mathbf{X_1} \mathbf{V} \bm{\Sigma}^{-1} \, .
 \end{equation}
 Now extract the $r$ largest eigenvalue and corresponding eigenvectors from $\mathbf{\tilde{A}}$ as the DMD modes $\boldsymbol{\Phi}$, which can be treated as the leading $r$ eigenvectors of $\mathbf{A}$.
-Note that the solution of \EQ{eq:linearized_model} is $\mathbf{x}(t) = e^{\mathcal{A}t}\mathbf{x}(0)$, and $\mathbf{A}$ is a discrete-time approximation of $e^{\mathcal{A}\Delta}$, which can be applied to the initial condition using the matrix exponential to compute the solution at a particular time. 
+Note that the solution of \EQ{eq:linearized_model} is 
+\begin{equation}
+\mathbf{x}(t) = e^{\mathcal{A}t}\mathbf{x}(0) \, ,   
+\end{equation}
+and $\mathbf{A}$ is a discrete-time approximation of $e^{\mathcal{A}\Delta}$, which can be applied to the initial condition using the matrix exponential to compute the solution at a particular time. 
 Moreover, the discrete eigenvalues $\lambda_i$ of $\mathbf{A}$ can be used to compute the continuous eigenvalues $\omega_i= \text{log}(\lambda_i)/\Delta t$.
-Subsequently, the state can be reconstructed at any time $t$ by initial condition by  
+Subsequently, the state can be reconstructed at any time $t$ by a given initial condition 
 \begin{equation}
 \label{eq:dmd_predict}
 \vec{x}^{DMD}(t) \triangleq \sum_{i=1}^{r} \vec{\phi}_i e^{\omega_it} b_i \, ,
