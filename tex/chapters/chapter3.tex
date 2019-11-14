@@ -3,7 +3,7 @@
 \chapter{The Power and Flattened-Power Methods}
 \label{chapter:PM}
 
-This chapter contains a general description of the power method and the flattened-power method and desribes their application to the k-eigenvalue neutron transport problem.
+This chapter contains a general description of the power method and the flattened-power method and describes their application to the k-eigenvalue neutron transport problem.
 All the eigenvalues and eigenvectors of a system matrix can be calculated by solving the characteristic equation,
 \begin{equation}
 det(\mathbf{A} -\lambda \mathbf{I} ) = 0 \, ,
@@ -21,13 +21,13 @@ Throughout scientific computing, some algorithms might not be applicable to gene
 On the other hand, the cost per iteration and the convergence rates can also depend greatly on the problem, which could be more than an order of magnitude sometimes. 
 
 Some of those iterative algorithms can produce all the eigenpairs or eigenvalues. 
-However, as mentioned in last chapter, only the largest eigenvalue and corresponding eigenvector are relevant in the k-eigenvalue transport problem.
-Although there are many iterative methods used for this type of eigenvalue problem, such as the QR algorithm, the Bisection method and the Jacobi eigenvalue algorithm, the traditional power iteration is the simplest method to determine the fundamental mode and corresponding eigenvalue.
+However, as mentioned in \CHAPTER{chapter:intro}, only the largest eigenvalue and corresponding eigenvector are relevant in the k-eigenvalue transport problem.
+Although there are many iterative methods used for this type of eigenvalue problem, such as the QR algorithm, the Bisection method, and the Jacobi eigenvalue algorithm, the traditional power iteration is the simplest method to determine the fundamental mode and corresponding eigenvalue.
 This method goes by many names such as power iteration and Von Mises iteration\cite{mises1929praktische}.
 Moreover, some of the more advanced eigenvalue algorithms are in some sense variations of the power iteration; for example, Arnoldi iteration \cite{arnoldi1951principle}, like the power method, requires the repeated application of $\mathbf{A}$, but takes advantage of the whole Krylov subspace. 
 
 \section{The Power Method}
-The power method is a simple algorithm for identifying the largest real eigenvalue of a matrix $\mathbf{A}$ and its corresponding eigenvector. The basic algorithm is summarized by the following steps:
+The power method is a simple algorithm for identifying the largest real eigenvalue of a matrix $\mathbf{A}$ and its corresponding eigenvector. The basic algorithm is summarized in the following steps:
 \begin{enumerate}
   \item Let $\lambda^{(0)}_0 =1 $ and $\mathbf{x}^{(0)}_0$ be a random, real vector normalized such the $||\mathbf{x}^{(0)}_0|| = 1$.
   \item Set $\mathbf{x}^{(i)}_0=\mathbf{A}\mathbf{x}^{(i-1)}_0$, where $(i)$ represents the $i$th iteration.
@@ -83,9 +83,9 @@ However, for transport, the process is much more complicated, and the operator $
 Each application of $\mathbf{T}^{-1}$ requires a complete solution of the inhomogeneous multigroup equation $\mathbf{Tx}^{i} = \mathbf{Fx}^{i-1}$.
 Because $\mathbf{T}$ is not formed explicitly, iterative techniques based on the application of $\mathbf{T}$ are needed. 
 The number of transport sweeps (over space and angle) is a good measure for the total computational cost of a method because a sweep is the single most computationally expensive operation.
-To to distinguish it from power iterations, the iterations required to solve the inhomogeneous equation needed to invert $\mathbf{T}$ are called inner iterations.
+To distinguish it from power iterations, the iterations required to solve the inhomogeneous equation needed to invert $\mathbf{T}$ are called inner iterations.
 As a result, the power method leads to two, nested iteration levels: the outer iteration(eigeniteration) and inner(source iteration).
-This algorithm is summarized as following.
+This algorithm is summarized as follows.
 
 \begin{algorithm}[H]
 \SetAlgoLined
@@ -105,7 +105,7 @@ This algorithm is summarized as following.
 \section{Flattened Power iteration}
 
 The power method can be modified in many ways to improve the overall efficiency, and one possible way is achieved by varying the level of precision of the inner iterations.
-For example, by setting the inner tolerance to be proportional to the current outer residual or some other measure of the current level of error in the outer iteration, one reduce time spent solving the multigroup equation with unconverged fission sources.
+For example, by setting the inner tolerance to be proportional to the current outer residual or some other measure of the current level of error in the outer iteration, one reduces time spent solving the multigroup equation with unconverged fission sources.
 Another would be to fix the number of inner iterations for each outer iteration.
 Note that the scattering and fission sources are not completely converged in every outer iteration while either of the inner iteration strategies is used.
 \citep{gill_newtons_2011}

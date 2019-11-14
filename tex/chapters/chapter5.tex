@@ -5,8 +5,8 @@
 
 \section{An Accelerated Power Method using DMD}
 \label{sec:dmdpi}
-The ultimate goal of this section is to develop a method that uses DMD to extrapolate eigenvectors and eigenvalues from a reasonably small number size of snapshots in order to produce an estimated eigenvector close to the final, steady-state solution.
-The difficult part of this strategy is that DMD itself needs to extract information from a time dependent, dynamic system due to extrapolating the prediction results in the ``future''.
+The ultimate goal of this section is to develop a method that uses DMD to extrapolate eigenvectors and eigenvalues from a reasonably small number size of snapshots to produce an estimated eigenvector close to the final, steady-state solution.
+The difficult part of this strategy is that DMD itself needs to extract information from a time-dependent, dynamic system due to extrapolating the prediction results in the ``future''.
 However, the power iteration does not recover the realistic physics transient process. 
 
 Note that because $\omega_i= \text{log}(\lambda_i)$ while $\Delta = 1$, $x^{DMD}(t)$ is a ``fictitious'' time step corresponding to a single power iteration.
@@ -23,7 +23,7 @@ e_0 = 1 \quad and  \quad e_j < 1,j = 1,2,3,4... \, .
 \end{equation}
 There are many strategies to select the optimal rank of DMD modes $r$ used to fit the original system $\mathbf{A}$. 
 Alternatively, because the power method can only reveal a single, dominant mode if the assumptions described in \CHAPTER{chapter:PM} are satisfied, only one mode recovered by DMD should remain at $t=\infty$, which is the fundamental eigenmode.
-This phenomena can also be proven in numerical perspective, as mentioned at \EQ{eq:ej}, all other modes with eigenvalue smaller than one will vanish eventually when the diagonal matrix $e^{\vec{\omega}t}$ is applied at $t=\infty$.
+This phenomenon can also be proven in a numerical perspective, as mentioned at \EQ{eq:ej}, all other modes with eigenvalue smaller than one will vanish eventually when the diagonal matrix $e^{\vec{\omega}t}$ is applied at $t=\infty$.
 Therefore, instead of computing all the DMD modes and predicting the response by \EQ{eq:dmd_predict}, we can simply compute only the dominant DMD mode and predict the steady-state solution 
 \begin{equation}
 \label{eq:f_mode}
@@ -48,7 +48,7 @@ Note that the normalization in step 5 is important for reducing numerical round-
 \section{The DMD-FPM(n) Method}
 
 As mentioned in \CHAPTER{chapter:PM}, the flattened power method is a more efficient approach for solving the multigroup neutron transport equation.
-We have discussed a restarted, DMD-accelerated power method scheme, which suggest that there is potential to develop this algorithm to fit the flattened power method.
+We have discussed a restarted, DMD-accelerated power method scheme, which suggests that there is potential to develop this algorithm to fit the flattened power method.
 This section contains a complete description of an accelerated flattened power method using DMD.
 
 The basic framework of DMD-FPM($n$) is similar to DMD-PM($n$).
@@ -74,7 +74,7 @@ In order to predict a more appropriate eigenvalue, Aitken extrapolation was empl
 k_{aitken} = k_{i-2} - \frac{(k_{i-1}-k_{i-2})^2}{(k_i - 2k_{i-1} + k_{i-2})}\, ,
 \end{equation}
 where $k_i$ is the eigenvalue from the ith iteration of the flattened power iteration.
-Although Aitken extrapolation does not eliminate the error from eigenvector/eigenvalue mismatch completely, significant improvement in numerical tests were observed.
+Although Aitken extrapolation does not eliminate the error from eigenvector/eigenvalue mismatch completely, significant improvement in all the numerical tests was observed.
 
 The procedure for applying DMD to the flattened power iteration with Aitken extrapolation is summarized as follows.
 \begin{enumerate}
@@ -88,6 +88,5 @@ The procedure for applying DMD to the flattened power iteration with Aitken extr
 
 Both DMD-PM($n$) and DMD-FPM($n$) are tested to verify the performance to accelerate solving neutron transport/diffusion problem.
 The testing cases and numerical analysis are presented in the following chapter. 
-
 
 
