@@ -1,0 +1,18 @@
+\documentclass[tikz,border=0pt,crop=true]{standalone}
+
+\usepackage{tikz} % Allows creation of tikz pictures
+\usepackage{varwidth}
+\usetikzlibrary{arrows,shapes}
+
+\begin{document}
+    \begin{tikzpicture}[scale=1.0, every node/.style={scale=1}]
+        \filldraw[xshift=-4.5cm,fill=red!30!white,draw=black] (-.25,-.25)
+        rectangle (.25,.25) node[yshift=-.25cm, right] {UO$_2$-1};%
+        \filldraw[xshift=-1.5cm,fill=yellow!30!white,draw=black] (-.25,-.25)
+        rectangle (.25,.25) node[yshift=-.25cm, right] {UO$_2$-2};%
+        \filldraw[xshift=1.5cm,fill=black!30!white,draw=black] (-.25,-.25)
+        rectangle (.25,.25) node[yshift=-.25cm, right] {UO$_2$-Gd};%
+        \filldraw[xshift=4.5cm,fill=blue!30!white,draw=black] (-.25,-.25)
+        rectangle (.25,.25) node[yshift=-.25cm, right] {Water};%
+    \end{tikzpicture}
+\end{document}
